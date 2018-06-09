@@ -46,6 +46,16 @@ npm test
 └── package.json           项目的package配置
 ```
 
+
+```
+├── home 首页 奖品列表页
+├── luckDraw 奖品详情页 抽奖页
+├── personalCenter 个人中心 我参加的抽奖、中奖纪录、收货地址
+├── past 我参与过的抽奖页 待开奖、已结束
+├── prize 中/未中奖展示页、分享页、通过通知点进去展示页
+├── record 中过奖的记录页
+```
+
 具体代码参照已实现的WePY
 
 
