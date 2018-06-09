@@ -1,0 +1,122 @@
+<style lang="less">
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import 'wepy-async-function'
+
+import { setStore } from 'wepy-redux'
+import configStore from './store'
+import { service } from './config.js'
+
+const store = configStore()
+setStore(store)
+
+export default class extends wepy.app {
+  config = {
+    pages: [
+      'pages/home',
+      'pages/index',
+      'pages/show'
+    ],
+    window: {
+      backgroundTextStyle: 'light',
+      navigationBarBackgroundColor: '#fff',
+      navigationBarTextStyle: 'black',
+      navigationBarTitleText: 'tabBar' // 配置底部导航
+    },
+    tabBar: {
+      color: '#111',
+      selectedColor: '#3cc51f',
+      backgroundColor: '#fff',
+      borderStyle: 'black',
+      list: [
+        {
+          text: 'home',
+          pagePath: 'pages/home'
+        },
+        {
+          text: 'index',
+          pagePath: 'pages/index'
+        }
+      ]
+    }
+  }
+
+  globalData = {
+    userInfo: null
+  }
+
+  constructor () {
+    super()
+    this.use('requestfix')
+  }
+
+  onLaunch() {
+    // let accessToken = wepy.getStorageSync('accessToken') || false
+    wepy.checkSession({
+      success: function() {
+      // session_key 未过期，并且在本生命周期一直有效
+      },
+      fail: function() {
+        debugger
+        // session_key 已经失效，需要重新执行登录流程
+        wepy.login({
+          success: res => {
+            if (res.code) {
+              wepy.request({
+                url: service.login,
+                method: 'POST',
+                data: {
+                  code: res.code
+                },
+                success: function (res) {
+                  wepy.setStorage({
+                    key: 'accessToken',
+                    data: res.data.access_token
+                  })
+                }
+              })
+            }
+          }
+        })
+      }
+    })
+    // this.testAsync()
+  }
+
+  // sleep (s) {
+  //   return new Promise((resolve, reject) => {
+  //     setTimeout(() => {
+  //       resolve('promise resolved')
+  //     }, s * 1000)
+  //   })
+  // }
+
+  // async testAsync () {
+  //   const data = await this.sleep(3)
+  //   console.log(data)
+  // }
+
+  // getUserInfo(cb) {
+  //   const that = this
+  //   if (this.globalData.userInfo) {
+  //     return this.globalData.userInfo
+  //   }
+  //   wepy.getUserInfo({
+  //     success (res) {
+  //       that.globalData.userInfo = res.userInfo
+  //       cb && cb(res.userInfo)
+  //     }
+  //   })
+  // }
+}
+</script>
