@@ -1,7 +1,16 @@
-<style>
-</style>
-<template>
-  <view>aaa</view>
+<template class="page">
+  <view class="prizes" wx:for="{{prizesList}}" wx:key="index">
+    <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}" class="prizesItem">
+      <view class="banner">
+        <image src="{{item.banner_url}}"></image>
+      </view>
+      <view class="describe">
+        <text class="name">{{item.brand}} · {{item.name}} · </text>
+        <text class="number"> {{item.number}}件</text>
+        <label>满 {{item.reach_number}} 参与开奖</label>
+      </view>
+    </navigator>
+  </view>
 </template>
 <script>
   import wepy from 'wepy'
@@ -11,20 +20,71 @@
   export default class Home extends wepy.page {
     mixins = [http, base]
     config = {
-      navigationBarTitleText: 'home'
+      navigationBarTitleText: '搞点抽奖'
     }
-    data = {}
+    data = {
+      prizesList: []
+    }
     components = {}
     methods = {}
     onLoad() {
     }
     onShow() {
+      let that = this
       this.$get({url: service.prizes}, {
         success: ({statusCode, data}) => {
-          console.log(statusCode, data['prizes'][0])
+          that.prizesList = data['prizes']
+          console.log(statusCode, data['prizes'])
+          console.log(that.prizesList)
         }
       })
     }
   }
-
 </script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  @import "../assets/stylesheets/layout.scss";
+  .prizes {
+    background: #F1F2F4;
+    padding: 36rpx;
+    overflow: hidden;
+    .prizesItem {
+      width: 686rpx;
+      margin-bottom: 32rpx;
+      box-shadow: rgba(60, 62, 66, 0.1) 0 2rpx 8rpx 0;
+      border-radius: 20rpx;
+      .banner {
+        border-bottom: 1rpx solid #F1F2F4;
+        image {
+          border-top-left-radius: 20rpx;
+          border-top-right-radius: 20rpx;
+          width: 100%;
+          height: 386rpx;
+          display: block;
+        }
+      }
+      .describe {
+        border-bottom-left-radius: 20rpx;
+        border-bottom-right-radius: 20rpx;
+        background: #fff;
+        padding: 32rpx;
+        .name, .number {
+          font-size: 32rpx;
+          color: #333333;
+          line-height: 36rpx;
+          display: inline-block;
+          margin-bottom: 16rpx;
+        }
+        .number {
+          margin-left: 16rpx;
+          color: #666666;
+        }
+        label {
+          font-size: 24rpx;
+          color: #666666;
+          line-height: 32rpx;
+          display: block;
+        }
+      }
+    }
+  }
+</style>

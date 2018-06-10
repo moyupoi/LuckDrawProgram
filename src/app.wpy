@@ -1,12 +1,12 @@
 <style lang="less">
-.container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  box-sizing: border-box;
-}
+// .container {
+//   height: 100%;
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   justify-content: space-between;
+//   box-sizing: border-box;
+// }
 </style>
 
 <script>
@@ -23,32 +23,39 @@ setStore(store)
 export default class extends wepy.app {
   config = {
     pages: [
+      'pages/past',
+      'pages/personalCenter',
+      'pages/luckDraw',
       'pages/home',
-      'pages/index',
-      'pages/show'
+      'pages/prize',
+      'pages/record'
     ],
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
       navigationBarTextStyle: 'black',
       navigationBarTitleText: 'tabBar' // 配置底部导航
-    },
-    tabBar: {
-      color: '#111',
-      selectedColor: '#3cc51f',
-      backgroundColor: '#fff',
-      borderStyle: 'black',
-      list: [
-        {
-          text: 'home',
-          pagePath: 'pages/home'
-        },
-        {
-          text: 'index',
-          pagePath: 'pages/index'
-        }
-      ]
     }
+    // tabBar: {
+    //   color: '#999999',
+    //   selectedColor: '#FA5C37',
+    //   backgroundColor: '#fff',
+    //   borderStyle: 'black',
+    //   list: [
+    //     {
+    //       text: '首页',
+    //       pagePath: 'pages/home',
+    //       iconPath: './assets/images/tabbars/icon-home.png',
+    //       selectedIconPath: './assets/images/tabbars/icon-home-active.png'
+    //     },
+    //     {
+    //       text: '我的',
+    //       pagePath: 'pages/personalCenter',
+    //       iconPath: './assets/images/tabbars/icon-personal.png',
+    //       selectedIconPath: './assets/images/tabbars/icon-personal-active.png'
+    //     }
+    //   ]
+    // }
   }
 
   globalData = {
@@ -120,3 +127,6 @@ export default class extends wepy.app {
   // }
 }
 </script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  @import "./assets/stylesheets/layout.scss";
+</style>

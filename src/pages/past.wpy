@@ -1,0 +1,89 @@
+<template>
+  <view class="title">
+    <view class="{{selected ? 'selected' : ''}}">
+      <button @tap="openPrize(0)">待开奖</button>
+      <label></label>
+    </view>
+    <view class="{{!selected ? 'selected' : ''}}">
+      <button @tap="openPrize(1)">已结束</button>
+      <label></label>
+    </view>
+  </view>
+  <view>
+
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  // import { service } from '../config.js'
+  import http from '../mixins/http'
+  import base from '../mixins/base'
+  export default class Past extends wepy.page {
+    mixins = [http, base]
+    config = {
+      navigationBarTitleText: '我参加的抽奖'
+    }
+    data = {
+      selected: true
+    }
+    components = {}
+    methods = {}
+    onLoad () {
+    }
+    onShow () {
+      // this.$get({url: service.prizes}, {
+      //   success: ({statusCode, data}) => {
+      //     console.log(statusCode, data['prizes'][0])
+      //   }
+      // })
+    }
+    openPrize (event) {
+      let that = this
+      if (event.target.dataset.wpyopenprizeA === '0') {
+        that.selected = true
+      } else {
+        that.selected = false
+      }
+    }
+  }
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  @import "../assets/stylesheets/layout.scss";
+  .title {
+    height: 96rpx;
+    view {
+      width: 50%;
+      height: 100%;
+      position: relative;
+      border: 0;
+      float: left;
+      button {
+        width: 100%;
+        height: 100%;
+        font-size: 28rpx;
+        line-height: 96rpx;
+        color: #666666;
+        text-align: center;
+        border-radius: 0;
+        background: #fff;
+      }
+      label {
+        position: absolute;
+        top: 56rpx;
+        left: 128rpx;
+        width: 120rpx;
+        height: 24rpx;
+        background: rgba(255, 235, 227, .5);
+        display: none;
+      }
+    }
+    .selected {
+      button {
+        color: #FF471C;
+      }
+      label {
+        display: block;
+      }
+    }
+  }
+</style>

@@ -1,0 +1,30 @@
+<template>
+  <view>fff</view>
+</template>
+<script>
+  import wepy from 'wepy'
+  // import { service } from '../config.js'
+  import http from '../mixins/http'
+  import base from '../mixins/base'
+  export default class Record extends wepy.page {
+    mixins = [http, base]
+    config = {
+      navigationBarTitleText: '中奖纪录'
+    }
+    data = {}
+    components = {}
+    methods = {}
+    onLoad() {
+    }
+    onShow() {
+      // this.$get({url: service.prizes}, {
+      //   success: ({statusCode, data}) => {
+      //     console.log(statusCode, data['prizes'][0])
+      //   }
+      // })
+    }
+  }
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+
+</style>

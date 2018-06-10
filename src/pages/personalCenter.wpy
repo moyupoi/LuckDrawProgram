@@ -1,0 +1,125 @@
+<template>
+  <view class="banner">
+    <view class="user">
+      <open-data type="userAvatarUrl" class="portrait"></open-data>
+      <open-data type="userNickName" class="userName"></open-data>
+    </view>
+    <image src="../assets/images/personalCenter/banner.png"></image>
+  </view>
+  <view class="option">
+    <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}">
+      <image src="../assets/images/personalCenter/icon01.png"></image>
+      <text>我参与的抽奖</text>
+    </navigator>
+    <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}">
+      <image src="../assets/images/personalCenter/icon02.png"></image>
+      <text>中奖纪录</text>
+    </navigator>
+    <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}">
+      <image src="../assets/images/personalCenter/icon03.png"></image>
+      <text>收货地址</text>
+    </navigator>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  // import { service } from '../config.js'
+  import http from '../mixins/http'
+  import base from '../mixins/base'
+  export default class PersonalCenter extends wepy.page {
+    mixins = [http, base]
+    config = {
+      navigationBarTitleText: '我的'
+    }
+    data = {}
+    components = {}
+    methods = {}
+    onLoad() {
+    }
+    onShow() {
+      // this.$get({url: service.prizes}, {
+      //   success: ({statusCode, data}) => {
+      //     console.log(statusCode, data['prizes'][0])
+      //   }
+      // })
+    }
+  }
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  .banner {
+    text-align: center;
+    width: 100%;
+    height: 400rpx;
+    background: #fff;
+    .user {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 2;
+      .portrait {
+        display: block;
+        width: 176rpx;
+        height: 176rpx;
+        margin: 80rpx auto 0 auto;
+        clip-path: circle(50% at center);
+        overflow: hidden;
+      }
+      .userName {
+        font-size: 40rpx;
+        line-height: 48rpx;
+        color: #4C4C4D;
+        margin-top: 20rpx;
+        display: block;
+      }
+    }
+    image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1;
+      width: 100%;
+      height: 400rpx;
+    }
+  }
+  .option {
+    background: #F2F3F5;
+    padding: 32rpx;
+    navigator {
+      display: block;
+      margin-bottom: 32rpx;
+      background: #fff;
+      border-radius: 20rpx;
+      position: relative;
+      padding: 28rpx 32rpx;
+      overflow: hidden;
+      &:before {
+        content: '';
+        position: absolute;
+        background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAYCAYAAADKx8xXAAAAAXNSR0IArs4c6QAAAf5JREFUOBGFVMtOVEEQrepG/YThGuNiZkjuwJegLtCMEDDGEFAWxK9hQZT4XpgoEKJh4cqvcGYS77Ai3IGlKwWnyzow1d5hHnTSqe7Tdfp0dVc1/8jyWRJ5SdqY/fPpamkP46ua65FuqaP2sN1sdxavImHdFZ1ExGv/0GofPyriw8YOx2Pmri2CHCS8b/w8emzYMOsQkwgtaYR/zUHJTgN+28zyJ4ZdtmxA6yCvd7v0kUgmDNOTBMe0mlaSN4aZjTGm5WTbOVlQ5TNbhHIQetU46KwYZjYqGtDIjudEwidVvmaYKgsTr9Wqk1uGRUUDELMnruv81DBVZiF50cyO1gwbULQFfc97IYQdnV83DMrEtD5dSTZHEuHcaOd3KciOEN0wMqy+4fJYIpx6KYk0jMr6VCcDMcK52DQnb+sR40X11n6NVWxmnae4FFyObcZMvzU77oxUxNsNkIj+sPi5tJp8H0pstfNlvZStPiUlCfP92lTpG9TjEewoyE+9xdfIGsPUnrLjB/oM+4bFvASAihhGct7Va+XJSIJv3PW8BrUi+pX4zJN7qKSvcC62c0VUvdbgu8skZjefVktfigQbM5IaX4aSvIGoTVRKrXJz9z/WP5oQ6W4o1EfynhbT8mgStogxYqIZgi9kCbWJ+biGL+KZOhxedFefmUo+jyPY2j8L8NKoRhpQsgAAAABJRU5ErkJggg==') no-repeat;
+        background-size: 10rpx 20rpx;
+        width: 10rpx;
+        height: 20rpx;
+        top: 50rpx;
+        right: 35rpx;
+      }
+      image {
+        width: 64rpx;
+        height: 64rpx;
+        display: block;
+        float: left;
+      }
+      text {
+        font-size: 28rpx;
+        line-height: 36rpx;
+        color: #333333;
+        display: block;
+        float: left;
+        margin: 14rpx 0 0 16rpx;
+      }
+    }
+  }
+</style>

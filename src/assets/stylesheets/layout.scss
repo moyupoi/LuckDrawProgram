@@ -1,0 +1,9 @@
+@import "./color.scss";
+page {
+  background: #F1F2F4;
+  height: 100%;
+}
+button::after, button::before {
+  display: none;
+  border: none;
+}
