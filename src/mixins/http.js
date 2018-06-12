@@ -104,12 +104,10 @@ export default class httpMixin extends wepy.mixin {
                       key: 'accessToken',
                       data: res.data.access_token
                     })
-                    debugger
                     var route = '/' + getCurrentPages()[0].__route__;
                     if (!res.data.access_token) {
                       wx.navigateTo({url: '/pages/user/register'})
                     } else {
-                      debugger
                       that.$apply()
                       wx.reLaunch({url: route})
                     }

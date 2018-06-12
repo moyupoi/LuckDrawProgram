@@ -1,0 +1,53 @@
+<template>
+  <view class="portrait" >
+    <text>{{portraitList.count}} 位参与者</text>
+    <image src="{{item}}" wx:for="{{portraitList.user_avatars}}" wx:key="index"></image>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import { service } from '../config.js'
+  import http from '../mixins/http'
+  import base from '../mixins/base'
+  export default class PortraitList extends wepy.page {
+    mixins = [http, base]
+    config = {
+      navigationBarTitleText: '中奖纪录'
+    }
+    data = {
+      portraitList: []
+    }
+    components = {}
+    methods = {}
+    onLoad(options) {
+      let id = options.id
+      let that = this
+      this.$get({url: service.prizes + id + '/draw_users'}, {
+        success: ({statusCode, data}) => {
+          that.portraitList = data
+        }
+      })
+    }
+    onShow() {}
+  }
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  @import "../assets/stylesheets/layout.scss";
+  .portrait {
+    padding: 50rpx 32rpx;
+    text {
+      display: block;
+      text-align: center;
+      font-size: 28rpx;
+      color: #666666;
+      margin-bottom: 20rpx;
+    }
+    image {
+      width: 50rpx;
+      height: 50rpx;
+      display: block;
+      float: left;
+      margin: 7rpx;
+    }
+  }
+</style>

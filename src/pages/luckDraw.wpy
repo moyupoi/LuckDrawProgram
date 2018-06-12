@@ -7,75 +7,127 @@
     <view class="awardProgress">
       <text class="percentageTitle">开奖进度:</text>
       <view class="progress">
-        <view style="width:{{ percentage + '%'}}"></view>
+        <view style="width:{{ percentage + '%' }}"></view>
       </view>
     </view>
-    <view class="participate" wx:if="{{titaList.prize_draws_count > 0}}">
+    <view class="participate" wx:if="{{titaList.prize_draws_count}}">
       <text>已有{{titaList.prize_draws_count}}人参加，</text>
-      <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}">
+      <navigator hover-class="none" url="/pages/portraitList?id={{titaList.id}}">
         查看全部>
       </navigator>
     </view>
-    <view class="participatePeople" wx:if="{{titaList.prize_draws_count > 0}}">
-      <image src="{{item}}" wx:for="{{tx}}" wx:key="index"></image>
+    <view class="participatePeople" wx:if="{{titaList.prize_draws_count}}">
+      <image src="{{item}}" wx:for="{{titaList.prize_draw_user_avatars}}" wx:key="index"></image>
+      <view class="ellipsis" wx:if="{{titaList.prize_draws_count >= 6}}"></view>
     </view>
     <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub">
-      <button class="drawBtn" @getuserinfo="drawBtn" open-type="getUserInfo" formType="submit">立即参加</button>
-      <text>分享给好友参加</text>
+      <button class="drawBtn" @getuserinfo="drawBtn" open-type="getUserInfo" formType="submit" wx:if="{{!isHasdraw}}">立即参加</button>
+      <button class="drawBtn" open-type="share" @tap="share" formType="submit" wx:if="{{isHasdraw}}">加速开奖</button>
+      <text wx:if="{{isHasdraw}}">分享给好友参加</text>
     </form>
   </view>
   <view class="sponsor">
     <text>赞助商</text>
-    <image src="../assets/images/test/tx.jpg"></image>
-    <label>天猫商城</label>
+    <image src="../assets/images/luckDraw/officialLogo.png"></image>
+    <label>{{titaList.sponsor}}</label>
   </view>
-  <image src="{{titaList.detail_url}}" class="commodityDisplay"  mode="widthFix"></image>
+  <image src="{{titaList.detail_url}}" class="commodityDisplay" mode="widthFix"></image>
 </template>
 <script>
   import wepy from 'wepy'
   import { service } from '../config.js'
   import http from '../mixins/http'
   import base from '../mixins/base'
+  import ShareMessage from '../mixins/ShareMessage'
   export default class LuckDraw extends wepy.page {
-    mixins = [http, base]
+    mixins = [http, base, ShareMessage]
     config = {
       navigationBarTitleText: '抽奖详情'
     }
     data = {
       titaList: {},
       percentage: 0,
-      tx: [
-        '../assets/images/test/tx.jpg',
-        '../assets/images/test/tx.jpg',
-        '../assets/images/test/tx.jpg',
-        '../assets/images/test/tx.jpg',
-        '../assets/images/test/tx.jpg',
-        '../assets/images/test/tx.jpg'
-      ]
+      prizeDrawsCount: 0,
+      reachNumber: 0,
+      isHasdraw: true,
+      formId: null
     }
     components = {}
     methods = {}
     onLoad (options) {
       let that = this
       if (options.id !== '') {
-        this.$get({url: service.prizes + '/' + '5b1a2d9f7ff631678af8e47e'}, {
+        this.$get({url: service.prizes + options.id}, {
           success: ({statusCode, data}) => {
             that.titaList = data
-            that.percentage = data.prize_draws_count > 0 ? parseInt(data.reach_number * data.prize_draws_count / 100) : 0
+            that.prizeDrawsCount = data.prize_draws_count
+            that.reachNumber = data.reach_number
+            that.percentage = data.prize_draws_count > 0 ? parseInt(data.prize_draws_count / data.reach_number * 100) : 0
+            that.isHasdraw = data.is_has_draw
           }
         })
       }
     }
-    onShow () {
-    }
+    onShow () {}
     formSubmit (event) {
-      console.log(event)
+      let formId = event.detail.formId
+      if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
+        this.formId = formId
+      }
     }
     drawBtn (event) {
+      let that = this
+      let isHasDraw = this.titaList.is_has_draw
       // 判断用户点击确认 并且 后台没有记录过用户信息字段为false
-      if (event.detail.errMsg === 'getUserInfo:ok' && !this.data.titaList.has_upload_userinfo) {
-        console.log(event)
+      if (event.detail.errMsg === 'getUserInfo:ok') {
+        let encryptedData = event.detail.encryptedData
+        let iv = event.detail.iv
+        this.$post({
+          url: service.uploadWechatUserinfo,
+          headers: {
+            'X-JINKU-WECHAT-FORM-ID': that.formId
+          },
+          data: {
+            encryptedData: encryptedData,
+            iv: iv
+          }
+        }, {
+          success: ({statusCode, data}) => {
+            if (statusCode === 200) {
+              if (!isHasDraw) {
+                that.prizesDraw()
+              }
+              // console.log(statusCode, message)
+            }
+          }
+        })
+      } else {
+        that.prizesDraw()
       }
+    }
+    prizesDraw () {
+      let that = this
+      let isHasDraw = this.isHasdraw
+      if (!isHasDraw) {
+        this.$post({
+          url: service.prizes + this.titaList.id + '/draw'
+        }, {
+          success: ({statusCode, data}) => {
+            if (statusCode === 200) {
+              that.isHasdraw = true
+              that.percentage = parseInt((that.prizeDrawsCount + 1) / that.reachNumber * 100)
+              wepy.showToast({
+                title: '参加成功',
+                icon: 'success'
+              })
+              console.log(data.message)
+            }
+          }
+        })
+      }
+    }
+    onShareAppMessage(res) {
+      return this.$parent.onShareAppMessage()
     }
   }
 </script>
@@ -88,7 +140,7 @@
   }
   .describe {
     background: #fff;
-    padding: 32rpx 32rpx 64rpx 32rpx;
+    padding: 32rpx;
     overflow: hidden;
     .name {
       font-size: 40rpx;
@@ -123,12 +175,13 @@
       .progress {
         display: block;
         float: right;
-        width: 566rpx;
+        width: 560rpx;
         background: #F2F3F5;
         height: 24rpx;
         border-radius: 20rpx;
-        margin: 6rpx 0 0 15rpx;
+        margin: 6rpx 4rpx 0 15rpx;
         view {
+          border-radius: 20rpx;
           margin: 4rpx 0 0 4rpx;
           height: 16rpx;
           background: linear-gradient(to right, #FB6741 , #FD9367);
@@ -165,8 +218,7 @@
         height: 72rpx;
         margin: 0 12rpx;
       }
-      &:before {
-        content: '';
+      .ellipsis {
         position: absolute;
         background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAECAYAAACKqs+rAAAAAXNSR0IArs4c6QAAAKJJREFUGBm1TUsOAiEUG4iElcqxNLoePQG6YcshuAAJnsXPCcajGOKGQAK+GieZzN4m8PpaWrruT2DotdYuY4wX8NbaKYQQwUcYY1Y550A745yfvfev0cPUWq8ZY4GyVSmlnXNvDoNK9yQecCi4hTZFKWXz8/ta627qgSNDfk/0iC5oC1z025WMAVxKecec4UH7QO+YEOI2876ZlNKT9Iou+B/opkhj5iraCQAAAABJRU5ErkJggg==') no-repeat;
         background-size: 24rpx 5rpx;
@@ -221,7 +273,7 @@
       display: block;
       float: right;
       border-radius: 50rpx;
-      margin-top: 5rpx;
+      margin-top: 7rpx;
       margin-left: 10rpx;
     }
   }

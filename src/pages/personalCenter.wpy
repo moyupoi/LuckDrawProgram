@@ -7,18 +7,18 @@
     <image src="../assets/images/personalCenter/banner.png"></image>
   </view>
   <view class="option">
-    <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}">
+    <navigator hover-class="none" url="/pages/past">
       <image src="../assets/images/personalCenter/icon01.png"></image>
       <text>我参与的抽奖</text>
     </navigator>
-    <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}">
+    <navigator hover-class="none" url="/pages/record">
       <image src="../assets/images/personalCenter/icon02.png"></image>
       <text>中奖纪录</text>
     </navigator>
-    <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}">
+    <view class="address" @tap="address">
       <image src="../assets/images/personalCenter/icon03.png"></image>
       <text>收货地址</text>
-    </navigator>
+    </view>
   </view>
 </template>
 <script>
@@ -34,14 +34,12 @@
     data = {}
     components = {}
     methods = {}
-    onLoad() {
-    }
-    onShow() {
-      // this.$get({url: service.prizes}, {
-      //   success: ({statusCode, data}) => {
-      //     console.log(statusCode, data['prizes'][0])
-      //   }
-      // })
+    onLoad() {}
+    onShow() {}
+    address () {
+      wepy.chooseAddress({
+        success: function (res) {}
+      })
     }
   }
 </script>
@@ -88,7 +86,9 @@
   .option {
     background: #F2F3F5;
     padding: 32rpx;
-    navigator {
+    position: relative;
+    z-index: 10;
+    navigator, .address {
       display: block;
       margin-bottom: 32rpx;
       background: #fff;

@@ -1,9 +1,52 @@
 <template>
-  <view>eee</view>
+  <view class="banner" wx:if="{{prizesDraws.is_get_draw}}">
+    <image src="../assets/images/prize/banner01.png" class="bannerBack"></image>
+    <image src="../assets/images/prize/circles.png" class="circles"></image>
+    <image src="{{prizesDraws.banner_url}}" class="bannerImg"></image>
+    <text class="title">{{prizesDraws.name}}</text>
+    <view class="fillAddress" @tap="address" wx:if="{{prizesDraws.user_address === ''}}">填写收货地址
+    </view>
+    <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}" class="shareBtn" style="width:{{prizesDraws.user_address !== '' ? '552rpx' : ''}}">分享
+    </navigator>
+  </view>
+  <view class="banner notWinning" wx:if="{{!prizesDraws.is_get_draw}}">
+    <image src="../assets/images/prize/banner02.png" class="bannerBack"></image>
+    <image src="{{prizesDraws.banner_url}}" class="bannerImg"></image>
+    <text class="title">{{prizesDraws.name}}</text>
+  </view>
+  <view class="receivingAddress" wx:if="{{prizesDraws.user_address !== ''}}">
+    <view class="hr"></view>
+    <image src="../assets/images/luckDraw/receivingAddress.png"></image>
+    <view>
+      <text>{{prizesDraws.user_address}}</text>
+      <label>{{prizesDraws.memo}}</label>
+    </view>
+  </view>
+  <view class="sponsor">
+    <text>赞助商</text>
+    <image src="../assets/images/luckDraw/officialLogo.png"></image>
+    <label>{{prizesDraws.sponsor}}</label>
+  </view>
+  <view class="footer">
+    <image src="../assets/images/prize/title.png" class="title"></image>
+    <image src="../assets/images/prize/footerBack.png" class="footerBack"></image>
+    <view class="participatePeople">
+      <image src="{{item}}" wx:for="{{prizesDraws.prize_draw_user_avatars}}" wx:key="index"></image>
+    </view>
+    <view class="participate">
+      <text>共{{titaList.prize_draws_count}}人参加，</text>
+      <navigator hover-class="none" url="/pages/portraitList?id={{prizesDraws.prize_id}}">
+        查看全部>
+      </navigator>
+    </view>
+  </view>
+  <navigator hover-class="none" class="otherBtn" url="/pages/home" open-type="switchTab">
+    参加其他抽奖
+  </navigator>
 </template>
 <script>
   import wepy from 'wepy'
-  // import { service } from '../config.js'
+  import { service } from '../config.js'
   import http from '../mixins/http'
   import base from '../mixins/base'
   export default class Prize extends wepy.page {
@@ -11,20 +54,251 @@
     config = {
       navigationBarTitleText: '中奖纪录'
     }
-    data = {}
+    data = {
+      id: '5b1e1ab27ff6312cb621b3ce',
+      prizesDraws: [],
+      winning: true
+    }
     components = {}
     methods = {}
-    onLoad() {
+    onLoad (options) {
+      if (options.id) {
+        this.id = options.id
+      }
+      let that = this
+      this.$get({url: service.prizesDraws + this.id}, {
+        success: ({statusCode, data}) => {
+          that.prizesDraws = data
+          console.log(data)
+        }
+      })
     }
-    onShow() {
-      // this.$get({url: service.prizes}, {
-      //   success: ({statusCode, data}) => {
-      //     console.log(statusCode, data['prizes'][0])
-      //   }
-      // })
+    onShow () {}
+    address () {
+      let that = this
+      wepy.chooseAddress({
+        success: function (res) {
+          console.log(res)
+          that.$post({
+            url: service.prizesDraws + that.id + '/address',
+            data: res
+          }, {
+            success: ({statusCode, data}) => {
+              if (statusCode === 200) {
+                wepy.showToast({
+                  title: '地址绑定成功！',
+                  icon: 'success'
+                })
+              }
+            }
+          })
+        }
+      })
     }
   }
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
-
+  @import "../assets/stylesheets/layout.scss";
+  .banner {
+    position: relative;
+    height: 724rpx;
+    background: #fff;
+    overflow: hidden;
+    text-align: center;
+    .bannerBack {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 496rpx;
+    }
+    .circles {
+      width: 175.84rpx;
+      height: 262.84rpx;
+      display: block;
+      position: absolute;
+      top: 302rpx;
+      right: 0;
+      z-index: 2;
+    }
+    .bannerImg {
+      width: 548rpx;
+      height: 308rpx;
+      position: absolute;
+      border-radius: 10rpx;
+      top: 144rpx;
+      left: 100rpx;
+    }
+    .title {
+      display: block;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      margin-top: 488rpx;
+      margin-bottom: 30rpx;
+    }
+    .fillAddress, .shareBtn {
+      width: 326rpx;
+      height: 92rpx;
+      display: inline-block;
+      font-size: 32rpx;
+      line-height: 92rpx;
+      position: relative;
+      z-index: 2;
+      border-radius: 50rpx;
+    }
+    .fillAddress {
+      background: #fff;
+      color: #FA5C37;
+      border: 1rpx solid #FA5C37;
+      margin-right: 32rpx;
+    }
+    .shareBtn {
+      background: #FA5C37;
+      color: #fff;
+    }
+  }
+  .notWinning {
+    height: 568rpx;
+  }
+  .receivingAddress {
+    overflow: hidden;
+    background: #fff;
+    padding: 0 28rpx;
+    .hr {
+      width: 100%;
+      height: 1rpx;
+      display: block;
+      background: #D8D8D8;
+      margin: 0rpx 0 48rpx;
+    }
+    image {
+      width: 46rpx;
+      height: 186rpx;
+      display: block;
+      float: left;
+    }
+    view {
+      overflow: hidden;
+      float: left;
+      margin-left: 20rpx;
+      text {
+        width: 620rpx;
+        height: 84rpx;
+        font-size: 28rpx;
+        line-height: 41rpx;
+        color: #333333;
+        display: block;
+        overflow: hidden;
+      }
+      label {
+        width: 544rpx;
+        height: 28rpx;
+        font-size: 24rpx;
+        line-height: 28rpx;
+        color: #FF471C;
+        display: block;
+        margin-top: 28rpx;
+        overflow: hidden;
+      }
+    }
+  }
+  .sponsor {
+    height: 50rpx;
+    background: #F2F3F5;
+    padding: 32rpx;
+    overflow: hidden;
+    text {
+      font-size: 28rpx;
+      line-height: 50rpx;
+      color: #999999;
+      display: block;
+      float: left;
+    }
+    label {
+      font-size: 28rpx;
+      line-height: 50rpx;
+      color: #333333;
+      display: block;
+      float: right;
+    }
+    image {
+      width: 36rpx;
+      height: 36rpx;
+      float: right;
+      border-radius: 50rpx;
+      margin-top: 7rpx;
+      margin-left: 10rpx;
+    }
+  }
+  .footer {
+    width: 100%;
+    height: 364rpx;
+    background: #fff;
+    overflow: hidden;
+    position: relative;
+    .title {
+      width: 282rpx;
+      height: 52rpx;
+      display: block;
+      text-align: center;
+      margin: 48rpx auto;
+      position: relative;
+      z-index: 1;
+    }
+    .footerBack {
+      width: 100%;
+      height: 364rpx;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+    .participatePeople {
+      overflow: hidden;
+      text-align: center;
+      display: block;
+      position: relative;
+      z-index: 2;
+      image {
+        border-radius: 50rpx;
+        display: inline-block;
+        width: 72rpx;
+        height: 72rpx;
+        margin: 0 12rpx;
+      }
+    }
+    .participate {
+      text-align: center;
+      margin: 10rpx auto;
+      position: relative;
+      z-index: 1;
+      text {
+        display: inline-block;
+        font-size: 28rpx;
+        line-height: 32rpx;
+        color: #333333;
+      }
+      navigator {
+        display: inline-block;
+        font-size: 28rpx;
+        line-height: 32rpx;
+        color: #FF471C;
+        border-bottom: 1rpx solid #FF471C;
+      }
+    }
+  }
+  .otherBtn {
+    width: 552rpx;
+    height: 92rpx;
+    display: block;
+    text-align: center;
+    background: #FA5C37;
+    color: #fff;
+    line-height: 92rpx;
+    margin: 32rpx auto;
+    border-radius: 50rpx;
+    font-weight: 300;
+  }
 </style>

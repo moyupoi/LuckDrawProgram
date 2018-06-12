@@ -1,6 +1,6 @@
 <template class="page">
-  <view class="prizes" wx:for="{{prizesList}}" wx:key="index">
-    <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}" class="prizesItem">
+  <view class="prizes">
+    <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}" class="prizesItem"  wx:for="{{prizesList}}" wx:key="index">
       <view class="banner">
         <image src="{{item.banner_url}}"></image>
       </view>
@@ -20,7 +20,7 @@
   export default class Home extends wepy.page {
     mixins = [http, base]
     config = {
-      navigationBarTitleText: '搞点抽奖'
+      navigationBarTitleText: '搞点福利'
     }
     data = {
       prizesList: []
@@ -48,8 +48,8 @@
     padding: 36rpx;
     overflow: hidden;
     .prizesItem {
-      width: 686rpx;
       margin-bottom: 32rpx;
+      width: 686rpx;
       box-shadow: rgba(60, 62, 66, 0.1) 0 2rpx 8rpx 0;
       border-radius: 20rpx;
       .banner {
