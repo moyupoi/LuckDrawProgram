@@ -11,19 +11,23 @@
       </view>
     </view>
     <view class="participate" wx:if="{{titaList.prize_draws_count}}">
-      <text>已有{{titaList.prize_draws_count}}人参加，</text>
+      <text>已有{{prizeDrawsCount}}人参加，</text>
       <navigator hover-class="none" url="/pages/portraitList?id={{titaList.id}}">
         查看全部>
       </navigator>
     </view>
     <view class="participatePeople" wx:if="{{titaList.prize_draws_count}}">
-      <image src="{{item}}" wx:for="{{titaList.prize_draw_user_avatars}}" wx:key="index"></image>
+      <image src="{{item}}" wx:for="{{prizeDrawUserAvatars}}" wx:key="index"></image>
       <view class="ellipsis" wx:if="{{titaList.prize_draws_count >= 6}}"></view>
     </view>
-    <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub">
+    <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub" wx:if="{{aasmState !== 'finishing' && aasmState !== 'finished' }}">
       <button class="drawBtn" @getuserinfo="drawBtn" open-type="getUserInfo" formType="submit" wx:if="{{!isHasdraw}}">立即参加</button>
       <button class="drawBtn" open-type="share" @tap="share" formType="submit" wx:if="{{isHasdraw}}">加速开奖</button>
       <text wx:if="{{isHasdraw}}">分享给好友参加</text>
+    </form>
+    <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub" wx:if="{{aasmState === 'finishing' || aasmState === 'finished' }}">
+      <navigator hover-class="none" url="/pages/home" class="drawBtn" open-type="share" @tap="share" formType="submit" open-type="switchTab">参加其他抽奖</navigator>
+      <text>本活动已结束</text>
     </form>
   </view>
   <view class="sponsor">
@@ -47,23 +51,31 @@
     data = {
       titaList: {},
       percentage: 0,
-      prizeDrawsCount: 0,
       reachNumber: 0,
       isHasdraw: true,
-      formId: null
+      formId: null,
+      hasUploadUserinfo: false,
+      prizeDrawUserAvatars: [],
+      prizeDrawsCount: 0,
+      aasmState: ''
     }
     components = {}
     methods = {}
     onLoad (options) {
       let that = this
+      // let id = '5b1a062e7ff63153b13abd84'
       if (options.id !== '') {
         this.$get({url: service.prizes + options.id}, {
           success: ({statusCode, data}) => {
             that.titaList = data
-            that.prizeDrawsCount = data.prize_draws_count
             that.reachNumber = data.reach_number
             that.percentage = data.prize_draws_count > 0 ? parseInt(data.prize_draws_count / data.reach_number * 100) : 0
             that.isHasdraw = data.is_has_draw
+            that.hasUploadUserinfo = data.has_upload_userinfo
+            that.prizeDrawUserAvatars = data.prize_draw_user_avatars
+            that.prizeDrawsCount = data.prize_draws_count
+            that.aasmState = data.aasm_state
+            // that.isHasdraw = false
           }
         })
       }
@@ -77,9 +89,10 @@
     }
     drawBtn (event) {
       let that = this
-      let isHasDraw = this.titaList.is_has_draw
+      // isHasDraw 判断用户是否抽过奖
+      let isHasDraw = this.isHasdraw
       // 判断用户点击确认 并且 后台没有记录过用户信息字段为false
-      if (event.detail.errMsg === 'getUserInfo:ok') {
+      if (event.detail.errMsg === 'getUserInfo:ok' && !this.hasUploadUserinfo) {
         let encryptedData = event.detail.encryptedData
         let iv = event.detail.iv
         this.$post({
@@ -116,11 +129,12 @@
             if (statusCode === 200) {
               that.isHasdraw = true
               that.percentage = parseInt((that.prizeDrawsCount + 1) / that.reachNumber * 100)
+              that.prizeDrawUserAvatars = [data.avatar_url, ...that.prizeDrawUserAvatars]
+              that.prizeDrawsCount += 1
               wepy.showToast({
                 title: '参加成功',
                 icon: 'success'
               })
-              console.log(data.message)
             }
           }
         })
@@ -232,11 +246,15 @@
       .drawBtn {
         width: 552rpx;
         height: 92rpx;
+        line-height: 92rpx;
+        font-weight: 300;
         display: block;
+        text-align: center;
         background: #FA5C37;
         border-radius: 50rpx;
         color: #fff;
         margin-top: 64rpx;
+        margin: 64rpx auto 0 auto;
       }
       text {
         font-size: 24rpx;

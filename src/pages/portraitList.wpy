@@ -1,7 +1,7 @@
 <template>
   <view class="portrait" >
-    <text>{{portraitList.count}} 位参与者</text>
-    <image src="{{item}}" wx:for="{{portraitList.user_avatars}}" wx:key="index"></image>
+    <text>{{count}} 位参与者</text>
+    <image src="{{item}}" wx:for="{{userAvatarsList}}" wx:key="index"></image>
   </view>
 </template>
 <script>
@@ -15,20 +15,44 @@
       navigationBarTitleText: '中奖纪录'
     }
     data = {
-      portraitList: []
+      userAvatarsList: [],
+      count: 0,
+      page: 1,
+      id: '',
+      nextPage: true
     }
     components = {}
     methods = {}
     onLoad(options) {
       let id = options.id
-      let that = this
-      this.$get({url: service.prizes + id + '/draw_users'}, {
-        success: ({statusCode, data}) => {
-          that.portraitList = data
-        }
-      })
+      this.id = options.id
+      this.userAvatars(id)
     }
     onShow() {}
+    userAvatars(id) {
+      let that = this
+      if (that.nextPage) {
+        that.$get({url: service.prizes + id + '/draw_users', data: {page: that.page}}, {
+          success: ({statusCode, data}) => {
+            if (data.user_avatars.length <= 0) {
+              that.nextPage = false
+            } else {
+              that.userAvatarsList = that.userAvatarsList.concat(data.user_avatars)
+              that.count = data.count
+              that.page += 1
+            }
+          }
+        })
+      }
+    }
+    onReachBottom() {
+      if (this.nextPage) {
+        wepy.showToast({
+          title: '正在加载更多'
+        })
+        this.userAvatars(this.id)
+      }
+    }
   }
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>

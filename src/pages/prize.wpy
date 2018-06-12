@@ -4,22 +4,24 @@
     <image src="../assets/images/prize/circles.png" class="circles"></image>
     <image src="{{prizesDraws.banner_url}}" class="bannerImg"></image>
     <text class="title">{{prizesDraws.name}}</text>
-    <view class="fillAddress" @tap="address" wx:if="{{prizesDraws.user_address === ''}}">填写收货地址
-    </view>
-    <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}" class="shareBtn" style="width:{{prizesDraws.user_address !== '' ? '552rpx' : ''}}">分享
-    </navigator>
+    <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub">
+      <view class="fillAddress" @tap="address" wx:if="{{userAddress === ''}}">填写收货地址</view>
+      <button class="shareBtn" @tap="shareBtn" formType="submit" open-type="share" style="width:{{userAddress !== '' ? '552rpx' : ''}}">分享
+      </button>
+    </form>
   </view>
   <view class="banner notWinning" wx:if="{{!prizesDraws.is_get_draw}}">
     <image src="../assets/images/prize/banner02.png" class="bannerBack"></image>
     <image src="{{prizesDraws.banner_url}}" class="bannerImg"></image>
     <text class="title">{{prizesDraws.name}}</text>
   </view>
-  <view class="receivingAddress" wx:if="{{prizesDraws.user_address !== ''}}">
+  <view class="receivingAddress" wx:if="{{userAddress !== ''}}">
     <view class="hr"></view>
     <image src="../assets/images/luckDraw/receivingAddress.png"></image>
     <view>
-      <text>{{prizesDraws.user_address}}</text>
-      <label>{{prizesDraws.memo}}</label>
+      <view>[收货地址]</view>
+      <text>{{userAddress}}</text>
+      <label>{{memo}}</label>
     </view>
   </view>
   <view class="sponsor">
@@ -31,10 +33,10 @@
     <image src="../assets/images/prize/title.png" class="title"></image>
     <image src="../assets/images/prize/footerBack.png" class="footerBack"></image>
     <view class="participatePeople">
-      <image src="{{item}}" wx:for="{{prizesDraws.prize_draw_user_avatars}}" wx:key="index"></image>
+      <image src="{{item}}" wx:for="{{prizesDraws.prize_draw_user_avatars_for_get}}" wx:key="index"></image>
     </view>
     <view class="participate">
-      <text>共{{titaList.prize_draws_count}}人参加，</text>
+      <text>共{{prizesDraws.prize_draws_count}}人参加，</text>
       <navigator hover-class="none" url="/pages/portraitList?id={{prizesDraws.prize_id}}">
         查看全部>
       </navigator>
@@ -49,15 +51,20 @@
   import { service } from '../config.js'
   import http from '../mixins/http'
   import base from '../mixins/base'
+  import ShareMessage from '../mixins/ShareMessage'
   export default class Prize extends wepy.page {
-    mixins = [http, base]
+    mixins = [http, base, ShareMessage]
     config = {
       navigationBarTitleText: '中奖纪录'
     }
     data = {
       id: '5b1e1ab27ff6312cb621b3ce',
       prizesDraws: [],
-      winning: true
+      winning: true,
+      userAddress: '',
+      memo: '',
+      formId: null,
+      path: 'pages/home'
     }
     components = {}
     methods = {}
@@ -69,7 +76,8 @@
       this.$get({url: service.prizesDraws + this.id}, {
         success: ({statusCode, data}) => {
           that.prizesDraws = data
-          console.log(data)
+          that.userAddress = data.user_address
+          that.memo = data.memo
         }
       })
     }
@@ -78,7 +86,6 @@
       let that = this
       wepy.chooseAddress({
         success: function (res) {
-          console.log(res)
           that.$post({
             url: service.prizesDraws + that.id + '/address',
             data: res
@@ -89,11 +96,22 @@
                   title: '地址绑定成功！',
                   icon: 'success'
                 })
+                that.userAddress = data.address
+                that.memo = data.memo
               }
             }
           })
         }
       })
+    }
+    onShareAppMessage(res) {
+      return this.$parent.onShareAppMessage()
+    }
+    formSubmit (event) {
+      let formId = event.detail.formId
+      if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
+        this.formId = formId
+      }
     }
   }
 </script>
@@ -131,6 +149,9 @@
       left: 100rpx;
     }
     .title {
+      font-size: 32rpx;
+      line-height: 36rpx;
+      color: #333333;
       display: block;
       text-align: center;
       position: relative;
@@ -183,6 +204,15 @@
       overflow: hidden;
       float: left;
       margin-left: 20rpx;
+      position: relative;
+      view {
+        font-size: 28rpx;
+        line-height: 41rpx;
+        color: #999999;
+        position: absolute;
+        top: 0;
+        left: -19rpx;
+      }
       text {
         width: 620rpx;
         height: 84rpx;
@@ -191,9 +221,11 @@
         color: #333333;
         display: block;
         overflow: hidden;
+        text-indent: 135rpx;
+        text-align: justify;
       }
       label {
-        width: 544rpx;
+        width: 620rpx;
         height: 28rpx;
         font-size: 24rpx;
         line-height: 28rpx;
@@ -201,6 +233,7 @@
         display: block;
         margin-top: 28rpx;
         overflow: hidden;
+        text-align: justify;
       }
     }
   }
@@ -212,6 +245,7 @@
     text {
       font-size: 28rpx;
       line-height: 50rpx;
+      font-weight: 300;
       color: #999999;
       display: block;
       float: left;
@@ -224,8 +258,8 @@
       float: right;
     }
     image {
-      width: 36rpx;
-      height: 36rpx;
+      width: 40rpx;
+      height: 40rpx;
       float: right;
       border-radius: 50rpx;
       margin-top: 7rpx;

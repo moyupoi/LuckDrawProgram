@@ -58,7 +58,6 @@
       this.$get({url: service.prizesDraws}, {
         success: ({statusCode, data}) => {
           that.prizesDrawsList = data
-          console.log(that.prizesDrawsList)
         }
       })
     }

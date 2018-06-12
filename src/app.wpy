@@ -26,15 +26,16 @@ export default class extends wepy.app {
       'pages/past',
       'pages/prize',
       'pages/luckDraw',
-      'pages/record',
+      'pages/portraitList',
       'pages/personalCenter',
-      'pages/portraitList'
+      'pages/record'
     ],
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
       navigationBarTextStyle: 'black',
-      navigationBarTitleText: 'tabBar' // 配置底部导航
+      navigationBarTitleText: 'tabBar', // 配置底部导航
+      onReachBottom: true
     },
     tabBar: {
       color: '#999999',

@@ -16,15 +16,21 @@ export default class ShareMessage extends wepy.mixin {
   }
   methods = {
     onShareAppMessage(res) {
-      let formId = res.source.data.formId
-      this.$get({
-        url: service.collectFormId,
-        headers: {
-          'X-JINKU-WECHAT-FORM-ID': formId
+      if (res.source.data.path) {
+        return {
+          path: res.source.data.path
         }
-      }, {
-        success: ({statusCode, data}) => {}
-      })
+      } else {
+        let formId = res.source.data.formId
+        this.$get({
+          url: service.collectFormId,
+          headers: {
+            'X-JINKU-WECHAT-FORM-ID': formId
+          }
+        }, {
+          success: ({statusCode, data}) => {}
+        })
+      }
     }
   }
 }

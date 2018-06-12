@@ -34,8 +34,6 @@
       this.$get({url: service.prizes}, {
         success: ({statusCode, data}) => {
           that.prizesList = data['prizes']
-          console.log(statusCode, data['prizes'])
-          console.log(that.prizesList)
         }
       })
     }
