@@ -1,8 +1,9 @@
 <template>
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <view class="topBanner">
-    <image src="../assets/images/home/logo.png"></image>
+    <image src="../assets/images/home/logo.png" class="logo"></image>
   </view>
+  <image src="../assets/images/home/logoRight.png" class="logoRight"></image>
   <view class="prizes">
     <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}" class="prizesItem"  wx:for="{{prizesList}}" wx:key="index">
       <view class="banner">
@@ -59,17 +60,24 @@
     top: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(to bottom, #909297, #B1B2B6, #F2F3F5);
     height: 332rpx;
     z-index: 0;
     overflow: hidden;
-    image {
-      width: 472rpx;
-      height: 48rpx;
+    .logo {
+      width: 100%;
+      height: 332rpx;
       display: block;
       overflow: hidden;
-      margin: 48rpx auto 0 auto;
     }
+  }
+  .logoRight {
+    position: absolute;
+    z-index: 3;
+    width: 124rpx;
+    height: 144rpx;
+    display: block;
+    top: 76rpx;
+    right: 1rpx;
   }
   .prizes {
     position: relative;
