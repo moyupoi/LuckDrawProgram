@@ -1,5 +1,9 @@
 <template>
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
+  <view class="tabBarCustom">
+    <text>搞点福利</text>
+  </view>
+  <view class="seat"></view>
   <view class="topBanner">
     <image src="../assets/images/home/logo.png" class="logo"></image>
   </view>
@@ -57,7 +61,7 @@
   @import "../assets/stylesheets/layout.scss";
   .topBanner {
     position: absolute;
-    top: 0;
+    top: 120rpx;
     left: 0;
     right: 0;
     height: 332rpx;
@@ -76,7 +80,7 @@
     width: 124rpx;
     height: 144rpx;
     display: block;
-    top: 76rpx;
+    top: 196rpx;
     right: 1rpx;
   }
   .prizes {

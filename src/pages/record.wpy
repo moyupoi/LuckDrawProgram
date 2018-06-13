@@ -1,5 +1,10 @@
 <template>
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
+  <view class="tabBarCustom">
+    <image src="../assets/images/tabbars/back.png" @tap="back"></image>
+    <text>搞点福利</text>
+  </view>
+  <view class="seat"></view>
   <view class="endPrize">
     <navigator hover-class="none" url="/pages/prize?id={{item.id}}" class="prizesItem" wx:for="{{prizesFinishedList}}" wx:key="index">
       <view class="winning" wx:if="{{item.is_get_draw}}">已中奖</view>
@@ -43,6 +48,11 @@
       })
     }
     onShow() {}
+    back () {
+      wepy.navigateBack({
+        delta: 1
+      })
+    }
   }
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>

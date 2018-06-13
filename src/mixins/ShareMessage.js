@@ -16,7 +16,11 @@ export default class ShareMessage extends wepy.mixin {
   }
   methods = {
     onShareAppMessage(res) {
-      if (res.source.data.path) {
+      if (res.source.data.isShare) {
+        return {
+          path: res.source.data.shareUrl + '?id=' + res.source.data.prizesDraws.id + '&share=true'
+        }
+      } else if (res.source.data.path) {
         return {
           path: res.source.data.path
         }

@@ -18,7 +18,8 @@ export default class extends wepy.app {
       navigationBarBackgroundColor: '#fff',
       navigationBarTextStyle: 'black',
       navigationBarTitleText: 'tabBar', // 配置底部导航
-      onReachBottom: true
+      onReachBottom: true,
+      navigationStyle: 'custom'
     },
     tabBar: {
       color: '#999999',

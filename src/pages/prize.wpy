@@ -1,5 +1,10 @@
 <template>
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
+  <view class="tabBarCustom">
+    <image src="{{btnImg}}" @tap="back"></image>
+    <text>搞点福利</text>
+  </view>
+  <view class="seat"></view>
   <view class="banner" wx:if="{{prizesDraws.is_get_draw}}">
     <image src="../assets/images/prize/banner01.png" class="bannerBack"></image>
     <image src="../assets/images/prize/circles.png" class="circles"></image>
@@ -67,25 +72,33 @@
       memo: '',
       formId: null,
       path: 'pages/home',
-      isShow: true
+      isShow: true,
+      isShare: true,
+      isShareBtn: false,
+      btnImg: '../assets/images/tabbars/back.png',
+      shareUrl: 'pages/prize'
     }
     components = {
       LoadingZ: LoadingZ
     }
     methods = {}
     onLoad (options) {
-      if (options.id) {
-        this.id = options.id
-      }
       let that = this
-      this.$get({url: service.prizesDraws + options.id}, {
-        success: ({statusCode, data}) => {
-          that.prizesDraws = data
-          that.userAddress = data.user_address
-          that.memo = data.memo
-          that.isShow = false
-        }
-      })
+      if (!this.isUndefined(options.share) && !this.isUndefined(options.id)) {
+        this.isShareBtn = true
+        this.btnImg = '../assets/images/tabbars/home.png'
+      }
+      if (!this.isUndefined(options.id)) {
+        this.id = options.id
+        this.$get({url: service.prizesDraws + options.id}, {
+          success: ({statusCode, data}) => {
+            that.prizesDraws = data
+            that.userAddress = data.user_address
+            that.memo = data.memo
+            that.isShow = false
+          }
+        })
+      }
     }
     onShow () {}
     address () {
@@ -117,6 +130,17 @@
       let formId = event.detail.formId
       if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
         this.formId = formId
+      }
+    }
+    back () {
+      if (this.isShareBtn) {
+        wepy.switchTab({
+          url: 'home'
+        })
+      } else {
+        wepy.navigateBack({
+          delta: 1
+        })
       }
     }
   }

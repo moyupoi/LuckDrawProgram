@@ -1,5 +1,10 @@
 <template>
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
+  <view class="tabBarCustom">
+    <image src="../assets/images/tabbars/back.png" @tap="back"></image>
+    <text>搞点福利</text>
+  </view>
+  <view class="seat"></view>
   <view class="portrait" >
     <text>{{count}} 位参与者</text>
     <image src="{{item}}" wx:for="{{userAvatarsList}}" wx:key="index"></image>
@@ -58,6 +63,11 @@
         })
         this.userAvatars(this.id)
       }
+    }
+    back () {
+      wepy.navigateBack({
+        delta: 1
+      })
     }
   }
 </script>

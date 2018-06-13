@@ -1,5 +1,10 @@
 <template>
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
+  <view class="tabBarCustom">
+    <image src="../assets/images/tabbars/back.png" @tap="back"></image>
+    <text>搞点福利</text>
+  </view>
+  <view class="seat"></view>
   <view class="title">
     <view class="{{selected ? 'selected' : ''}}">
       <button @tap="openPrize(0)">待开奖</button>
@@ -73,6 +78,11 @@
       } else {
         that.selected = false
       }
+    }
+    back () {
+      wepy.navigateBack({
+        delta: 1
+      })
     }
   }
 </script>
