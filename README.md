@@ -1,4 +1,4 @@
-# LuckDrawProgram
+# 抽奖小程序
 
 ## 依赖
 
@@ -12,7 +12,7 @@
 #### 如何运行？
 
 ```
-$ 拷贝API文件
+$ 配置API文件
 $ cp config.js
 执行如下命令：
 $ npm install
