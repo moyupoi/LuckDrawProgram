@@ -2,10 +2,9 @@
 
 ## 依赖
 
-- Webpack
-- Express
-- Redux
+- Vue
 - Babel
+- Webpack
 - [WePY](https://tencent.github.io/wepy/)
 
 ## 常用操作
@@ -54,6 +53,7 @@ npm test
 ├── past            我参与过的抽奖页 待开奖、已结束
 ├── prize           中/未中奖展示页、分享页、通过通知点进去展示页
 ├── record          中过奖的记录页
+├── portraitList    头像列表
 ```
 
 具体代码参照已实现的WePY

@@ -1,7 +1,9 @@
 <template>
   <view class="banner">
     <view class="user">
-      <open-data type="userAvatarUrl" class="portrait"></open-data>
+      <view class="portraitView">
+        <open-data type="userAvatarUrl" class="portrait" style="clip-path: circle(50% at center)"></open-data>
+      </view>
       <open-data type="userNickName" class="userName"></open-data>
     </view>
     <image src="../assets/images/personalCenter/banner.png"></image>
@@ -56,13 +58,20 @@
       right: 0;
       bottom: 0;
       z-index: 2;
-      .portrait {
-        display: block;
+      .portraitView {
         width: 176rpx;
         height: 176rpx;
-        margin: 80rpx auto 0 auto;
-        clip-path: circle(50% at center);
+        display: block;
+        border-radius: 100rpx;
         overflow: hidden;
+        margin: 80rpx auto 0 auto;
+        .portrait {
+          display: block;
+          width: 176rpx;
+          height: 176rpx;
+          clip-path: circle(50% at center);
+          overflow: hidden;
+        }
       }
       .userName {
         font-size: 40rpx;

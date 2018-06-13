@@ -1,4 +1,5 @@
 <template>
+  <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <view class="endPrize">
     <navigator hover-class="none" url="/pages/prize?id={{item.id}}" class="prizesItem" wx:for="{{prizesFinishedList}}" wx:key="index">
       <view class="winning" wx:if="{{item.is_get_draw}}">已中奖</view>
@@ -18,21 +19,26 @@
   import { service } from '../config.js'
   import http from '../mixins/http'
   import base from '../mixins/base'
+  import LoadingZ from '../components/LoadingZ'
   export default class Record extends wepy.page {
     mixins = [http, base]
     config = {
       navigationBarTitleText: '中奖纪录'
     }
     data = {
-      prizesFinishedList: []
+      prizesFinishedList: [],
+      isShow: true
     }
-    components = {}
+    components = {
+      LoadingZ: LoadingZ
+    }
     methods = {}
     onLoad() {
       let that = this
-      this.$get({url: service.prizesDraws}, {
+      this.$get({url: service.prizesDrawsIndexForGet}, {
         success: ({statusCode, data}) => {
-          that.prizesFinishedList = data['prizes_finished']
+          that.prizesFinishedList = data
+          that.isShow = false
         }
       })
     }

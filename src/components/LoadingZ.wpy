@@ -1,0 +1,41 @@
+<template>
+  <view class="Loading" wx:if="{{isShow}}">
+    <image src="../assets/images/home/LoadingBars.svg"></image>
+    <text>正在努力吃豆, 请耐心等待...</text>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+export default class LoadingZ extends wepy.component {
+  props = {
+    isShow: {
+      type: Boolean,
+      default: true
+    }
+  }
+}
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  .Loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+    text-align: center;
+    background: #fff;
+  }
+  .Loading image {
+    width: 200rpx;
+    height: 200rpx;
+    display: block;
+    margin: 60rpx auto;
+  }
+  .Loading text {
+    display: inline-block;
+    color: #494949;
+  }
+</style>

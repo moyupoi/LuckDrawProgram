@@ -15,6 +15,8 @@ export const service = {
     prizes: `${host}/v1/prizes/`,
     // 抽奖记录列表 & 抽奖记录详细 & 地址
     prizesDraws: `${host}/v1/prize_draws/`,
+    // 中奖纪录
+    prizesDrawsIndexForGet: `${host}/v1/prize_draws/index_for_get`,
     // 头像列表
     portraitList: `${host}`,
     // 主域

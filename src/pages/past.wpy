@@ -1,4 +1,5 @@
 <template>
+  <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <view class="title">
     <view class="{{selected ? 'selected' : ''}}">
       <button @tap="openPrize(0)">待开奖</button>
@@ -40,6 +41,7 @@
   import { service } from '../config.js'
   import http from '../mixins/http'
   import base from '../mixins/base'
+  import LoadingZ from '../components/LoadingZ'
   export default class Past extends wepy.page {
     mixins = [http, base]
     config = {
@@ -47,17 +49,20 @@
     }
     data = {
       prizesDrawsList: [],
-      selected: true
+      selected: true,
+      isShow: true
     }
-    components = {}
+    components = {
+      LoadingZ: LoadingZ
+    }
     methods = {}
-    onLoad () {
-    }
+    onLoad () {}
     onShow () {
       let that = this
       this.$get({url: service.prizesDraws}, {
         success: ({statusCode, data}) => {
           that.prizesDrawsList = data
+          that.isShow = false
         }
       })
     }

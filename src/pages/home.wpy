@@ -1,4 +1,8 @@
-<template class="page">
+<template>
+  <LoadingZ :isShow.sync="isShow"></LoadingZ>
+  <view class="topBanner">
+    <image src="../assets/images/home/logo.png"></image>
+  </view>
   <view class="prizes">
     <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}" class="prizesItem"  wx:for="{{prizesList}}" wx:key="index">
       <view class="banner">
@@ -7,7 +11,10 @@
       <view class="describe">
         <text class="name">{{item.brand}} · {{item.name}} · </text>
         <text class="number"> {{item.number}}件</text>
-        <label>满 {{item.reach_number}} 参与开奖</label>
+        <view>
+          <text class="isJoin" wx:if="{{item.is_has_draw}}">已参加 |</text>
+          <label>满 {{item.reach_number}} 参与开奖</label>
+        </view>
       </view>
     </navigator>
   </view>
@@ -17,23 +24,29 @@
   import { service } from '../config.js'
   import http from '../mixins/http'
   import base from '../mixins/base'
+  import LoadingZ from '../components/LoadingZ'
   export default class Home extends wepy.page {
     mixins = [http, base]
     config = {
       navigationBarTitleText: '搞点福利'
     }
     data = {
-      prizesList: []
+      prizesList: [],
+      bannerUrl: '',
+      isShow: true
     }
-    components = {}
+    components = {
+      LoadingZ: LoadingZ
+    }
     methods = {}
-    onLoad() {
-    }
+    onLoad() {}
     onShow() {
       let that = this
       this.$get({url: service.prizes}, {
         success: ({statusCode, data}) => {
           that.prizesList = data['prizes']
+          that.bannerUrl = data.banner_url
+          that.isShow = false
         }
       })
     }
@@ -41,10 +54,29 @@
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
   @import "../assets/stylesheets/layout.scss";
+  .topBanner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to bottom, #909297, #B1B2B6, #F2F3F5);
+    height: 332rpx;
+    z-index: 0;
+    overflow: hidden;
+    image {
+      width: 472rpx;
+      height: 48rpx;
+      display: block;
+      overflow: hidden;
+      margin: 48rpx auto 0 auto;
+    }
+  }
   .prizes {
-    background: #F1F2F4;
+    position: relative;
+    z-index: 1;
     padding: 36rpx;
     overflow: hidden;
+    margin-top: 110rpx;
     .prizesItem {
       margin-bottom: 32rpx;
       width: 686rpx;
@@ -71,16 +103,27 @@
           line-height: 36rpx;
           display: inline-block;
           margin-bottom: 16rpx;
+          text-align: justify;
         }
         .number {
           margin-left: 16rpx;
           color: #666666;
         }
-        label {
-          font-size: 24rpx;
-          color: #666666;
-          line-height: 32rpx;
-          display: block;
+        view {
+          .isJoin {
+            font-size: 24rpx;
+            color: #666666;
+            line-height: 32rpx;
+            display: inline-block;
+            color: #999999;
+            margin-right: 10rpx;
+          }
+          label {
+            font-size: 24rpx;
+            color: #666666;
+            line-height: 32rpx;
+            display: inline-block;
+          }
         }
       }
     }

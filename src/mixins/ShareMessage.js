@@ -22,14 +22,16 @@ export default class ShareMessage extends wepy.mixin {
         }
       } else {
         let formId = res.source.data.formId
-        this.$get({
-          url: service.collectFormId,
-          headers: {
-            'X-JINKU-WECHAT-FORM-ID': formId
-          }
-        }, {
-          success: ({statusCode, data}) => {}
-        })
+        if (formId !== null) {
+          this.$get({
+            url: service.collectFormId,
+            headers: {
+              'X-JINKU-WECHAT-FORM-ID': formId
+            }
+          }, {
+            success: ({statusCode, data}) => {}
+          })
+        }
       }
     }
   }

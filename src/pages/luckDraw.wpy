@@ -1,4 +1,5 @@
 <template>
+  <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <image src="{{titaList.banner_url}}" class="banner"></image>
   <view class="describe">
     <text class="name">{{titaList.name}}</text>
@@ -10,15 +11,15 @@
         <view style="width:{{ percentage + '%' }}"></view>
       </view>
     </view>
-    <view class="participate" wx:if="{{titaList.prize_draws_count}}">
+    <view class="participate" wx:if="{{prizeDrawsCount > 0}}">
       <text>已有{{prizeDrawsCount}}人参加，</text>
       <navigator hover-class="none" url="/pages/portraitList?id={{titaList.id}}">
         查看全部>
       </navigator>
     </view>
-    <view class="participatePeople" wx:if="{{titaList.prize_draws_count}}">
+    <view class="participatePeople" wx:if="{{prizeDrawsCount > 0}}">
       <image src="{{item}}" wx:for="{{prizeDrawUserAvatars}}" wx:key="index"></image>
-      <view class="ellipsis" wx:if="{{titaList.prize_draws_count >= 6}}"></view>
+      <view class="ellipsis" wx:if="{{prizeDrawsCount >= 6}}"></view>
     </view>
     <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub" wx:if="{{aasmState !== 'finishing' && aasmState !== 'finished' }}">
       <button class="drawBtn" @getuserinfo="drawBtn" open-type="getUserInfo" formType="submit" wx:if="{{!isHasdraw}}">立即参加</button>
@@ -43,6 +44,7 @@
   import http from '../mixins/http'
   import base from '../mixins/base'
   import ShareMessage from '../mixins/ShareMessage'
+  import LoadingZ from '../components/LoadingZ'
   export default class LuckDraw extends wepy.page {
     mixins = [http, base, ShareMessage]
     config = {
@@ -57,9 +59,12 @@
       hasUploadUserinfo: false,
       prizeDrawUserAvatars: [],
       prizeDrawsCount: 0,
-      aasmState: ''
+      aasmState: '',
+      isShow: true
     }
-    components = {}
+    components = {
+      LoadingZ: LoadingZ
+    }
     methods = {}
     onLoad (options) {
       let that = this
@@ -75,6 +80,7 @@
             that.prizeDrawUserAvatars = data.prize_draw_user_avatars
             that.prizeDrawsCount = data.prize_draws_count
             that.aasmState = data.aasm_state
+            that.isShow = false
             // that.isHasdraw = false
           }
         })
@@ -123,13 +129,16 @@
       let isHasDraw = this.isHasdraw
       if (!isHasDraw) {
         this.$post({
-          url: service.prizes + this.titaList.id + '/draw'
+          url: service.prizes + this.titaList.id + '/draw',
+          headers: {
+            'X-JINKU-WECHAT-FORM-ID': that.formId
+          }
         }, {
           success: ({statusCode, data}) => {
             if (statusCode === 200) {
               that.isHasdraw = true
               that.percentage = parseInt((that.prizeDrawsCount + 1) / that.reachNumber * 100)
-              that.prizeDrawUserAvatars = [data.avatar_url, ...that.prizeDrawUserAvatars]
+              that.prizeDrawUserAvatars = that.prizeDrawUserAvatars.length <= 0 ? [data.avatar_url] : [data.avatar_url, ...that.prizeDrawUserAvatars]
               that.prizeDrawsCount += 1
               wepy.showToast({
                 title: '参加成功',

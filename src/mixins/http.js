@@ -8,10 +8,15 @@ export default class httpMixin extends wepy.mixin {
     {success = () => {}, fail = () => {}, complete = () => {} }
   ) {
     const methods = 'GET'
-    this.$ajax(
-      {url, headers, methods, data},
-      {success, fail, complete }
-    )
+    let accessToken = wepy.getStorageSync('accessToken') || false
+    if (!accessToken) {
+      this.$loginToken()
+    } else {
+      this.$ajax(
+        {url, headers, methods, data},
+        {success, fail, complete }
+      )
+    }
   }
 
   /* =================== [$post 发起POST请求] =================== */
@@ -20,10 +25,15 @@ export default class httpMixin extends wepy.mixin {
     {success = () => {}, fail = () => {}, complete = () => {} }
   ) {
     const methods = 'POST'
-    this.$ajax(
-      {url, headers, methods, data},
-      {success, fail, complete }
-    )
+    let accessToken = wepy.getStorageSync('accessToken') || false
+    if (!accessToken) {
+      this.$loginToken()
+    } else {
+      this.$ajax(
+        {url, headers, methods, data},
+        {success, fail, complete }
+      )
+    }
   }
 
   /* =================== [$post 发起POST请求] =================== */
@@ -48,6 +58,29 @@ export default class httpMixin extends wepy.mixin {
       {url, headers, methods, data},
       {success, fail, complete }
     )
+  }
+
+  $loginToken() {
+    wepy.login({
+      success: res => {
+        if (res.code) {
+          wepy.request({
+            url: service.login,
+            method: 'POST',
+            data: {
+              code: res.code
+            },
+            success: function (res) {
+              wepy.setStorage({
+                key: 'accessToken',
+                data: res.data.access_token
+              })
+              wepy.reLaunch({url: '/' + getCurrentPages()[0].__route__})
+            }
+          })
+        }
+      }
+    })
   }
 
   /**
@@ -76,7 +109,6 @@ export default class httpMixin extends wepy.mixin {
 
     // 控制台调试日志
     // console.table(request)
-
     // 发起请求
     wepy.request(Object.assign(request, {
       success: ({ statusCode, data }) => {
@@ -137,7 +169,7 @@ export default class httpMixin extends wepy.mixin {
         // 完成回调
         return (() => {
           let completeExist = this.isFunction(complete)
-           completeExist && complete(res)
+          completeExist && complete(res)
           this.$apply()
         })()
       }

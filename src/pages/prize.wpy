@@ -1,12 +1,13 @@
 <template>
+  <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <view class="banner" wx:if="{{prizesDraws.is_get_draw}}">
     <image src="../assets/images/prize/banner01.png" class="bannerBack"></image>
     <image src="../assets/images/prize/circles.png" class="circles"></image>
     <image src="{{prizesDraws.banner_url}}" class="bannerImg"></image>
     <text class="title">{{prizesDraws.name}}</text>
     <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub">
-      <view class="fillAddress" @tap="address" wx:if="{{userAddress === ''}}">填写收货地址</view>
-      <button class="shareBtn" @tap="shareBtn" formType="submit" open-type="share" style="width:{{userAddress !== '' ? '552rpx' : ''}}">分享
+      <button class="fillAddress" @tap="address" wx:if="{{userAddress === ''}}">填写收货地址</button>
+      <button class="fillAddress shareBtn {{userAddress !== '' ? 'shareShow' : ''}}" @tap="shareBtn" formType="submit" open-type="share">分享
       </button>
     </form>
   </view>
@@ -52,6 +53,7 @@
   import http from '../mixins/http'
   import base from '../mixins/base'
   import ShareMessage from '../mixins/ShareMessage'
+  import LoadingZ from '../components/LoadingZ'
   export default class Prize extends wepy.page {
     mixins = [http, base, ShareMessage]
     config = {
@@ -64,20 +66,24 @@
       userAddress: '',
       memo: '',
       formId: null,
-      path: 'pages/home'
+      path: 'pages/home',
+      isShow: true
     }
-    components = {}
+    components = {
+      LoadingZ: LoadingZ
+    }
     methods = {}
     onLoad (options) {
       if (options.id) {
         this.id = options.id
       }
       let that = this
-      this.$get({url: service.prizesDraws + this.id}, {
+      this.$get({url: service.prizesDraws + options.id}, {
         success: ({statusCode, data}) => {
           that.prizesDraws = data
           that.userAddress = data.user_address
           that.memo = data.memo
+          that.isShow = false
         }
       })
     }
@@ -165,9 +171,8 @@
       display: inline-block;
       font-size: 32rpx;
       line-height: 92rpx;
-      position: relative;
-      z-index: 2;
       border-radius: 50rpx;
+      text-align: center;
     }
     .fillAddress {
       background: #fff;
@@ -178,6 +183,11 @@
     .shareBtn {
       background: #FA5C37;
       color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+    .shareShow {
+      width: 552rpx;
     }
   }
   .notWinning {

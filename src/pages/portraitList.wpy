@@ -1,4 +1,5 @@
 <template>
+  <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <view class="portrait" >
     <text>{{count}} 位参与者</text>
     <image src="{{item}}" wx:for="{{userAvatarsList}}" wx:key="index"></image>
@@ -9,6 +10,7 @@
   import { service } from '../config.js'
   import http from '../mixins/http'
   import base from '../mixins/base'
+  import LoadingZ from '../components/LoadingZ'
   export default class PortraitList extends wepy.page {
     mixins = [http, base]
     config = {
@@ -19,9 +21,12 @@
       count: 0,
       page: 1,
       id: '',
-      nextPage: true
+      nextPage: true,
+      isShow: true
     }
-    components = {}
+    components = {
+      LoadingZ: LoadingZ
+    }
     methods = {}
     onLoad(options) {
       let id = options.id
@@ -34,6 +39,7 @@
       if (that.nextPage) {
         that.$get({url: service.prizes + id + '/draw_users', data: {page: that.page}}, {
           success: ({statusCode, data}) => {
+            that.isShow = false
             if (data.user_avatars.length <= 0) {
               that.nextPage = false
             } else {
