@@ -69,7 +69,8 @@
       isShare: true,
       isShareBtn: false,
       btnImg: '../assets/images/tabbars/back.png',
-      shareUrl: 'pages/luckDraw'
+      shareUrl: 'pages/luckDraw',
+      shareUrlId: ''
     }
     components = {
       LoadingZ: LoadingZ
@@ -94,6 +95,7 @@
             that.prizeDrawsCount = data.prize_draws_count
             that.aasmState = data.aasm_state
             that.isShow = false
+            that.shareUrlId = data.id
             // that.isHasdraw = false
           }
         })

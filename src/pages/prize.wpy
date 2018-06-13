@@ -76,7 +76,8 @@
       isShare: true,
       isShareBtn: false,
       btnImg: '../assets/images/tabbars/back.png',
-      shareUrl: 'pages/prize'
+      shareUrl: 'pages/prize',
+      shareUrlId: ''
     }
     components = {
       LoadingZ: LoadingZ
@@ -96,6 +97,7 @@
             that.userAddress = data.user_address
             that.memo = data.memo
             that.isShow = false
+            that.shareUrlId = data.id
           }
         })
       }
