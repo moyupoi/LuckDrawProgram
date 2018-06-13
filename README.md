@@ -23,10 +23,6 @@ $ npm install
 $ wepy build --watch
 ```
 
-#### 如何运行测试？
-```
-npm test
-```
 #### 如何开发一个功能页面
 
  - 整体目录结构如下：
