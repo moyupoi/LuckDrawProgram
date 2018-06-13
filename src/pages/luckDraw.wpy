@@ -2,7 +2,7 @@
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <view class="tabBarCustom">
     <image src="{{btnImg}}" @tap="back"></image>
-    <text>搞点福利</text>
+    <text>抽奖详情</text>
   </view>
   <view class="seat"></view>
   <image src="{{titaList.banner_url}}" class="banner"></image>

@@ -15,7 +15,7 @@
   <view class="option">
     <navigator hover-class="none" url="/pages/past">
       <image src="../assets/images/personalCenter/icon01.png"></image>
-      <text>我参与的抽奖</text>
+      <text>我参加的抽奖</text>
     </navigator>
     <navigator hover-class="none" url="/pages/record">
       <image src="../assets/images/personalCenter/icon02.png"></image>

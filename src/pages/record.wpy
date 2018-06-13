@@ -2,7 +2,7 @@
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <view class="tabBarCustom">
     <image src="../assets/images/tabbars/back.png" @tap="back"></image>
-    <text>搞点福利</text>
+    <text>中奖纪录</text>
   </view>
   <view class="seat"></view>
   <view class="endPrize">
