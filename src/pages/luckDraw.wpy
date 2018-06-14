@@ -53,7 +53,7 @@
   export default class LuckDraw extends wepy.page {
     mixins = [http, base, ShareMessage]
     config = {
-      navigationBarTitleText: '抽奖详情'
+      // navigationBarTitleText: '抽奖详情'
     }
     data = {
       titaList: {},
@@ -106,6 +106,7 @@
       let formId = event.detail.formId
       if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
         this.formId = formId
+        this.$updataFormId(this.formId)
       }
     }
     drawBtn (event) {

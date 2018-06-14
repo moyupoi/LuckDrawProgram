@@ -18,7 +18,7 @@
         <text class="number"> {{item.number}}件</text>
         <view>
           <text class="isJoin" wx:if="{{item.is_has_draw}}">已参加 |</text>
-          <label>满 {{item.reach_number}} 参与开奖</label>
+          <label>满 {{item.reach_number}} 人参与开奖</label>
         </view>
       </view>
     </navigator>
@@ -33,7 +33,7 @@
   export default class Home extends wepy.page {
     mixins = [http, base]
     config = {
-      navigationBarTitleText: '搞点福利'
+      // navigationBarTitleText: '搞点福利'
     }
     data = {
       prizesList: [],
@@ -44,7 +44,10 @@
       LoadingZ: LoadingZ
     }
     methods = {}
-    onLoad() {}
+    onLoad() {
+      // let res = wepy.getSystemInfoSync()
+      // res.screenHeight - res.windowHeight
+    }
     onShow() {
       let that = this
       this.$get({url: service.prizes}, {
@@ -61,7 +64,7 @@
   @import "../assets/stylesheets/layout.scss";
   .topBanner {
     position: absolute;
-    top: 120rpx;
+    top: 180rpx;
     left: 0;
     right: 0;
     height: 332rpx;

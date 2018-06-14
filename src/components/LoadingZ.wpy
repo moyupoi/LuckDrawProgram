@@ -18,7 +18,7 @@ export default class LoadingZ extends wepy.component {
 <style lang="scss" rel="stylesheet/scss" scoped>
   .Loading {
     position: fixed;
-    top: 0;
+    top: 180rpx;
     left: 0;
     right: 0;
     bottom: 0;

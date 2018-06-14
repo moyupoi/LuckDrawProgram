@@ -50,7 +50,7 @@
   export default class Past extends wepy.page {
     mixins = [http, base]
     config = {
-      navigationBarTitleText: '我参加的抽奖'
+      // navigationBarTitleText: '我参加的抽奖'
     }
     data = {
       prizesDrawsList: [],

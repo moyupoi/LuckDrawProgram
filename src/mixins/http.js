@@ -83,6 +83,17 @@ export default class httpMixin extends wepy.mixin {
     })
   }
 
+  $updataFormId(formId) {
+    this.$get({
+      url: service.collectFormId,
+      headers: {
+        'X-JINKU-WECHAT-FORM-ID': formId
+      }
+    }, {
+      success: ({statusCode, data}) => {}
+    })
+  }
+
   /**
    * [ajax 统一请求方法]
    * @param  {[type]}  item [description]

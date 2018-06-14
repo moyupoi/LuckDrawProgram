@@ -62,7 +62,7 @@
   export default class Prize extends wepy.page {
     mixins = [http, base, ShareMessage]
     config = {
-      navigationBarTitleText: '中奖纪录'
+      // navigationBarTitleText: '中奖纪录'
     }
     data = {
       id: '5b1e1ab27ff6312cb621b3ce',

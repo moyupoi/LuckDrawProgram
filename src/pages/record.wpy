@@ -28,7 +28,7 @@
   export default class Record extends wepy.page {
     mixins = [http, base]
     config = {
-      navigationBarTitleText: '中奖纪录'
+      // navigationBarTitleText: '中奖纪录'
     }
     data = {
       prizesFinishedList: [],
