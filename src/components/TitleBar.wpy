@@ -1,0 +1,92 @@
+<template>
+  <view class="tabBarCustom" style="height: {{barHeight}}rpx">
+    <image src="{{barBackBtn}}" @tap="back" wx:if="{{isBackBtn}}"></image>
+    <text style="margin-top: {{barTitleHeight}}rpx">{{titleText}}</text>
+  </view>
+  <view class="seat" style="height: {{barHeight}}rpx"></view>
+</template>
+<script>
+import wepy from 'wepy'
+export default class TitleBar extends wepy.component {
+  props = {
+    barHeight: {
+      type: [String, Number],
+      default: 0
+    },
+    barTitleHeight: {
+      type: [String, Number],
+      default: 0
+    },
+    barBackBtn: {
+      type: [String],
+      default: '../assets/images/tabbars/back.png'
+    },
+    isBackBtn: {
+      type: [Boolean],
+      default: false
+    },
+    isShareBtn: {
+      type: [Boolean],
+      default: false
+    },
+    titleText: {
+      type: [String],
+      default: '搞点福利'
+    }
+  }
+  computed = {
+    init() {
+      if (this.isShareBtn) {
+        this.barBackBtn = '../assets/images/tabbars/home.png'
+      }
+      // let sys = wepy.getSystemInfoSync()
+      // let calculationHeight = sys.screenHeight - sys.windowHeight + sys.batteryLevel
+      // this.barHeight = calculationHeight
+      // this.barTitleHeight = sys.screenHeight - sys.windowHeight
+      this.barHeight = 180
+      this.barTitleHeight = 100
+    }
+  }
+  methods = {
+    back () {
+      if (this.isShareBtn) {
+        wepy.switchTab({
+          url: 'home'
+        })
+      } else {
+        wepy.navigateBack({
+          delta: 1
+        })
+      }
+    }
+  }
+}
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+.tabBarCustom {
+  width: 100%;
+  z-index: 999;
+  background: #fff;
+  overflow: hidden;
+  position: fixed;
+  image {
+    width: 61rpx;
+    height: 61rpx;
+    display: block;
+    position: absolute;
+    top: 81rpx;
+    left: 18rpx;
+    z-index: 3;
+  }
+  text {
+    font-size: 32rpx;
+    font-weight: 600;
+    text-align: center;
+    display: block;
+  }
+}
+.seat {
+  width: 100%;
+  overflow: hidden;
+}
+</style>

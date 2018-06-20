@@ -1,9 +1,6 @@
 <template>
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
-  <view class="tabBarCustom">
-    <image src="../assets/images/tabbars/back.png" @tap="back"></image>
-    <text>我参加的抽奖</text>
-  </view>
+  <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
   <view class="seat"></view>
   <view class="title">
     <view class="{{selected ? 'selected' : ''}}">
@@ -47,18 +44,22 @@
   import http from '../mixins/http'
   import base from '../mixins/base'
   import LoadingZ from '../components/LoadingZ'
+  import TitleBar from '../components/TitleBar'
   export default class Past extends wepy.page {
     mixins = [http, base]
     config = {
       // navigationBarTitleText: '我参加的抽奖'
     }
     data = {
+      titleText: '我参加的抽奖',
+      isBackBtn: true,
       prizesDrawsList: [],
       selected: true,
       isShow: true
     }
     components = {
-      LoadingZ: LoadingZ
+      LoadingZ,
+      TitleBar
     }
     methods = {}
     onLoad () {}
@@ -78,11 +79,6 @@
       } else {
         that.selected = false
       }
-    }
-    back () {
-      wepy.navigateBack({
-        delta: 1
-      })
     }
   }
 </script>

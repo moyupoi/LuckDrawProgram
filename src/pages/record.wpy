@@ -1,10 +1,6 @@
 <template>
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
-  <view class="tabBarCustom">
-    <image src="../assets/images/tabbars/back.png" @tap="back"></image>
-    <text>中奖纪录</text>
-  </view>
-  <view class="seat"></view>
+  <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
   <view class="endPrize">
     <navigator hover-class="none" url="/pages/prize?id={{item.id}}" class="prizesItem" wx:for="{{prizesFinishedList}}" wx:key="index">
       <view class="winning" wx:if="{{item.is_get_draw}}">已中奖</view>
@@ -25,6 +21,7 @@
   import http from '../mixins/http'
   import base from '../mixins/base'
   import LoadingZ from '../components/LoadingZ'
+  import TitleBar from '../components/TitleBar'
   export default class Record extends wepy.page {
     mixins = [http, base]
     config = {
@@ -35,7 +32,8 @@
       isShow: true
     }
     components = {
-      LoadingZ: LoadingZ
+      LoadingZ,
+      TitleBar
     }
     methods = {}
     onLoad() {
@@ -48,11 +46,6 @@
       })
     }
     onShow() {}
-    back () {
-      wepy.navigateBack({
-        delta: 1
-      })
-    }
   }
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>

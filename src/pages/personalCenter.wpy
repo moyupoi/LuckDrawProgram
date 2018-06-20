@@ -1,8 +1,5 @@
 <template>
-  <view class="tabBarCustom">
-    <text>我的</text>
-  </view>
-  <view class="seat"></view>
+  <TitleBar :titleText.sync="titleText"></TitleBar>
   <view class="banner">
     <view class="user">
       <view class="portraitView">
@@ -32,13 +29,18 @@
   // import { service } from '../config.js'
   import http from '../mixins/http'
   import base from '../mixins/base'
+  import TitleBar from '../components/TitleBar'
   export default class PersonalCenter extends wepy.page {
     mixins = [http, base]
     config = {
-      navigationBarTitleText: '我的'
+      // navigationBarTitleText: '我的'
     }
-    data = {}
-    components = {}
+    data = {
+      titleText: '我的'
+    }
+    components = {
+      TitleBar
+    }
     methods = {}
     onLoad() {}
     onShow() {}

@@ -1,27 +1,26 @@
 <template>
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
-  <view class="tabBarCustom">
-    <text>搞点福利</text>
-  </view>
-  <view class="seat"></view>
-  <view class="topBanner">
-    <image src="../assets/images/home/logo.png" class="logo"></image>
-  </view>
-  <image src="../assets/images/home/logoRight.png" class="logoRight"></image>
-  <view class="prizes">
-    <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}" class="prizesItem"  wx:for="{{prizesList}}" wx:key="index">
-      <view class="banner">
-        <image src="{{item.banner_url}}"></image>
-      </view>
-      <view class="describe">
-        <text class="name">{{item.brand}} · {{item.name}} · </text>
-        <text class="number"> {{item.number}}件</text>
-        <view>
-          <text class="isJoin" wx:if="{{item.is_has_draw}}">已参加 |</text>
-          <label>满 {{item.reach_number}} 人参与开奖</label>
+  <TitleBar :titleText.sync="titleText"></TitleBar>
+  <view class="homeSurround">
+    <view class="topBanner">
+      <image src="../assets/images/home/logo.png" class="logo"></image>
+    </view>
+    <image src="../assets/images/home/logoRight.png" class="logoRight"></image>
+    <view class="prizes">
+      <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}" class="prizesItem"  wx:for="{{prizesList}}" wx:key="index">
+        <view class="banner">
+          <image src="{{item.banner_url}}"></image>
         </view>
-      </view>
-    </navigator>
+        <view class="describe">
+          <text class="name">{{item.brand}} · {{item.name}} · </text>
+          <text class="number"> {{item.number}}件</text>
+          <view>
+            <text class="isJoin" wx:if="{{item.is_has_draw}}">已参加 |</text>
+            <label>满 {{item.reach_number}} 人参与开奖</label>
+          </view>
+        </view>
+      </navigator>
+    </view>
   </view>
 </template>
 <script>
@@ -30,23 +29,29 @@
   import http from '../mixins/http'
   import base from '../mixins/base'
   import LoadingZ from '../components/LoadingZ'
+  import TitleBar from '../components/TitleBar'
   export default class Home extends wepy.page {
     mixins = [http, base]
     config = {
       // navigationBarTitleText: '搞点福利'
     }
     data = {
+      titleText: '搞点福利',
       prizesList: [],
       bannerUrl: '',
-      isShow: true
+      isShow: true,
+      barHeight: 0
     }
     components = {
-      LoadingZ: LoadingZ
+      LoadingZ,
+      TitleBar
     }
     methods = {}
     onLoad() {
-      // let res = wepy.getSystemInfoSync()
-      // res.screenHeight - res.windowHeight
+      // let sys = wepy.getSystemInfoSync()
+      // let calculationHeight = sys.screenHeight - sys.windowHeight
+      // console.log(calculationHeight)
+      // this.barHeight = calculationHeight
     }
     onShow() {
       let that = this
@@ -62,82 +67,83 @@
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
   @import "../assets/stylesheets/layout.scss";
-  .topBanner {
-    position: absolute;
-    top: 180rpx;
-    left: 0;
-    right: 0;
-    height: 332rpx;
-    z-index: 0;
-    overflow: hidden;
-    .logo {
-      width: 100%;
+  .homeSurround {
+    .topBanner {
+      position: absolute;
+      left: 0;
+      right: 0;
       height: 332rpx;
-      display: block;
+      z-index: 0;
       overflow: hidden;
-    }
-  }
-  .logoRight {
-    position: absolute;
-    z-index: 3;
-    width: 124rpx;
-    height: 144rpx;
-    display: block;
-    top: 196rpx;
-    right: 1rpx;
-  }
-  .prizes {
-    position: relative;
-    z-index: 1;
-    padding: 36rpx;
-    overflow: hidden;
-    margin-top: 110rpx;
-    .prizesItem {
-      margin-bottom: 32rpx;
-      width: 686rpx;
-      box-shadow: rgba(60, 62, 66, 0.1) 0 2rpx 8rpx 0;
-      border-radius: 20rpx;
-      .banner {
-        border-bottom: 1rpx solid #F1F2F4;
-        image {
-          border-top-left-radius: 20rpx;
-          border-top-right-radius: 20rpx;
-          width: 100%;
-          height: 386rpx;
-          display: block;
-        }
+      .logo {
+        width: 100%;
+        height: 332rpx;
+        display: block;
+        overflow: hidden;
       }
-      .describe {
-        border-bottom-left-radius: 20rpx;
-        border-bottom-right-radius: 20rpx;
-        background: #fff;
-        padding: 32rpx;
-        .name, .number {
-          font-size: 32rpx;
-          color: #333333;
-          line-height: 36rpx;
-          display: inline-block;
-          margin-bottom: 16rpx;
-          text-align: justify;
-        }
-        .number {
-          margin-left: 16rpx;
-          color: #666666;
-        }
-        view {
-          .isJoin {
-            font-size: 24rpx;
-            color: #666666;
-            line-height: 32rpx;
-            display: inline-block;
-            color: #999999;
-            margin-right: 10rpx;
+    }
+    .logoRight {
+      position: absolute;
+      z-index: 3;
+      width: 124rpx;
+      height: 144rpx;
+      display: block;
+      top: 196rpx;
+      right: 1rpx;
+    }
+    .prizes {
+      position: relative;
+      z-index: 1;
+      padding: 36rpx;
+      overflow: hidden;
+      top: 110rpx;
+      .prizesItem {
+        margin-bottom: 32rpx;
+        width: 686rpx;
+        box-shadow: rgba(60, 62, 66, 0.1) 0 2rpx 8rpx 0;
+        border-radius: 20rpx;
+        .banner {
+          border-bottom: 1rpx solid #F1F2F4;
+          image {
+            border-top-left-radius: 20rpx;
+            border-top-right-radius: 20rpx;
+            width: 100%;
+            height: 386rpx;
+            display: block;
           }
-          label {
-            font-size: 24rpx;
-            color: #666666;
-            line-height: 32rpx;
+        }
+        .describe {
+          border-bottom-left-radius: 20rpx;
+          border-bottom-right-radius: 20rpx;
+          background: #fff;
+          padding: 32rpx;
+          .name, .number {
+            font-size: 32rpx;
+            color: #333333;
+            line-height: 36rpx;
             display: inline-block;
+            margin-bottom: 16rpx;
+            text-align: justify;
+          }
+          .number {
+            margin-left: 16rpx;
+            color: #666666;
+          }
+          view {
+            .isJoin {
+              font-size: 24rpx;
+              color: #666666;
+              line-height: 32rpx;
+              display: inline-block;
+              color: #999999;
+              margin-right: 10rpx;
+            }
+            label {
+              font-size: 24rpx;
+              color: #666666;
+              line-height: 32rpx;
+              display: inline-block;
+            }
           }
         }
       }

@@ -1,10 +1,6 @@
 <template>
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
-  <view class="tabBarCustom">
-    <image src="{{btnImg}}" @tap="back"></image>
-    <text>中奖纪录</text>
-  </view>
-  <view class="seat"></view>
+  <TitleBar :isBackBtn.sync="isBackBtn" :isShareBtn.sync="isShareBtn" :titleText.sync="titleText"></TitleBar>
   <view class="banner" wx:if="{{prizesDraws.is_get_draw}}">
     <image src="../assets/images/prize/banner01.png" class="bannerBack"></image>
     <image src="../assets/images/prize/circles.png" class="circles"></image>
@@ -59,13 +55,18 @@
   import base from '../mixins/base'
   import ShareMessage from '../mixins/ShareMessage'
   import LoadingZ from '../components/LoadingZ'
+  import TitleBar from '../components/TitleBar'
   export default class Prize extends wepy.page {
     mixins = [http, base, ShareMessage]
     config = {
       // navigationBarTitleText: '中奖纪录'
     }
     data = {
-      id: '5b1e1ab27ff6312cb621b3ce',
+      titleText: '中奖纪录',
+      isBackBtn: true,
+      isShare: true,
+      isShareBtn: false,
+      id: '',
       prizesDraws: [],
       winning: true,
       userAddress: '',
@@ -73,21 +74,18 @@
       formId: null,
       path: 'pages/home',
       isShow: true,
-      isShare: true,
-      isShareBtn: false,
-      btnImg: '../assets/images/tabbars/back.png',
-      shareUrl: 'pages/prize',
-      shareUrlId: ''
+      shareUrlId: '',
+      shareUrl: 'pages/prize'
     }
     components = {
-      LoadingZ: LoadingZ
+      LoadingZ,
+      TitleBar
     }
     methods = {}
     onLoad (options) {
       let that = this
       if (!this.isUndefined(options.share) && !this.isUndefined(options.id)) {
         this.isShareBtn = true
-        this.btnImg = '../assets/images/tabbars/home.png'
       }
       if (!this.isUndefined(options.id)) {
         this.id = options.id
@@ -132,17 +130,6 @@
       let formId = event.detail.formId
       if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
         this.formId = formId
-      }
-    }
-    back () {
-      if (this.isShareBtn) {
-        wepy.switchTab({
-          url: 'home'
-        })
-      } else {
-        wepy.navigateBack({
-          delta: 1
-        })
       }
     }
   }
