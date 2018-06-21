@@ -18,15 +18,20 @@
       <image src="../assets/images/personalCenter/icon02.png"></image>
       <text>中奖纪录</text>
     </navigator>
-    <view class="address" @tap="address">
+    <view class="opportunity">
       <image src="../assets/images/personalCenter/icon03.png"></image>
+      <text>剩余抽奖机会</text>
+      <label>{{count}}</label>
+    </view>
+    <view class="address" @tap="address">
+      <image src="../assets/images/personalCenter/icon04.png"></image>
       <text>收货地址</text>
     </view>
   </view>
 </template>
 <script>
   import wepy from 'wepy'
-  // import { service } from '../config.js'
+  import { service } from '../config.js'
   import http from '../mixins/http'
   import base from '../mixins/base'
   import TitleBar from '../components/TitleBar'
@@ -36,13 +41,21 @@
       // navigationBarTitleText: '我的'
     }
     data = {
-      titleText: '我的'
+      titleText: '我的',
+      count: 0
     }
     components = {
       TitleBar
     }
     methods = {}
-    onLoad() {}
+    onLoad() {
+      let that = this
+      this.$get({url: service.prizesMine}, {
+        success: ({statusCode, data}) => {
+          that.count = data.left_chance
+        }
+      })
+    }
     onShow() {}
     address () {
       wepy.chooseAddress({
@@ -100,7 +113,7 @@
     padding: 32rpx;
     position: relative;
     z-index: 10;
-    navigator, .address {
+    navigator, .address, .opportunity {
       display: block;
       margin-bottom: 32rpx;
       background: #fff;
@@ -131,6 +144,19 @@
         display: block;
         float: left;
         margin: 14rpx 0 0 16rpx;
+      }
+    }
+    .opportunity {
+      &:before {
+        background: none;
+      }
+      label {
+        position: absolute;
+        display: block;
+        top: 42rpx;
+        right: 32rpx;
+        color: #D5DBE6;
+        font-size: 28rpx;
       }
     }
   }

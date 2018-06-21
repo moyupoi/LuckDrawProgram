@@ -3,11 +3,21 @@
   <TitleBar :titleText.sync="titleText"></TitleBar>
   <view class="homeSurround">
     <view class="topBanner">
-      <image src="../assets/images/home/logo.png" class="logo"></image>
+      <view class="tab">
+        <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true">
+          <button @tap="haveInHand(1)" formType="submit">
+            <text class="{{tab ? 'active' : ''}}">进行中</text>
+            <view class="{{tab ? 'selected' : ''}}"></view>
+          </button>
+          <button @tap="haveInHand(0)" formType="submit">
+            <text class="{{!tab ? 'active' : ''}}">即将开始</text>
+            <view class="{{!tab ? 'selected' : ''}}"></view>
+          </button>
+        </form>
+      </view>
     </view>
-    <image src="../assets/images/home/logoRight.png" class="logoRight"></image>
     <view class="prizes">
-      <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}" class="prizesItem"  wx:for="{{prizesList}}" wx:key="index">
+      <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}" class="prizesItem"  wx:for="{{prizesList}}" wx:key="index" wx:if="{{tab}}">
         <view class="banner">
           <image src="{{item.banner_url}}"></image>
         </view>
@@ -20,6 +30,22 @@
           </view>
         </view>
       </navigator>
+      <view class="prizesItem" wx:for="{{prizesQueuingList}}" wx:key="index" wx:if="{{!tab}}">
+        <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}" class="banner">
+          <image src="{{item.banner_url}}"></image>
+        </navigator>
+        <view class="describe">
+          <text class="name">{{item.brand}} · {{item.name}} · </text>
+          <text class="number"> {{item.number}}件</text>
+          <view>
+            <text class="isJoin" wx:if="{{item.is_has_draw}}">已参加 |</text>
+            <label>满 {{item.reach_number}} 人参与开奖</label>
+            <form bindsubmit="remind({{item.id}})" bindreset="formReset" report-submit="true">
+              <button formType="submit">提醒我</button>
+            </form>
+          </view>
+        </view>
+      </view>
     </view>
   </view>
 </template>
@@ -38,9 +64,12 @@
     data = {
       titleText: '搞点福利',
       prizesList: [],
+      prizesQueuingList: [],
       bannerUrl: '',
       isShow: true,
-      barHeight: 0
+      barHeight: 0,
+      tab: true,
+      formId: null
     }
     components = {
       LoadingZ,
@@ -58,10 +87,40 @@
       this.$get({url: service.prizes}, {
         success: ({statusCode, data}) => {
           that.prizesList = data['prizes']
+          that.prizesQueuingList = data['prizes_queuing']
           that.bannerUrl = data.banner_url
           that.isShow = false
         }
       })
+    }
+    haveInHand(event) {
+      this.tab = parseInt(event.currentTarget.dataset.wpyhaveinhandA)
+    }
+    remind(event) {
+      let formId = event.detail.formId
+      if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
+        formId = event.detail.formId
+      } else {
+        formId = null
+      }
+      let id = event.target.dataset.wpyremindA
+      this.$post({
+        url: service.prizes + id + '/remind',
+        headers: {
+          'X-JINKU-WECHAT-FORM-ID': formId
+        }
+      }, {
+        success: ({statusCode, data}) => {
+          this.$alert('设置提醒', data.message)
+        }
+      })
+    }
+    formSubmit (event) {
+      let formId = event.detail.formId
+      if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
+        this.formId = formId
+        this.$updataFormId(this.formId)
+      }
     }
   }
 </script>
@@ -69,34 +128,72 @@
   @import "../assets/stylesheets/layout.scss";
   .homeSurround {
     .topBanner {
-      position: absolute;
-      left: 0;
-      right: 0;
-      height: 332rpx;
-      z-index: 0;
       overflow: hidden;
-      .logo {
+      position: relative;
+      .tab {
         width: 100%;
-        height: 332rpx;
-        display: block;
-        overflow: hidden;
+        text-align: center;
+        button {
+          width: 375rpx;
+          height: 108rpx;
+          background: #fff;
+          border: 0;
+          border-radius: 0;
+          display: inline-block;
+          text {
+            position: relative;
+            z-index: 10;
+            font-size: 28rpx;
+            color: #666666;
+          }
+          .selected {
+            position: absolute;
+            top: 50rpx;
+            left: 125rpx;
+            z-index: 0;
+          }
+        }
+        .active {
+          color: #FF471C;
+        }
+        .selected {
+          content: '';
+          width: 120rpx;
+          height: 24rpx;
+          position: absolute;
+          z-index: 10;
+          top: 10rpx;
+          left: 100rpx;
+          background: #FFEBE3;
+          border-radius: 5rpx;
+        }
+      }
+      &:before {
+        content: '';
+        border-right: 1rpx solid #ccc;
+        position: absolute;
+        z-index: 10;
+        top: 25rpx;
+        left: 375rpx;
+        width: 1rpx;
+        height: 48rpx;
+        background: #D8D8D8;
       }
     }
-    .logoRight {
-      position: absolute;
-      z-index: 3;
-      width: 124rpx;
-      height: 144rpx;
-      display: block;
-      top: 196rpx;
-      right: 1rpx;
-    }
+    // .logoRight {
+    //   position: absolute;
+    //   z-index: 3;
+    //   width: 124rpx;
+    //   height: 144rpx;
+    //   display: block;
+    //   top: 196rpx;
+    //   right: 1rpx;
+    // }
     .prizes {
       position: relative;
       z-index: 1;
       padding: 36rpx;
       overflow: hidden;
-      top: 110rpx;
       .prizesItem {
         margin-bottom: 32rpx;
         width: 686rpx;
@@ -143,6 +240,20 @@
               color: #666666;
               line-height: 32rpx;
               display: inline-block;
+            }
+            button {
+              width: 120rpx;
+              height: 50rpx;
+              font-size: 24rpx;
+              line-height: 49rpx;
+              position: absolute;
+              z-index: 10;
+              bottom: 118rpx;
+              right: 56rpx;
+              border-radius: 50rpx;
+              color: #3799FA;
+              border: 1rpx solid #3799FA;
+              background: #fff;
             }
           }
         }

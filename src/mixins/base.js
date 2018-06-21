@@ -121,4 +121,8 @@ export default class baseMixin extends wepy.mixin {
   $goto(url) {
     wx.navigateTo({url: url})
   }
+
+  $gotoSwitch(url) {
+    wx.switchTab({url: url})
+  }
 }

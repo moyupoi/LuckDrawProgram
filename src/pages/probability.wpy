@@ -1,0 +1,221 @@
+<template>
+  <LoadingZ :isShow.sync="isShow"></LoadingZ>
+  <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
+  <view class="probability">
+    <view class="describe">
+      <image src="../assets/images/probability/describe.png"></image>
+    </view>
+    <view class="rule">
+      <label>规则说明：</label>
+      <text>1、分享奖品给好友</text>
+      <text>2、好友参加抽奖</text>
+      <text>3、每邀请1位好友参加，抽奖机会+1</text>
+      <text>4、继续抽奖，中奖概率增加</text>
+      <view class="important">
+        <text>*</text>
+        <text>增加的抽奖机会，可用于任意奖品</text>
+      </view>
+    </view>
+    <view class="invitation">
+      <view class="participate" wx:if="{{prizesData.count > 0}}">
+        <text>已邀请{{prizesData.count}}人参加</text>
+      </view>
+      <view class="participatePeople" wx:if="{{prizesData.count > 0}}">
+        <image src="{{item}}" wx:for="{{prizesData.user_avatars}}" wx:key="index" wx:if="{{index < 6}}"></image>
+        <view class="ellipsis" wx:if="{{index >= 5}}"></view>
+        <navigator hover-class="none" url="/pages/portraitList?id={{id}}&type=probability">
+          查看全部>
+        </navigator>
+      </view>
+    </view>
+    <button class="share">邀请好友参加抽奖</button>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import { service } from '../config.js'
+  import http from '../mixins/http'
+  import base from '../mixins/base'
+  import LoadingZ from '../components/LoadingZ'
+  import TitleBar from '../components/TitleBar'
+  export default class Probability extends wepy.page {
+    mixins = [http, base]
+    config = {
+      // navigationBarTitleText: '抽奖详情'
+    }
+    data = {
+      titleText: '抽奖详情',
+      isBackBtn: true,
+      isShow: true,
+      id: '',
+      prizesData: {
+        user_avatars: [
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg',
+          '../assets/images/test/tx.jpg'
+        ],
+        count: 10
+      }
+    }
+    components = {
+      LoadingZ,
+      TitleBar
+    }
+    methods = {}
+    onLoad (options) {
+      let that = this
+      if (options.id) {
+        this.id = options.id
+        this.$get({url: service.prizes + options.id + '/chance'}, {
+          success: ({statusCode, data}) => {
+            // that.prizesData = data
+            // that.prizeDrawsCount = data.count
+            that.isShow = false
+          }
+        })
+      }
+    }
+  }
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  @import "../assets/stylesheets/layout.scss";
+  .probability {
+    overflow: hidden;
+    .describe {
+      width: 100%;
+      height: 218rpx;
+      background: #fff;
+      overflow: hidden;
+      image {
+        width: 552rpx;
+        height: 90rpx;
+        display: block;
+        margin: 32rpx auto;
+      }
+    }
+    .rule {
+      background: #fff;
+      margin-top: 16rpx;
+      padding: 32rpx;
+      label {
+        font-size: 28rpx;
+        color: #333333;
+        display: block;
+        margin-bottom: 32rpx;
+      }
+      text {
+        font-size: 26rpx;
+        line-height: 28rpx;
+        color: #666666;
+        display: block;
+        margin-bottom: 16rpx;
+        font-weight: 300;
+      }
+      .important {
+        margin-top: 32rpx;
+        text {
+          display: inline-block;
+          font-size: 26rpx;
+          color: #666666;
+        }
+        text:nth-of-type(1) {
+          color: #FF4A32;
+          margin-right: 10rpx;
+        }
+      }
+    }
+    .invitation {
+      background: #fff;
+      width: 100%;
+      padding: 64rpx 0;
+      overflow: hidden;
+      margin: 8rpx 0 36rpx;
+      .participate {
+        text-align: center;
+        overflow: hidden;
+        margin: 0 auto 32rpx auto;
+        text {
+          text-align: center;
+          display: block;
+          font-size: 28rpx;
+          line-height: 32rpx;
+          color: #333333;
+        }
+      }
+      .participatePeople {
+        overflow: hidden;
+        text-align: center;
+        display: block;
+        position: relative;
+        image {
+          border-radius: 50rpx;
+          display: inline-block;
+          width: 72rpx;
+          height: 72rpx;
+          margin: 0 12rpx;
+        }
+        .ellipsis {
+          position: absolute;
+          background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAECAYAAACKqs+rAAAAAXNSR0IArs4c6QAAAKJJREFUGBm1TUsOAiEUG4iElcqxNLoePQG6YcshuAAJnsXPCcajGOKGQAK+GieZzN4m8PpaWrruT2DotdYuY4wX8NbaKYQQwUcYY1Y550A745yfvfev0cPUWq8ZY4GyVSmlnXNvDoNK9yQecCi4hTZFKWXz8/ta627qgSNDfk/0iC5oC1z025WMAVxKecec4UH7QO+YEOI2876ZlNKT9Iou+B/opkhj5iraCQAAAABJRU5ErkJggg==') no-repeat;
+          background-size: 24rpx 5rpx;
+          width: 24rpx;
+          height: 5rpx;
+          top: 55rpx;
+          right: 25rpx;
+        }
+        navigator {
+          font-size: 28rpx;
+          line-height: 32rpx;
+          color: #FF471C;
+          width: 140rpx;
+          border-bottom: 1rpx solid #FF471C;
+          display: block;
+          margin: 32rpx auto 0 auto;
+        }
+      }
+    }
+    .share {
+      width: 700rpx;
+      height: 90rpx;
+      border-radius: 50rpx;
+      color: #fff;
+      background: #FA5C37;
+      font-size: 32rpx;
+      line-height: 90rpx;
+      margin-bottom: 124rpx;
+      font-weight: 300;
+    }
+  }
+</style>

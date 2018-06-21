@@ -7,12 +7,13 @@ export default class extends wepy.app {
   config = {
     pages: [
       'pages/home',
+      'pages/personalCenter',
+      'pages/luckDraw',
       'pages/past',
       'pages/prize',
-      'pages/luckDraw',
       'pages/portraitList',
-      'pages/personalCenter',
-      'pages/record'
+      'pages/record',
+      'pages/probability'
     ],
     window: {
       backgroundTextStyle: 'light',

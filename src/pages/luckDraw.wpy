@@ -15,24 +15,28 @@
       </view>
       <view class="participate" wx:if="{{prizeDrawsCount > 0}}">
         <text>已有{{prizeDrawsCount}}人参加，</text>
-        <navigator hover-class="none" url="/pages/portraitList?id={{titaList.id}}">
+        <navigator hover-class="none" url="/pages/portraitList?id={{titaList.id}}&type=luckDraw">
           查看全部>
         </navigator>
       </view>
       <view class="participatePeople" wx:if="{{prizeDrawsCount > 0}}">
-        <image src="{{item}}" wx:for="{{prizeDrawUserAvatars}}" wx:key="index"></image>
+        <image src="{{item}}" wx:for="{{prizeDrawUserAvatars}}" wx:key="index" wx:if="{{index <= 6}}"></image>
         <view class="ellipsis" wx:if="{{prizeDrawsCount >= 6}}"></view>
       </view>
       <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub" wx:if="{{aasmState !== 'finishing' && aasmState !== 'finished' }}">
-        <button class="drawBtn" @getuserinfo="drawBtn" open-type="getUserInfo" formType="submit" wx:if="{{!isHasdraw}}">立即参加</button>
-        <button class="drawBtn" open-type="share" @tap="share" formType="submit" wx:if="{{isHasdraw}}">加速开奖</button>
-        <text wx:if="{{isHasdraw}}">分享给好友参加</text>
+        <button class="drawBtn" @getuserinfo="drawBtn" open-type="getUserInfo" formType="submit" wx:if="{{!isHasdraw}}">立即抽奖</button>
+        <button class="surplus {{leftChance === 0 ? 'active' : ''}}" @getuserinfo="drawBtn" open-type="getUserInfo" formType="submit" wx:if="{{isHasdraw}}">剩余抽奖机会{{leftChance}}次</button>
+        <button class="shareIncrease" open-type="share" @tap="share" formType="submit" wx:if="{{isHasdraw}}">分享增加抽奖机会</button>
       </form>
       <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub" wx:if="{{aasmState === 'finishing' || aasmState === 'finished' }}">
         <navigator hover-class="none" url="/pages/home" class="drawBtn" open-type="share" @tap="share" formType="submit" open-type="switchTab">参加其他抽奖</navigator>
         <text>本活动已结束</text>
       </form>
     </view>
+    <navigator url="/pages/probability?id={{titaList.id}}" hover-class="none" class="probability">
+      <text>中奖概率：</text>
+      <label>{{titaList.get_prize_percent}}%</label>
+    </navigator>
     <view class="sponsor">
       <text>赞助商</text>
       <image src="../assets/images/luckDraw/officialLogo.png"></image>
@@ -57,6 +61,7 @@
     data = {
       titleText: '抽奖详情',
       isBackBtn: true,
+      luckDrawId: '',
       isShare: true,
       isShareBtn: false,
       titaList: {},
@@ -70,7 +75,9 @@
       aasmState: '',
       isShow: true,
       shareUrlId: '',
-      shareUrl: 'pages/luckDraw'
+      shareUrl: 'pages/luckDraw',
+      leftChance: 0,
+      isCanDraw: false
     }
     components = {
       LoadingZ,
@@ -78,31 +85,37 @@
     }
     methods = {}
     onLoad (options) {
-      let that = this
-      console.log(options)
+      // options.id = '5b28b7324f14bf02e88807dd'
+      // options.id = '5b28b6de4f14bf02e4e15c3c'
+      this.luckDrawId = options.id
       if (!this.isUndefined(options.share) && !this.isUndefined(options.id)) {
         this.isShareBtn = true
       }
-      // let id = '5b1a062e7ff63153b13abd84'
       if (!this.isUndefined(options.id) && options.id !== '') {
-        this.$get({url: service.prizes + options.id}, {
-          success: ({statusCode, data}) => {
-            that.titaList = data
-            that.reachNumber = data.reach_number
-            that.percentage = data.prize_draws_count > 0 ? parseInt(data.prize_draws_count / data.reach_number * 100) : 0
-            that.isHasdraw = data.is_has_draw
-            that.hasUploadUserinfo = data.has_upload_userinfo
-            that.prizeDrawUserAvatars = data.prize_draw_user_avatars
-            that.prizeDrawsCount = data.prize_draws_count
-            that.aasmState = data.aasm_state
-            that.isShow = false
-            that.shareUrlId = data.id
-            // that.isHasdraw = false
-          }
-        })
+        this.luckDrawInit(options.id)
       }
     }
     onShow () {}
+    luckDrawInit(id) {
+      let that = this
+      this.$get({url: service.prizes + id}, {
+        success: ({statusCode, data}) => {
+          that.titaList = data
+          that.reachNumber = data.reach_number
+          that.percentage = data.prize_draws_count > 0 ? parseInt(data.prize_draws_count / data.reach_number * 100) : 0
+          that.isHasdraw = data.is_has_draw
+          that.isCanDraw = data.is_can_draw
+          that.hasUploadUserinfo = data.has_upload_userinfo
+          that.prizeDrawUserAvatars = data.prize_draw_user_avatars
+          that.prizeDrawsCount = data.prize_draws_count
+          that.aasmState = data.aasm_state
+          that.isShow = false
+          that.shareUrlId = data.id
+          that.leftChance = data.left_chance
+          // that.isHasdraw = false
+        }
+      })
+    }
     formSubmit (event) {
       let formId = event.detail.formId
       if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
@@ -112,8 +125,6 @@
     }
     drawBtn (event) {
       let that = this
-      // isHasDraw 判断用户是否抽过奖
-      let isHasDraw = this.isHasdraw
       // 判断用户点击确认 并且 后台没有记录过用户信息字段为false
       if (event.detail.errMsg === 'getUserInfo:ok' && !this.hasUploadUserinfo) {
         let encryptedData = event.detail.encryptedData
@@ -130,7 +141,8 @@
         }, {
           success: ({statusCode, data}) => {
             if (statusCode === 200) {
-              if (!isHasDraw) {
+              // 可以抽奖
+              if (that.isCanDraw) {
                 that.prizesDraw()
               }
               // console.log(statusCode, message)
@@ -143,8 +155,7 @@
     }
     prizesDraw () {
       let that = this
-      let isHasDraw = this.isHasdraw
-      if (!isHasDraw) {
+      if (that.isCanDraw) {
         this.$post({
           url: service.prizes + this.titaList.id + '/draw',
           headers: {
@@ -153,14 +164,14 @@
         }, {
           success: ({statusCode, data}) => {
             if (statusCode === 200) {
-              that.isHasdraw = true
-              that.percentage = parseInt((that.prizeDrawsCount + 1) / that.reachNumber * 100)
-              that.prizeDrawUserAvatars = that.prizeDrawUserAvatars.length <= 0 ? [data.avatar_url] : [data.avatar_url, ...that.prizeDrawUserAvatars]
-              that.prizeDrawsCount += 1
+              // that.percentage = parseInt((that.prizeDrawsCount + 1) / that.reachNumber * 100)
+              // that.prizeDrawUserAvatars = that.prizeDrawUserAvatars.length <= 0 ? [data.avatar_url] : [data.avatar_url, ...that.prizeDrawUserAvatars]
+              // that.prizeDrawsCount += 1
               wepy.showToast({
                 title: '参加成功',
                 icon: 'success'
               })
+              that.luckDrawInit(that.luckDrawId)
             }
           }
         })
@@ -181,7 +192,7 @@
     }
     .describe {
       background: #fff;
-      padding: 32rpx;
+      padding: 32rpx 32rpx 48rpx 32rpx;
       overflow: hidden;
       .name {
         font-size: 40rpx;
@@ -270,6 +281,31 @@
         }
       }
       .formSub {
+        .surplus {
+          display: block;
+          border: 1rpx solid #FA5C37;
+          border-radius: 50rpx;
+          background: #fff;
+          color: #FA5C37;
+          width: 686rpx;
+          height: 92rpx;
+          font-size: 32rpx;
+          line-height: 92rpx;
+          font-family: 400;
+          margin: 64rpx 0 32rpx;
+        }
+        .shareIncrease {
+          display: block;
+          border: 1rpx solid #FA5C37;
+          border-radius: 50rpx;
+          background: #FA5C37;
+          color: #fff;
+          width: 686rpx;
+          height: 92rpx;
+          font-size: 32rpx;
+          line-height: 92rpx;
+          font-family: 400;
+        }
         .drawBtn {
           width: 552rpx;
           height: 92rpx;
@@ -283,6 +319,10 @@
           margin-top: 64rpx;
           margin: 64rpx auto 0 auto;
         }
+        .active {
+          border-color: #B2B2B2;
+          color: #B2B2B2;
+        }
         text {
           font-size: 24rpx;
           line-height: 32rpx;
@@ -291,6 +331,33 @@
           text-align: center;
           margin-top: 16rpx;
         }
+      }
+    }
+    .probability {
+      border-top: 1rpx solid #EDEEF0;
+      width: 100%;
+      height: 92rpx;
+      background: #fff;
+      padding: 0 32rpx;
+      position: relative;
+      &:before {
+        content: '';
+        position: absolute;
+        top: 38rpx;
+        right: 100rpx;
+        background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAYCAYAAADKx8xXAAAAAXNSR0IArs4c6QAAAf5JREFUOBGFVMtOVEEQrepG/YThGuNiZkjuwJegLtCMEDDGEFAWxK9hQZT4XpgoEKJh4cqvcGYS77Ai3IGlKwWnyzow1d5hHnTSqe7Tdfp0dVc1/8jyWRJ5SdqY/fPpamkP46ua65FuqaP2sN1sdxavImHdFZ1ExGv/0GofPyriw8YOx2Pmri2CHCS8b/w8emzYMOsQkwgtaYR/zUHJTgN+28zyJ4ZdtmxA6yCvd7v0kUgmDNOTBMe0mlaSN4aZjTGm5WTbOVlQ5TNbhHIQetU46KwYZjYqGtDIjudEwidVvmaYKgsTr9Wqk1uGRUUDELMnruv81DBVZiF50cyO1gwbULQFfc97IYQdnV83DMrEtD5dSTZHEuHcaOd3KciOEN0wMqy+4fJYIpx6KYk0jMr6VCcDMcK52DQnb+sR40X11n6NVWxmnae4FFyObcZMvzU77oxUxNsNkIj+sPi5tJp8H0pstfNlvZStPiUlCfP92lTpG9TjEewoyE+9xdfIGsPUnrLjB/oM+4bFvASAihhGct7Va+XJSIJv3PW8BrUi+pX4zJN7qKSvcC62c0VUvdbgu8skZjefVktfigQbM5IaX4aSvIGoTVRKrXJz9z/WP5oQ6W4o1EfynhbT8mgStogxYqIZgi9kCbWJ+biGL+KZOhxedFefmUo+jyPY2j8L8NKoRhpQsgAAAABJRU5ErkJggg==') no-repeat;
+        background-size: 10rpx 20rpx;
+        width: 10rpx;
+        height: 20rpx;
+      }
+      text, label {
+        display: inline-block;
+        font-size: 28rpx;
+        line-height: 92rpx;
+        color: #666666;
+      }
+      label {
+        color: #FA5C37;
       }
     }
     .sponsor {

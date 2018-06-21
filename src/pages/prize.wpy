@@ -39,7 +39,7 @@
     </view>
     <view class="participate">
       <text>共{{prizesDraws.prize_draws_count}}人参加，</text>
-      <navigator hover-class="none" url="/pages/portraitList?id={{prizesDraws.prize_id}}">
+      <navigator hover-class="none" url="/pages/portraitList?id={{prizesDraws.prize_id}}&type=luckDraw">
         查看全部>
       </navigator>
     </view>
@@ -96,6 +96,15 @@
             that.memo = data.memo
             that.isShow = false
             that.shareUrlId = data.id
+            wepy.showModal({
+              title: '表灰心',
+              content: '增加一次抽奖机会',
+              success: function(res) {
+                if (res.confirm) {
+                  that.$gotoSwitch('/pages/personalCenter')
+                } else if (res.cancel) {}
+              }
+            })
           }
         })
       }

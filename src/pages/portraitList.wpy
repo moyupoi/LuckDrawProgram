@@ -25,6 +25,7 @@
       count: 0,
       page: 1,
       id: '',
+      type: '',
       nextPage: true,
       isShow: true
     }
@@ -35,14 +36,22 @@
     methods = {}
     onLoad(options) {
       let id = options.id
-      this.id = options.id
+      let type = options.type
+      this.id = id
+      this.type = type
       this.userAvatars(id)
     }
     onShow() {}
     userAvatars(id) {
       let that = this
+      let type = ''
+      if (id && this.type === 'luckDraw') {
+        type = '/draw_users'
+      } else {
+        type = '/chance'
+      }
       if (that.nextPage) {
-        that.$get({url: service.prizes + id + '/draw_users', data: {page: that.page}}, {
+        that.$get({url: service.prizes + id + type, data: {page: that.page}}, {
           success: ({statusCode, data}) => {
             that.isShow = false
             if (data.user_avatars.length <= 0) {
