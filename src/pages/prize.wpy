@@ -8,7 +8,7 @@
     <text class="title">{{prizesDraws.name}}</text>
     <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub">
       <button class="fillAddress" @tap="address" wx:if="{{userAddress === ''}}">填写收货地址</button>
-      <button class="fillAddress shareBtn {{userAddress !== '' ? 'shareShow' : ''}}" @tap="shareBtn" formType="submit" open-type="share">分享
+      <button class="fillAddress shareBtn {{userAddress !== '' ? 'shareShow' : ''}}" formType="submit" open-type="share">分享
       </button>
     </form>
   </view>
@@ -96,15 +96,17 @@
             that.memo = data.memo
             that.isShow = false
             that.shareUrlId = data.id
-            wepy.showModal({
-              title: '表灰心',
-              content: '增加一次抽奖机会',
-              success: function(res) {
-                if (res.confirm) {
-                  that.$gotoSwitch('/pages/personalCenter')
-                } else if (res.cancel) {}
-              }
-            })
+            if (data.alter_messsage) {
+              wepy.showModal({
+                title: '表灰心',
+                content: data.alter_messsage,
+                success: function(res) {
+                  if (res.confirm) {
+                    that.$gotoSwitch('/pages/personalCenter')
+                  } else if (res.cancel) {}
+                }
+              })
+            }
           }
         })
       }
@@ -139,6 +141,7 @@
       let formId = event.detail.formId
       if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
         this.formId = formId
+        this.$updataFormId(this.formId)
       }
     }
   }

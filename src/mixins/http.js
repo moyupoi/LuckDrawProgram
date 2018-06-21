@@ -9,13 +9,14 @@ export default class httpMixin extends wepy.mixin {
   ) {
     const methods = 'GET'
     let accessToken = wepy.getStorageSync('accessToken') || false
-    if (!accessToken) {
-      this.$loginToken()
-    } else {
+    let shereUserId = wepy.getStorageSync('userId') || false
+    if (accessToken && shereUserId) {
       this.$ajax(
         {url, headers, methods, data},
         {success, fail, complete }
       )
+    } else {
+      this.$loginToken()
     }
   }
 
@@ -26,13 +27,14 @@ export default class httpMixin extends wepy.mixin {
   ) {
     const methods = 'POST'
     let accessToken = wepy.getStorageSync('accessToken') || false
-    if (!accessToken) {
-      this.$loginToken()
-    } else {
+    let shereUserId = wepy.getStorageSync('userId') || false
+    if (accessToken && shereUserId) {
       this.$ajax(
         {url, headers, methods, data},
         {success, fail, complete }
       )
+    } else {
+      this.$loginToken()
     }
   }
 
@@ -74,6 +76,10 @@ export default class httpMixin extends wepy.mixin {
               wepy.setStorage({
                 key: 'accessToken',
                 data: res.data.access_token
+              })
+              wepy.setStorage({
+                key: 'userId',
+                data: res.data.id
               })
               wepy.reLaunch({url: '/' + getCurrentPages()[0].__route__})
             }
@@ -143,9 +149,14 @@ export default class httpMixin extends wepy.mixin {
                     code: res.code
                   },
                   success: function (res) {
+                    debugger
                     wepy.setStorage({
                       key: 'accessToken',
                       data: res.data.access_token
+                    })
+                    wepy.setStorage({
+                      key: 'userId',
+                      data: res.data.id
                     })
                     var route = '/' + getCurrentPages()[0].__route__;
                     if (!res.data.access_token) {

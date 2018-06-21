@@ -16,11 +16,11 @@
         <text>增加的抽奖机会，可用于任意奖品</text>
       </view>
     </view>
-    <view class="invitation">
-      <view class="participate" wx:if="{{prizesData.count > 0}}">
+    <view class="invitation" wx:if="{{prizesData.count > 0}}">
+      <view class="participate">
         <text>已邀请{{prizesData.count}}人参加</text>
       </view>
-      <view class="participatePeople" wx:if="{{prizesData.count > 0}}">
+      <view class="participatePeople">
         <image src="{{item}}" wx:for="{{prizesData.user_avatars}}" wx:key="index" wx:if="{{index < 6}}"></image>
         <view class="ellipsis" wx:if="{{index >= 5}}"></view>
         <navigator hover-class="none" url="/pages/portraitList?id={{id}}&type=probability">
@@ -28,7 +28,9 @@
         </navigator>
       </view>
     </view>
-    <button class="share">邀请好友参加抽奖</button>
+    <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub">
+      <button class="share" formType="submit" open-type="share">邀请好友参加抽奖</button>
+    </form>
   </view>
 </template>
 <script>
@@ -36,10 +38,11 @@
   import { service } from '../config.js'
   import http from '../mixins/http'
   import base from '../mixins/base'
+  import ShareMessage from '../mixins/ShareMessage'
   import LoadingZ from '../components/LoadingZ'
   import TitleBar from '../components/TitleBar'
   export default class Probability extends wepy.page {
-    mixins = [http, base]
+    mixins = [http, base, ShareMessage]
     config = {
       // navigationBarTitleText: '抽奖详情'
     }
@@ -47,47 +50,11 @@
       titleText: '抽奖详情',
       isBackBtn: true,
       isShow: true,
+      isShare: true,
+      shareUrlId: '',
+      shareUrl: 'pages/luckDraw',
       id: '',
-      prizesData: {
-        user_avatars: [
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg',
-          '../assets/images/test/tx.jpg'
-        ],
-        count: 10
-      }
+      prizesData: {}
     }
     components = {
       LoadingZ,
@@ -98,14 +65,23 @@
       let that = this
       if (options.id) {
         this.id = options.id
+        this.shareUrlId = options.id
         this.$get({url: service.prizes + options.id + '/chance'}, {
           success: ({statusCode, data}) => {
-            // that.prizesData = data
-            // that.prizeDrawsCount = data.count
+            that.prizesData = data
             that.isShow = false
           }
         })
       }
+    }
+    formSubmit (event) {
+      let formId = event.detail.formId
+      if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
+        this.formId = formId
+      }
+    }
+    onShareAppMessage(res) {
+      return this.$parent.onShareAppMessage()
     }
   }
 </script>
@@ -214,6 +190,7 @@
       background: #FA5C37;
       font-size: 32rpx;
       line-height: 90rpx;
+      margin-top: 36rpx;
       margin-bottom: 124rpx;
       font-weight: 300;
     }

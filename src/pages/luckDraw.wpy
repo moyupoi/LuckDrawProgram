@@ -26,10 +26,10 @@
       <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub" wx:if="{{aasmState !== 'finishing' && aasmState !== 'finished' }}">
         <button class="drawBtn" @getuserinfo="drawBtn" open-type="getUserInfo" formType="submit" wx:if="{{!isHasdraw}}">立即抽奖</button>
         <button class="surplus {{leftChance === 0 ? 'active' : ''}}" @getuserinfo="drawBtn" open-type="getUserInfo" formType="submit" wx:if="{{isHasdraw}}">剩余抽奖机会{{leftChance}}次</button>
-        <button class="shareIncrease" open-type="share" @tap="share" formType="submit" wx:if="{{isHasdraw}}">分享增加抽奖机会</button>
+        <button class="shareIncrease" open-type="share" formType="submit" wx:if="{{isHasdraw}}">分享增加抽奖机会</button>
       </form>
       <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub" wx:if="{{aasmState === 'finishing' || aasmState === 'finished' }}">
-        <navigator hover-class="none" url="/pages/home" class="drawBtn" open-type="share" @tap="share" formType="submit" open-type="switchTab">参加其他抽奖</navigator>
+        <navigator hover-class="none" url="/pages/home" class="drawBtn" open-type="share" formType="submit" open-type="switchTab">参加其他抽奖</navigator>
         <text>本活动已结束</text>
       </form>
     </view>
@@ -77,7 +77,8 @@
       shareUrlId: '',
       shareUrl: 'pages/luckDraw',
       leftChance: 0,
-      isCanDraw: false
+      isCanDraw: false,
+      shereUserId: ''
     }
     components = {
       LoadingZ,
@@ -88,6 +89,8 @@
       // options.id = '5b28b7324f14bf02e88807dd'
       // options.id = '5b28b6de4f14bf02e4e15c3c'
       this.luckDrawId = options.id
+      // this.shereUserId = !this.isUndefined(options.shereUserId) ? options.shereUserId : null
+      this.shereUserId = options.shereUserId
       if (!this.isUndefined(options.share) && !this.isUndefined(options.id)) {
         this.isShareBtn = true
       }
@@ -158,6 +161,9 @@
       if (that.isCanDraw) {
         this.$post({
           url: service.prizes + this.titaList.id + '/draw',
+          data: {
+            share_user_id: that.shereUserId
+          },
           headers: {
             'X-JINKU-WECHAT-FORM-ID': that.formId
           }
@@ -335,7 +341,6 @@
     }
     .probability {
       border-top: 1rpx solid #EDEEF0;
-      width: 100%;
       height: 92rpx;
       background: #fff;
       padding: 0 32rpx;
@@ -344,7 +349,7 @@
         content: '';
         position: absolute;
         top: 38rpx;
-        right: 100rpx;
+        right: 45rpx;
         background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAYCAYAAADKx8xXAAAAAXNSR0IArs4c6QAAAf5JREFUOBGFVMtOVEEQrepG/YThGuNiZkjuwJegLtCMEDDGEFAWxK9hQZT4XpgoEKJh4cqvcGYS77Ai3IGlKwWnyzow1d5hHnTSqe7Tdfp0dVc1/8jyWRJ5SdqY/fPpamkP46ua65FuqaP2sN1sdxavImHdFZ1ExGv/0GofPyriw8YOx2Pmri2CHCS8b/w8emzYMOsQkwgtaYR/zUHJTgN+28zyJ4ZdtmxA6yCvd7v0kUgmDNOTBMe0mlaSN4aZjTGm5WTbOVlQ5TNbhHIQetU46KwYZjYqGtDIjudEwidVvmaYKgsTr9Wqk1uGRUUDELMnruv81DBVZiF50cyO1gwbULQFfc97IYQdnV83DMrEtD5dSTZHEuHcaOd3KciOEN0wMqy+4fJYIpx6KYk0jMr6VCcDMcK52DQnb+sR40X11n6NVWxmnae4FFyObcZMvzU77oxUxNsNkIj+sPi5tJp8H0pstfNlvZStPiUlCfP92lTpG9TjEewoyE+9xdfIGsPUnrLjB/oM+4bFvASAihhGct7Va+XJSIJv3PW8BrUi+pX4zJN7qKSvcC62c0VUvdbgu8skZjefVktfigQbM5IaX4aSvIGoTVRKrXJz9z/WP5oQ6W4o1EfynhbT8mgStogxYqIZgi9kCbWJ+biGL+KZOhxedFefmUo+jyPY2j8L8NKoRhpQsgAAAABJRU5ErkJggg==') no-repeat;
         background-size: 10rpx 20rpx;
         width: 10rpx;

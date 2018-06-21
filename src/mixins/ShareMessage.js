@@ -22,7 +22,12 @@ export default class ShareMessage extends wepy.mixin {
       //   fail: (res) => {
       //   }
       // }
-      if (res.source.data.isShare) {
+      let shereUserId = wepy.getStorageSync('userId')
+      if (res.source.data.isShare && res.source.data.shareUrlId && res.source.data.shareUrl && shereUserId) {
+        return {
+          path: res.source.data.shareUrl + '?id=' + res.source.data.shareUrlId + '&share=true&shereUserId=' + shereUserId
+        }
+      } else if (res.source.data.isShare && res.source.data.shareUrlId) {
         return {
           path: res.source.data.shareUrl + '?id=' + res.source.data.shareUrlId + '&share=true'
         }
