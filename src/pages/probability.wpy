@@ -18,7 +18,8 @@
     </view>
     <view class="invitation" wx:if="{{prizesData.count > 0}}">
       <view class="participate">
-        <text>已邀请{{prizesData.count}}人参加</text>
+        <text>已邀请{{prizesData.count}}人参加，抽奖机会 </text>
+        <text> + {{prizesData.count}}</text>
       </view>
       <view class="participatePeople">
         <image src="{{item}}" wx:for="{{prizesData.user_avatars}}" wx:key="index" wx:if="{{index < 6}}"></image>
@@ -54,7 +55,9 @@
       shareUrlId: '',
       shareUrl: 'pages/luckDraw',
       id: '',
-      prizesData: {}
+      prizesData: {},
+      bannerUrl: '',
+      prizeName: ''
     }
     components = {
       LoadingZ,
@@ -70,6 +73,8 @@
           success: ({statusCode, data}) => {
             that.prizesData = data
             that.isShow = false
+            that.bannerUrl = data.banner_url
+            that.prizeName = data.prize_name
           }
         })
       }
@@ -144,10 +149,14 @@
         margin: 0 auto 32rpx auto;
         text {
           text-align: center;
-          display: block;
+          display: inline-block;
           font-size: 28rpx;
           line-height: 32rpx;
           color: #333333;
+        }
+        text:nth-of-type(2) {
+          color: #FF471C;
+          display: inline-block;
         }
       }
       .participatePeople {

@@ -1,5 +1,6 @@
 import wepy from 'wepy'
 import { service } from '../config.js'
+import base from '../mixins/base'
 
 export default class httpMixin extends wepy.mixin {
   /* =================== [$get 发起GET请求] =================== */
@@ -129,6 +130,7 @@ export default class httpMixin extends wepy.mixin {
     // 发起请求
     wepy.request(Object.assign(request, {
       success: ({ statusCode, data }) => {
+        let that = this
         // 控制台调试日志
         console.log('[SUCCESS]', statusCode, typeof data === 'object' ? data : data.toString().substring(0, 100))
         if (statusCode == 200) {
@@ -138,7 +140,6 @@ export default class httpMixin extends wepy.mixin {
             this.$apply()
           })
         } else if (statusCode == 401) {
-          let that = this
           wepy.login({
             success: res => {
               if (res.code) {
@@ -149,7 +150,6 @@ export default class httpMixin extends wepy.mixin {
                     code: res.code
                   },
                   success: function (res) {
-                    debugger
                     wepy.setStorage({
                       key: 'accessToken',
                       data: res.data.access_token
@@ -169,6 +169,13 @@ export default class httpMixin extends wepy.mixin {
                 })
               }
             }
+          })
+        } else if (statusCode == 422) {
+          that.$alert('提示', data.message)
+          return setTimeout(() => {
+            let successExist = this.isFunction(data)
+            !successExist && success({statusCode: statusCode, data: data})
+            this.$apply()
           })
         }
       },

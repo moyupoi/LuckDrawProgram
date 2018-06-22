@@ -29,7 +29,8 @@
     }
     data = {
       prizesFinishedList: [],
-      isShow: true
+      isShow: true,
+      isBackBtn: true
     }
     components = {
       LoadingZ,

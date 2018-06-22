@@ -1,5 +1,6 @@
 <template>
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
+  <LoadingX :isLoading.sync="isLoading"></LoadingZ>
   <TitleBar :isBackBtn.sync="isBackBtn" :isShareBtn.sync="isShareBtn" :titleText.sync="titleText"></TitleBar>
   <view class="luckDrawSurround">
     <image src="{{titaList.banner_url}}" class="banner"></image>
@@ -23,18 +24,22 @@
         <image src="{{item}}" wx:for="{{prizeDrawUserAvatars}}" wx:key="index" wx:if="{{index <= 6}}"></image>
         <view class="ellipsis" wx:if="{{prizeDrawsCount >= 6}}"></view>
       </view>
-      <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub" wx:if="{{aasmState !== 'finishing' && aasmState !== 'finished' }}">
+      <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub" wx:if="{{aasmState !== 'finishing' && aasmState !== 'finished' && !isReachPrizeLimit}}">
         <button class="drawBtn" @getuserinfo="drawBtn" open-type="getUserInfo" formType="submit" wx:if="{{!isHasdraw}}">立即抽奖</button>
         <button class="surplus {{leftChance === 0 ? 'active' : ''}}" @getuserinfo="drawBtn" open-type="getUserInfo" formType="submit" wx:if="{{isHasdraw}}">剩余抽奖机会{{leftChance}}次</button>
         <button class="shareIncrease" open-type="share" formType="submit" wx:if="{{isHasdraw}}">分享增加抽奖机会</button>
       </form>
-      <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub" wx:if="{{aasmState === 'finishing' || aasmState === 'finished' }}">
+      <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub" wx:if="{{aasmState !== 'finishing' && aasmState !== 'finished' && isReachPrizeLimit}}">
+        <button class="surplus active" @getuserinfo="drawBtn" open-type="getUserInfo" formType="submit">{{titaList.prize_limit_message}}</button>
+        <button class="shareIncrease" open-type="share" formType="submit" wx:if="{{isHasdraw}}">分享增加抽奖机会</button>
+      </form>
+      <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub" wx:if="{{aasmState === 'finishing' || aasmState === 'finished'}}">
         <navigator hover-class="none" url="/pages/home" class="drawBtn" open-type="share" formType="submit" open-type="switchTab">参加其他抽奖</navigator>
         <text>本活动已结束</text>
       </form>
     </view>
     <navigator url="/pages/probability?id={{titaList.id}}" hover-class="none" class="probability">
-      <text>中奖概率：</text>
+      <text>邀请记录：</text>
       <label>{{titaList.get_prize_percent}}%</label>
     </navigator>
     <view class="sponsor">
@@ -52,6 +57,7 @@
   import base from '../mixins/base'
   import ShareMessage from '../mixins/ShareMessage'
   import LoadingZ from '../components/LoadingZ'
+  import LoadingX from '../components/LoadingX'
   import TitleBar from '../components/TitleBar'
   export default class LuckDraw extends wepy.page {
     mixins = [http, base, ShareMessage]
@@ -78,10 +84,13 @@
       shareUrl: 'pages/luckDraw',
       leftChance: 0,
       isCanDraw: false,
-      shereUserId: ''
+      shereUserId: '',
+      isReachPrizeLimit: false,
+      isLoading: false
     }
     components = {
       LoadingZ,
+      LoadingX,
       TitleBar
     }
     methods = {}
@@ -89,7 +98,7 @@
       // options.id = '5b28b7324f14bf02e88807dd'
       // options.id = '5b28b6de4f14bf02e4e15c3c'
       this.luckDrawId = options.id
-      // this.shereUserId = !this.isUndefined(options.shereUserId) ? options.shereUserId : null
+      this.shereUserId = !this.isUndefined(options.shereUserId) ? options.shereUserId : null
       this.shereUserId = options.shereUserId
       if (!this.isUndefined(options.share) && !this.isUndefined(options.id)) {
         this.isShareBtn = true
@@ -115,6 +124,8 @@
           that.isShow = false
           that.shareUrlId = data.id
           that.leftChance = data.left_chance
+          that.isReachPrizeLimit = data.is_reach_prize_limit
+          that.isLoading = false
           // that.isHasdraw = false
         }
       })
@@ -159,6 +170,7 @@
     prizesDraw () {
       let that = this
       if (that.isCanDraw) {
+        that.isLoading = true
         this.$post({
           url: service.prizes + this.titaList.id + '/draw',
           data: {
@@ -178,6 +190,8 @@
                 icon: 'success'
               })
               that.luckDrawInit(that.luckDrawId)
+            } else {
+              that.isLoading = false
             }
           }
         })

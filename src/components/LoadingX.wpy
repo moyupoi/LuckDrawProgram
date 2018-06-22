@@ -1,0 +1,40 @@
+<template>
+  <view class="Loading" wx:if="{{isLoading}}">
+    <image src="../assets/images/home/LoadingX.svg"></image>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+export default class LoadingX extends wepy.component {
+  props = {
+    isLoading: {
+      type: Boolean,
+      default: true
+    }
+  }
+}
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  .Loading {
+    position: fixed;
+    top: 180rpx;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+    text-align: center;
+    background: rgba(255, 255, 255, 0);
+  }
+  .Loading image {
+    width: 200rpx;
+    height: 200rpx;
+    display: block;
+    margin: 500rpx auto;
+  }
+  .Loading text {
+    display: inline-block;
+    color: #494949;
+  }
+</style>

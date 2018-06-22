@@ -10,23 +10,29 @@
     <image src="../assets/images/personalCenter/banner.png"></image>
   </view>
   <view class="option">
-    <navigator hover-class="none" url="/pages/past">
-      <image src="../assets/images/personalCenter/icon01.png"></image>
-      <text>我参加的抽奖</text>
-    </navigator>
-    <navigator hover-class="none" url="/pages/record">
-      <image src="../assets/images/personalCenter/icon02.png"></image>
-      <text>中奖纪录</text>
-    </navigator>
-    <view class="opportunity">
-      <image src="../assets/images/personalCenter/icon03.png"></image>
-      <text>剩余抽奖机会</text>
-      <label>{{count}}</label>
-    </view>
-    <view class="address" @tap="address">
-      <image src="../assets/images/personalCenter/icon04.png"></image>
-      <text>收货地址</text>
-    </view>
+    <form bindsubmit="formSubmit" report-submit="true">
+      <navigator hover-class="none" url="/pages/past">
+        <button formType="submit"></button>
+        <image src="../assets/images/personalCenter/icon01.png"></image>
+        <text>我参加的抽奖</text>
+      </navigator>
+      <navigator hover-class="none" url="/pages/record">
+        <button formType="submit"></button>
+        <image src="../assets/images/personalCenter/icon02.png"></image>
+        <text>中奖纪录</text>
+      </navigator>
+      <view class="opportunity">
+        <button formType="submit"></button>
+        <image src="../assets/images/personalCenter/icon03.png"></image>
+        <text>剩余抽奖机会</text>
+        <label>{{count}}</label>
+      </view>
+      <view class="address" @tap="address">
+        <button formType="submit"></button>
+        <image src="../assets/images/personalCenter/icon04.png"></image>
+        <text>收货地址</text>
+      </view>
+    </form>
   </view>
 </template>
 <script>
@@ -48,7 +54,8 @@
       TitleBar
     }
     methods = {}
-    onLoad() {
+    onLoad() {}
+    onShow() {
       let that = this
       this.$get({url: service.prizesMine}, {
         success: ({statusCode, data}) => {
@@ -56,11 +63,16 @@
         }
       })
     }
-    onShow() {}
     address () {
       wepy.chooseAddress({
         success: function (res) {}
       })
+    }
+    formSubmit (event) {
+      let formId = event.detail.formId
+      if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
+        this.$updataFormId(formId)
+      }
     }
   }
 </script>
@@ -145,6 +157,16 @@
         float: left;
         margin: 14rpx 0 0 16rpx;
       }
+      button {
+        width: 686rpx;
+        height: 120rpx;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0);
+      }
     }
     .opportunity {
       &:before {
@@ -155,7 +177,7 @@
         display: block;
         top: 42rpx;
         right: 32rpx;
-        color: #D5DBE6;
+        color: #FF471C;
         font-size: 28rpx;
       }
     }

@@ -23,17 +23,24 @@ export default class ShareMessage extends wepy.mixin {
       //   }
       // }
       let shereUserId = wepy.getStorageSync('userId')
-      if (res.source.data.isShare && res.source.data.shareUrlId && res.source.data.shareUrl && shereUserId) {
+      let resData = res.source.data
+      if (resData.bannerUrl && resData.isShare && resData.shareUrlId && resData.shareUrl && shereUserId) {
         return {
-          path: res.source.data.shareUrl + '?id=' + res.source.data.shareUrlId + '&share=true&shereUserId=' + shereUserId
+          path: resData.shareUrl + '?id=' + resData.shareUrlId + '&share=true&shereUserId=' + shereUserId,
+          imageUrl: resData.bannerUrl,
+          title: resData.prizeName
         }
-      } else if (res.source.data.isShare && res.source.data.shareUrlId) {
+      } else if (resData.isShare && resData.shareUrlId && resData.shareUrl && shereUserId) {
         return {
-          path: res.source.data.shareUrl + '?id=' + res.source.data.shareUrlId + '&share=true'
+          path: resData.shareUrl + '?id=' + resData.shareUrlId + '&share=true&shereUserId=' + shereUserId
         }
-      } else if (res.source.data.path) {
+      } else if (resData.isShare && resData.shareUrlId) {
         return {
-          path: res.source.data.path
+          path: resData.shareUrl + '?id=' + resData.shareUrlId + '&share=true'
+        }
+      } else if (resData.path) {
+        return {
+          path: resData.path
         }
       }
     }
