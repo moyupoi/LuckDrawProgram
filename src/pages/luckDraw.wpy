@@ -22,6 +22,7 @@
       </view>
       <view class="participatePeople" wx:if="{{prizeDrawsCount > 0}}">
         <image src="{{item}}" wx:for="{{prizeDrawUserAvatars}}" wx:key="index" wx:if="{{index <= 6}}"></image>
+        <label wx:if="{{titaList.get_prize_percent !== 0}}">{{titaList.get_prize_percent}}%</label>
         <view class="ellipsis" wx:if="{{prizeDrawsCount >= 6}}"></view>
       </view>
       <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub" wx:if="{{aasmState !== 'finishing' && aasmState !== 'finished' && !isReachPrizeLimit}}">
@@ -39,8 +40,7 @@
       </form>
     </view>
     <navigator url="/pages/probability?id={{titaList.id}}" hover-class="none" class="probability">
-      <text>邀请记录：</text>
-      <label>{{titaList.get_prize_percent}}%</label>
+      <text>邀请记录</text>
     </navigator>
     <view class="sponsor">
       <text>赞助商</text>
@@ -290,6 +290,12 @@
           height: 72rpx;
           margin: 0 12rpx;
         }
+        label {
+          display: block;
+          color: #FF471C;
+          font-size: 34rpx;
+          margin-top: 20rpx;
+        }
         .ellipsis {
           position: absolute;
           background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAECAYAAACKqs+rAAAAAXNSR0IArs4c6QAAAKJJREFUGBm1TUsOAiEUG4iElcqxNLoePQG6YcshuAAJnsXPCcajGOKGQAK+GieZzN4m8PpaWrruT2DotdYuY4wX8NbaKYQQwUcYY1Y550A745yfvfev0cPUWq8ZY4GyVSmlnXNvDoNK9yQecCi4hTZFKWXz8/ta627qgSNDfk/0iC5oC1z025WMAVxKecec4UH7QO+YEOI2876ZlNKT9Iou+B/opkhj5iraCQAAAABJRU5ErkJggg==') no-repeat;
@@ -312,7 +318,7 @@
           font-size: 32rpx;
           line-height: 92rpx;
           font-family: 400;
-          margin: 64rpx 0 32rpx;
+          margin: 32rpx 0 32rpx;
         }
         .shareIncrease {
           display: block;

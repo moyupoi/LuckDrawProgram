@@ -73,9 +73,7 @@
       memo: '',
       formId: null,
       path: 'pages/home',
-      isShow: true,
-      shareUrlId: '',
-      shareUrl: 'pages/prize'
+      isShow: true
     }
     components = {
       LoadingZ,
@@ -95,7 +93,6 @@
             that.userAddress = data.user_address
             that.memo = data.memo
             that.isShow = false
-            that.shareUrlId = data.id
             if (data.alter_messsage) {
               wepy.showModal({
                 title: '表灰心',
