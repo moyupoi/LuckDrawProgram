@@ -173,9 +173,6 @@
         that.isLoading = true
         this.$post({
           url: service.prizes + this.titaList.id + '/draw',
-          data: {
-            share_user_id: that.shereUserId
-          },
           headers: {
             'X-JINKU-WECHAT-FORM-ID': that.formId
           }

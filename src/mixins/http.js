@@ -3,15 +3,25 @@ import { service } from '../config.js'
 import base from '../mixins/base'
 
 export default class httpMixin extends wepy.mixin {
+  data = {
+    accessToken: '',
+    shereUserId: ''
+  }
   /* =================== [$get 发起GET请求] =================== */
   $get(
     {url = '', headers = {}, data = {} },
     {success = () => {}, fail = () => {}, complete = () => {} }
   ) {
     const methods = 'GET'
-    let accessToken = wepy.getStorageSync('accessToken') || false
-    let shereUserId = wepy.getStorageSync('userId') || false
-    if (accessToken && shereUserId) {
+    this.accessToken = wepy.getStorageSync(service.isFormal ? 'accessToken' : 'accessTokenInfo') || false
+    this.shereUserId = wepy.getStorageSync(service.isFormal ? 'userId' : 'userIdInfo') || false
+    if (this.accessToken && this.shereUserId) {
+      headers = {
+        'Authorization': this.accessToken
+      }
+      data = {
+        'share_user_id': this.shereUserId
+      }
       this.$ajax(
         {url, headers, methods, data},
         {success, fail, complete }
@@ -27,9 +37,15 @@ export default class httpMixin extends wepy.mixin {
     {success = () => {}, fail = () => {}, complete = () => {} }
   ) {
     const methods = 'POST'
-    let accessToken = wepy.getStorageSync('accessToken') || false
-    let shereUserId = wepy.getStorageSync('userId') || false
-    if (accessToken && shereUserId) {
+    this.accessToken = wepy.getStorageSync(service.isFormal ? 'accessToken' : 'accessTokenInfo') || false
+    this.shereUserId = wepy.getStorageSync(service.isFormal ? 'userId' : 'userIdInfo') || false
+    if (this.accessToken && this.shereUserId) {
+      headers = {
+        'Authorization': this.accessToken
+      }
+      data = {
+        'share_user_id': this.shereUserId
+      }
       this.$ajax(
         {url, headers, methods, data},
         {success, fail, complete }
@@ -74,14 +90,25 @@ export default class httpMixin extends wepy.mixin {
               code: res.code
             },
             success: function (res) {
-              wepy.setStorage({
-                key: 'accessToken',
-                data: res.data.access_token
-              })
-              wepy.setStorage({
-                key: 'userId',
-                data: res.data.id
-              })
+              if (service.isFormal) {
+                wepy.setStorage({
+                  key: 'accessToken',
+                  data: res.data.access_token
+                })
+                wepy.setStorage({
+                  key: 'userId',
+                  data: res.data.id
+                })
+              } else {
+                wepy.setStorage({
+                  key: 'accessTokenInfo',
+                  data: res.data.access_token
+                })
+                wepy.setStorage({
+                  key: 'userIdInfo',
+                  data: res.data.id
+                })
+              }
               wepy.reLaunch({url: '/' + getCurrentPages()[0].__route__})
             }
           })
@@ -117,7 +144,6 @@ export default class httpMixin extends wepy.mixin {
       url: url,
       method: ['GET', 'POST','PUT', 'DELETE'].indexOf(methods) > -1 ? methods : 'GET',
       header: Object.assign({
-        'Authorization': wx.getStorageSync('accessToken'),
         'Content-Type': 'application/json'
       }, headers),
       data: Object.assign({
@@ -150,14 +176,25 @@ export default class httpMixin extends wepy.mixin {
                     code: res.code
                   },
                   success: function (res) {
-                    wepy.setStorage({
-                      key: 'accessToken',
-                      data: res.data.access_token
-                    })
-                    wepy.setStorage({
-                      key: 'userId',
-                      data: res.data.id
-                    })
+                    if (service.isFormal) {
+                      wepy.setStorage({
+                        key: 'accessToken',
+                        data: res.data.access_token
+                      })
+                      wepy.setStorage({
+                        key: 'userId',
+                        data: res.data.id
+                      })
+                    } else {
+                      wepy.setStorage({
+                        key: 'accessTokenInfo',
+                        data: res.data.access_token
+                      })
+                      wepy.setStorage({
+                        key: 'userIdInfo',
+                        data: res.data.id
+                      })
+                    }
                     var route = '/' + getCurrentPages()[0].__route__;
                     if (!res.data.access_token) {
                       wx.navigateTo({url: '/pages/user/register'})

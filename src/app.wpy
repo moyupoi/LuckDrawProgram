@@ -54,7 +54,7 @@ export default class extends wepy.app {
     this.use('requestfix')
   }
 
-  onLaunch() {
+  onLaunch(options) {
     wepy.checkSession({
       success: function() {},
       fail: function() {
@@ -68,10 +68,26 @@ export default class extends wepy.app {
                   code: res.code
                 },
                 success: function (res) {
-                  wepy.setStorage({
-                    key: 'accessToken',
-                    data: res.data.access_token
-                  })
+                  if (service.isFormal) {
+                    wepy.setStorage({
+                      key: 'accessToken',
+                      data: res.data.access_token
+                    })
+                    wepy.setStorage({
+                      key: 'userId',
+                      data: res.data.id
+                    })
+                  } else {
+                    wepy.setStorage({
+                      key: 'accessTokenInfo',
+                      data: res.data.access_token
+                    })
+                    wepy.setStorage({
+                      key: 'userIdInfo',
+                      data: res.data.id
+                    })
+                  }
+                  wepy.reLaunch({url: options.path})
                 }
               })
             }
