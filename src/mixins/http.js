@@ -16,12 +16,12 @@ export default class httpMixin extends wepy.mixin {
     this.accessToken = wepy.getStorageSync(service.isFormal ? 'accessToken' : 'accessTokenInfo') || false
     this.shereUserId = wepy.getStorageSync(service.isFormal ? 'userId' : 'userIdInfo') || false
     if (this.accessToken && this.shereUserId) {
-      headers = {
+      headers = Object.assign({
         'Authorization': this.accessToken
-      }
-      data = {
+      }, headers)
+      data = Object.assign({
         'share_user_id': this.shereUserId
-      }
+      }, data)
       this.$ajax(
         {url, headers, methods, data},
         {success, fail, complete }
@@ -40,12 +40,12 @@ export default class httpMixin extends wepy.mixin {
     this.accessToken = wepy.getStorageSync(service.isFormal ? 'accessToken' : 'accessTokenInfo') || false
     this.shereUserId = wepy.getStorageSync(service.isFormal ? 'userId' : 'userIdInfo') || false
     if (this.accessToken && this.shereUserId) {
-      headers = {
+      headers = Object.assign({
         'Authorization': this.accessToken
-      }
-      data = {
+      }, headers)
+      data = Object.assign({
         'share_user_id': this.shereUserId
-      }
+      }, data)
       this.$ajax(
         {url, headers, methods, data},
         {success, fail, complete }

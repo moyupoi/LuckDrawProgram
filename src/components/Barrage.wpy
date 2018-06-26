@@ -72,6 +72,14 @@ export default class Barrage extends wepy.component {
 }
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
+  @keyframes first {
+    from {
+      left: 100%;
+    }
+    to {
+      left: -100%;
+    }
+  }
   .barrageModulars {
     position: absolute;
     width: 100%;

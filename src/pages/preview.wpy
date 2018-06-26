@@ -1,0 +1,263 @@
+<template>
+  <LoadingZ :isShow.sync="isShow"></LoadingZ>
+  <TitleBar :titleText.sync="titleText"></TitleBar>
+  <view class="homeSurround">
+    <view class="prizes">
+      <form bindsubmit="formSubmit" report-submit="true">
+        <view class="prizesItem" wx:for="{{prizesQueuingList}}" wx:key="index" wx:if="{{!tab}}">
+          <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}" class="banner">
+            <image src="{{item.banner_url}}"></image>
+          </navigator>
+          <button formType="submit" class="prizesItemFormSubmit"></button>
+          <view class="describe">
+            <text class="name">{{item.brand}} · {{item.name}} · </text>
+            <text class="number"> {{item.number}}件</text>
+            <view>
+              <text class="isJoin" wx:if="{{item.is_has_draw}}">已参加 |</text>
+              <label>满 {{item.reach_number}} 人参与开奖</label>
+              <form bindsubmit="remind({{item.id}})" wx:if="{{!item.has_remind}}" bindreset="formReset" report-submit="true">
+                <button formType="submit">提醒我</button>
+              </form>
+              <button wx:if="{{item.has_remind}}" class="already">已提醒</button>
+            </view>
+          </view>
+        </view>
+      </form>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import { service } from '../config.js'
+  import http from '../mixins/http'
+  import base from '../mixins/base'
+  import LoadingZ from '../components/LoadingZ'
+  import TitleBar from '../components/TitleBar'
+  import Barrage from '../components/Barrage'
+  export default class Home extends wepy.page {
+    mixins = [http, base]
+    config = {
+      // navigationBarTitleText: '搞点福利'
+    }
+    data = {
+      titleText: '搞点福利',
+      prizesList: [],
+      prizesQueuingList: [],
+      bannerUrl: '',
+      isShow: true,
+      barHeight: 0,
+      tab: true,
+      formId: null
+    }
+    components = {
+      LoadingZ,
+      TitleBar,
+      Barrage
+    }
+    methods = {}
+    onLoad() {
+      // let sys = wepy.getSystemInfoSync()
+      // let calculationHeight = sys.screenHeight - sys.windowHeight
+      // console.log(calculationHeight)
+      // this.barHeight = calculationHeight
+    }
+    onShow() {
+      this.homeInit()
+    }
+    homeInit() {
+      let that = this
+      this.$get({url: service.prizes}, {
+        success: ({statusCode, data}) => {
+          that.prizesList = data['prizes']
+          that.prizesQueuingList = data['prizes_queuing']
+          that.bannerUrl = data.banner_url
+          that.isShow = false
+        }
+      })
+    }
+    haveInHand(event) {
+      this.tab = parseInt(event.currentTarget.dataset.wpyhaveinhandA)
+    }
+    remind(event) {
+      let formId = event.detail.formId
+      if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
+        formId = event.detail.formId
+      } else {
+        formId = null
+      }
+      let id = event.target.dataset.wpyremindA
+      this.$post({
+        url: service.prizes + id + '/remind',
+        headers: {
+          'X-JINKU-WECHAT-FORM-ID': formId
+        }
+      }, {
+        success: ({statusCode, data}) => {
+          this.$alert('设置提醒', data.message)
+          this.homeInit()
+        }
+      })
+    }
+    formSubmit (event) {
+      let formId = event.detail.formId
+      if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
+        this.$updataFormId(this.formId)
+      }
+    }
+  }
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  @import "../assets/stylesheets/layout.scss";
+  .homeSurround {
+    // .topBanner {
+    //   overflow: hidden;
+    //   position: relative;
+    //   .tab {
+    //     width: 100%;
+    //     text-align: center;
+    //     button {
+    //       width: 375rpx;
+    //       height: 108rpx;
+    //       background: #fff;
+    //       border: 0;
+    //       border-radius: 0;
+    //       display: inline-block;
+    //       text {
+    //         position: relative;
+    //         z-index: 10;
+    //         font-size: 28rpx;
+    //         color: #666666;
+    //       }
+    //       .selected {
+    //         position: absolute;
+    //         top: 50rpx;
+    //         left: 125rpx;
+    //         z-index: 0;
+    //       }
+    //     }
+    //     .active {
+    //       color: #FF471C;
+    //     }
+    //     .selected {
+    //       content: '';
+    //       width: 120rpx;
+    //       height: 24rpx;
+    //       position: absolute;
+    //       z-index: 10;
+    //       top: 10rpx;
+    //       left: 100rpx;
+    //       background: #FFEBE3;
+    //       border-radius: 5rpx;
+    //     }
+    //   }
+    //   &:before {
+    //     content: '';
+    //     border-right: 1rpx solid #ccc;
+    //     position: absolute;
+    //     z-index: 10;
+    //     top: 25rpx;
+    //     left: 375rpx;
+    //     width: 1rpx;
+    //     height: 48rpx;
+    //     background: #D8D8D8;
+    //   }
+    // }
+
+    // .logoRight {
+    //   position: absolute;
+    //   z-index: 3;
+    //   width: 124rpx;
+    //   height: 144rpx;
+    //   display: block;
+    //   top: 196rpx;
+    //   right: 1rpx;
+    // }
+    .prizes {
+      position: relative;
+      z-index: 1;
+      padding: 36rpx;
+      overflow: hidden;
+      .prizesItem {
+        margin-bottom: 32rpx;
+        width: 686rpx;
+        box-shadow: rgba(60, 62, 66, 0.1) 0 2rpx 8rpx 0;
+        border-radius: 20rpx;
+        position: relative;
+        .banner {
+          border-bottom: 1rpx solid #F1F2F4;
+          image {
+            border-top-left-radius: 20rpx;
+            border-top-right-radius: 20rpx;
+            width: 100%;
+            height: 386rpx;
+            display: block;
+          }
+        }
+        .prizesItemFormSubmit {
+          width: 686rpx;
+          height: 534rpx;
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(255, 255, 255, 0);
+        }
+        .describe {
+          border-bottom-left-radius: 20rpx;
+          border-bottom-right-radius: 20rpx;
+          background: #fff;
+          padding: 32rpx;
+          .name, .number {
+            font-size: 32rpx;
+            color: #333333;
+            line-height: 36rpx;
+            display: inline-block;
+            margin-bottom: 16rpx;
+            text-align: justify;
+          }
+          .number {
+            margin-left: 16rpx;
+            color: #666666;
+          }
+          view {
+            .isJoin {
+              font-size: 24rpx;
+              color: #666666;
+              line-height: 32rpx;
+              display: inline-block;
+              color: #999999;
+              margin-right: 10rpx;
+              position: relative;
+            }
+            label {
+              font-size: 24rpx;
+              color: #666666;
+              line-height: 32rpx;
+              display: inline-block;
+            }
+            button {
+              width: 120rpx;
+              height: 50rpx;
+              font-size: 24rpx;
+              line-height: 49rpx;
+              position: absolute;
+              z-index: 10;
+              bottom: 35rpx;
+              right: 34rpx;
+              border-radius: 50rpx;
+              color: #3799FA;
+              border: 1rpx solid #3799FA;
+              background: #fff;
+            }
+            .already {
+              color: #666666;
+              width: 140rpx;
+              border-color: #666666;
+            }
+          }
+        }
+      }
+    }
+  }
+</style>
