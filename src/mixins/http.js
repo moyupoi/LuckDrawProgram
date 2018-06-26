@@ -80,6 +80,7 @@ export default class httpMixin extends wepy.mixin {
   }
 
   $loginToken() {
+    const that = this
     wepy.login({
       success: res => {
         if (res.code) {
@@ -109,7 +110,7 @@ export default class httpMixin extends wepy.mixin {
                   data: res.data.id
                 })
               }
-              wepy.reLaunch({url: '/' + getCurrentPages()[0].__route__})
+              wepy.reLaunch({url: this.globalData.pathUrl.slice(6)})
             }
           })
         }
@@ -166,47 +167,7 @@ export default class httpMixin extends wepy.mixin {
             this.$apply()
           })
         } else if (statusCode == 401) {
-          wepy.login({
-            success: res => {
-              if (res.code) {
-                wepy.request({
-                  url: service.login,
-                  method: 'POST',
-                  data: {
-                    code: res.code
-                  },
-                  success: function (res) {
-                    if (service.isFormal) {
-                      wepy.setStorage({
-                        key: 'accessToken',
-                        data: res.data.access_token
-                      })
-                      wepy.setStorage({
-                        key: 'userId',
-                        data: res.data.id
-                      })
-                    } else {
-                      wepy.setStorage({
-                        key: 'accessTokenInfo',
-                        data: res.data.access_token
-                      })
-                      wepy.setStorage({
-                        key: 'userIdInfo',
-                        data: res.data.id
-                      })
-                    }
-                    var route = '/' + getCurrentPages()[0].__route__;
-                    if (!res.data.access_token) {
-                      wx.navigateTo({url: '/pages/user/register'})
-                    } else {
-                      that.$apply()
-                      wx.reLaunch({url: route})
-                    }
-                  }
-                })
-              }
-            }
-          })
+          that.$loginToken()
         } else if (statusCode == 422) {
           that.$alert('提示', data.message)
           return setTimeout(() => {

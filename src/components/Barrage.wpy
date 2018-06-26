@@ -1,0 +1,104 @@
+<template>
+  <view class="barrageModulars" wx:if="{{isBarrage}}">
+    <view class="barrage" wx:for="{{barrageList}}" wx:key="index" style="animation: first {{item.time}}s infinite linear forwards;top:{{item.top}}%;" @tap="barrageClick({{index}})">
+      <image src="{{item.img}}"></image>
+      <text style="color:{{item.colors}}">{{item.text}}</text>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import base from '../mixins/base'
+export default class Barrage extends wepy.component {
+  mixins = [base]
+  props = {
+    isBarrage: {
+      type: Boolean,
+      default: false
+    },
+    barrageList: {
+      type: Array,
+      default: [{
+        img: '../assets/images/test/tx.jpg',
+        text: '弹幕测试'
+      }, {
+        img: '../assets/images/test/tx.jpg',
+        text: '弹幕测试'
+      }, {
+        img: '../assets/images/test/tx.jpg',
+        text: '弹幕测试'
+      }, {
+        img: '../assets/images/test/tx.jpg',
+        text: '弹幕测试'
+      }, {
+        img: '../assets/images/test/tx.jpg',
+        text: '弹幕测试'
+      }, {
+        img: '../assets/images/test/tx.jpg',
+        text: '弹幕测试'
+      }, {
+        img: '../assets/images/test/tx.jpg',
+        text: '弹幕测试'
+      }, {
+        img: '../assets/images/test/tx.jpg',
+        text: '弹幕测试'
+      }, {
+        img: '../assets/images/test/tx.jpg',
+        text: '弹幕测试'
+      }, {
+        img: '../assets/images/test/tx.jpg',
+        text: '弹幕测试'
+      }, {
+        img: '../assets/images/test/tx.jpg',
+        text: '弹幕测试'
+      }, {
+        img: '../assets/images/test/tx.jpg',
+        text: '弹幕测试'
+      }]
+    }
+  }
+  onLoad() {
+    this.barrageInit()
+  }
+  barrageInit() {
+    let that = this
+    that.barrageList.map((item, i) => {
+      that.barrageList[i].top = Math.ceil(Math.random() * 100)
+      that.barrageList[i].time = Math.ceil(Math.random() * 15)
+      that.barrageList[i].colors = that.$getRandomColor()
+    })
+    console.log(that.barrageList)
+  }
+}
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  .barrageModulars {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 100rpx;
+    z-index: 2;
+    overflow: inherit;
+    pointer-events: none;
+    .barrage {
+      position: absolute;
+      width: 180rpx;
+      image {
+        width: 50rpx;
+        height: 50rpx;
+        border: 5rpx solid #ccc;
+        display: inline-block;
+        border-radius: 50rpx;
+      }
+      text {
+        font-size: 28rpx;
+        line-height: 32rpx;
+        color: #000;
+        margin-left: 5rpx;
+        vertical-align: text-top;
+        white-space: nowrap;
+        // -webkit-text-stroke: .8px #fff;
+      }
+    }
+  }
+</style>

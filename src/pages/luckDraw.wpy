@@ -1,6 +1,6 @@
 <template>
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
-  <LoadingX :isLoading.sync="isLoading"></LoadingZ>
+  <LoadingX :isLoading.sync="isLoading"></LoadingX>
   <TitleBar :isBackBtn.sync="isBackBtn" :isShareBtn.sync="isShareBtn" :titleText.sync="titleText"></TitleBar>
   <view class="luckDrawSurround">
     <image src="{{titaList.banner_url}}" class="banner"></image>

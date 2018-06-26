@@ -46,7 +46,7 @@ export default class extends wepy.app {
   }
 
   globalData = {
-    userInfo: null
+    pathUrl: null
   }
 
   constructor () {
@@ -55,6 +55,8 @@ export default class extends wepy.app {
   }
 
   onLaunch(options) {
+    let pathUrl = this.urlToString(options.path, options.query)
+    this.globalData.pathUrl = pathUrl
     wepy.checkSession({
       success: function() {},
       fail: function() {
@@ -87,7 +89,7 @@ export default class extends wepy.app {
                       data: res.data.id
                     })
                   }
-                  wepy.reLaunch({url: options.path})
+                  wepy.reLaunch({url: pathUrl})
                 }
               })
             }
@@ -109,6 +111,10 @@ export default class extends wepy.app {
       desc: '搞点福利，靠谱抽奖',
       path: 'pages/home'
     }
+  }
+
+  urlToString(path, query) {
+    return path + '?id=' + query.id + '&share=true&shereUserId=' + query.shereUserId
   }
 }
 </script>

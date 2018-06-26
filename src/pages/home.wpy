@@ -1,6 +1,7 @@
 <template>
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <TitleBar :titleText.sync="titleText"></TitleBar>
+  <Barrage></Barrage>
   <view class="homeSurround">
     <view class="topBanner">
       <view class="tab">
@@ -61,6 +62,7 @@
   import base from '../mixins/base'
   import LoadingZ from '../components/LoadingZ'
   import TitleBar from '../components/TitleBar'
+  import Barrage from '../components/Barrage'
   export default class Home extends wepy.page {
     mixins = [http, base]
     config = {
@@ -78,7 +80,8 @@
     }
     components = {
       LoadingZ,
-      TitleBar
+      TitleBar,
+      Barrage
     }
     methods = {}
     onLoad() {
@@ -134,6 +137,14 @@
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
   @import "../assets/stylesheets/layout.scss";
+  @keyframes first {
+    from {
+      left: 100%;
+    }
+    to {
+      left: -100%;
+    }
+  }
   .homeSurround {
     .topBanner {
       overflow: hidden;
