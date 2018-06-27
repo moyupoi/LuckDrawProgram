@@ -34,7 +34,7 @@
   import LoadingZ from '../components/LoadingZ'
   import TitleBar from '../components/TitleBar'
   import Barrage from '../components/Barrage'
-  export default class Home extends wepy.page {
+  export default class Preview extends wepy.page {
     mixins = [http, base]
     config = {
       // navigationBarTitleText: '搞点福利'

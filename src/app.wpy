@@ -7,6 +7,7 @@ export default class extends wepy.app {
   config = {
     pages: [
       'pages/home',
+      'pages/preview',
       'pages/personalCenter',
       'pages/luckDraw',
       'pages/past',
@@ -18,31 +19,31 @@ export default class extends wepy.app {
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
-      navigationBarTextStyle: 'black',
-      navigationBarTitleText: 'tabBar', // 配置底部导航
+      navigationBarTextStyle: '#fff',
+      // navigationBarTitleText: 'tabBar', // 配置底部导航
       onReachBottom: true,
       navigationStyle: 'custom'
-    },
-    tabBar: {
-      color: '#999999',
-      selectedColor: '#FA5C37',
-      backgroundColor: '#fff',
-      borderStyle: 'black',
-      list: [
-        {
-          text: '首页',
-          pagePath: 'pages/home',
-          iconPath: './assets/images/tabbars/icon-home.png',
-          selectedIconPath: './assets/images/tabbars/icon-home-active.png'
-        },
-        {
-          text: '我的',
-          pagePath: 'pages/personalCenter',
-          iconPath: './assets/images/tabbars/icon-personal.png',
-          selectedIconPath: './assets/images/tabbars/icon-personal-active.png'
-        }
-      ]
     }
+    // tabBar: {
+    //   color: '#999999',
+    //   selectedColor: '#FA5C37',
+    //   backgroundColor: '#fff',
+    //   borderStyle: 'black',
+    //   list: [
+    //     {
+    //       text: '首页',
+    //       pagePath: 'pages/home',
+    //       iconPath: './assets/images/tabbars/icon-home.png',
+    //       selectedIconPath: './assets/images/tabbars/icon-home-active.png'
+    //     },
+    //     {
+    //       text: '我的',
+    //       pagePath: 'pages/personalCenter',
+    //       iconPath: './assets/images/tabbars/icon-personal.png',
+    //       selectedIconPath: './assets/images/tabbars/icon-personal-active.png'
+    //     }
+    //   ]
+    // }
   }
 
   globalData = {

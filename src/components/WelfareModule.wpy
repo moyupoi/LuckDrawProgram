@@ -1,0 +1,59 @@
+<template>
+  <view wx:if="{{switchTabName === '2'}}">福利</view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import { service } from '../config.js'
+  import http from '../mixins/http'
+  import base from '../mixins/base'
+  export default class PreviewListModule extends wepy.component {
+    mixins = [http, base]
+    config = {
+      // navigationBarTitleText: '搞点福利'
+    }
+    data = {
+      titleText: '搞点福利',
+      prizesList: [],
+      prizesQueuingList: [],
+      bannerUrl: '',
+      isShow: true,
+      barHeight: 0,
+      tab: true,
+      formId: null,
+      switchTabName: '0'
+    }
+    components = {}
+    methods = {}
+    onLoad() {
+    }
+    remind(event) {
+      let formId = event.detail.formId
+      if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
+        formId = event.detail.formId
+      } else {
+        formId = null
+      }
+      let id = event.target.dataset.wpyremindA
+      this.$post({
+        url: service.prizes + id + '/remind',
+        headers: {
+          'X-JINKU-WECHAT-FORM-ID': formId
+        }
+      }, {
+        success: ({statusCode, data}) => {
+          this.$alert('设置提醒', data.message)
+          this.homeInit()
+        }
+      })
+    }
+    formSubmit (event) {
+      let formId = event.detail.formId
+      if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
+        this.$updataFormId(this.formId)
+      }
+    }
+  }
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  @import "../assets/stylesheets/layout.scss";
+</style>

@@ -35,7 +35,7 @@
         <button class="shareIncrease" open-type="share" formType="submit" wx:if="{{isHasdraw}}">分享增加抽奖机会</button>
       </form>
       <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub" wx:if="{{aasmState === 'finishing' || aasmState === 'finished'}}">
-        <navigator hover-class="none" url="/pages/home" class="drawBtn" open-type="share" formType="submit" open-type="switchTab">参加其他抽奖</navigator>
+        <navigator hover-class="none" url="/pages/home" class="drawBtn" open-type="share" formType="submit">参加其他抽奖</navigator>
         <text>本活动已结束</text>
       </form>
     </view>
@@ -155,16 +155,15 @@
           success: ({statusCode, data}) => {
             if (statusCode === 200) {
               // 可以抽奖
-              if (that.isCanDraw) {
-                that.prizesDraw()
-              }
+              // if (that.isCanDraw) {
+              //   that.prizesDraw()
+              // }
               // console.log(statusCode, message)
             }
           }
         })
-      } else {
-        that.prizesDraw()
       }
+      that.prizesDraw()
     }
     prizesDraw () {
       let that = this
