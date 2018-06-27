@@ -22,21 +22,21 @@ export default class ShareMessage extends wepy.mixin {
       //   fail: (res) => {
       //   }
       // }
-      let shereUserId = wepy.getStorageSync('userId')
+      let userId = this.$getUserId()
       let resData = res.source.data
-      if (resData.bannerUrl && resData.isShare && resData.shareUrlId && resData.shareUrl && shereUserId) {
+      if (resData.bannerUrl && resData.isShare && resData.commodityId && resData.shareUrl && userId) {
         return {
-          path: resData.shareUrl + '?id=' + resData.shareUrlId + '&share=true&shereUserId=' + shereUserId,
+          path: resData.shareUrl + '?id=' + resData.commodityId + '&share=true&shereUserId=' + userId,
           imageUrl: resData.bannerUrl,
           title: resData.prizeName
         }
-      } else if (resData.isShare && resData.shareUrlId && resData.shareUrl && shereUserId) {
+      } else if (resData.isShare && resData.commodityId && resData.shareUrl && userId) {
         return {
-          path: resData.shareUrl + '?id=' + resData.shareUrlId + '&share=true&shereUserId=' + shereUserId
+          path: resData.shareUrl + '?id=' + resData.commodityId + '&share=true&shereUserId=' + userId
         }
-      } else if (resData.isShare && resData.shareUrlId) {
+      } else if (resData.isShare && resData.commodityId) {
         return {
-          path: resData.shareUrl + '?id=' + resData.shareUrlId + '&share=true'
+          path: resData.shareUrl + '?id=' + resData.commodityId + '&share=true'
         }
       } else if (resData.path) {
         return {

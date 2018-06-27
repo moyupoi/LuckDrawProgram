@@ -80,11 +80,11 @@
       prizeDrawsCount: 0,
       aasmState: '',
       isShow: true,
-      shareUrlId: '',
+      commodityId: null,
+      shereUserId: null,
       shareUrl: 'pages/luckDraw',
       leftChance: 0,
       isCanDraw: false,
-      shereUserId: '',
       isReachPrizeLimit: false,
       isLoading: false
     }
@@ -98,8 +98,7 @@
       // options.id = '5b28b7324f14bf02e88807dd'
       // options.id = '5b28b6de4f14bf02e4e15c3c'
       this.luckDrawId = options.id
-      this.shereUserId = !this.isUndefined(options.shereUserId) ? options.shereUserId : null
-      this.shereUserId = options.shereUserId
+      this.shereUserId = options.shereUserId ? options.shereUserId : null
       if (!this.isUndefined(options.share) && !this.isUndefined(options.id)) {
         this.isShareBtn = true
       }
@@ -122,7 +121,7 @@
           that.prizeDrawsCount = data.prize_draws_count
           that.aasmState = data.aasm_state
           that.isShow = false
-          that.shareUrlId = data.id
+          that.commodityId = data.id
           that.leftChance = data.left_chance
           that.isReachPrizeLimit = data.is_reach_prize_limit
           that.isLoading = false
@@ -175,6 +174,9 @@
           url: service.prizes + this.titaList.id + '/draw',
           headers: {
             'X-JINKU-WECHAT-FORM-ID': that.formId
+          },
+          data: {
+            share_user_id: this.shereUserId
           }
         }, {
           success: ({statusCode, data}) => {

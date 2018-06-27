@@ -1,4 +1,5 @@
 import wepy from 'wepy'
+import { service } from '../config.js'
 
 export default class baseMixin extends wepy.mixin {
   /**
@@ -135,5 +136,9 @@ export default class baseMixin extends wepy.mixin {
       rgb.push(color)
     }
     return '#' + rgb.join('')
+  }
+  // 获取用户信息
+  $getUserId() {
+    return service.isFormal ? wepy.getStorageSync('userId') : wepy.getStorageSync('userIdInfo')
   }
 }

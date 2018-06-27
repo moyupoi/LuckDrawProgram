@@ -52,7 +52,7 @@
       isBackBtn: true,
       isShow: true,
       isShare: true,
-      shareUrlId: '',
+      commodityId: '',
       shareUrl: 'pages/luckDraw',
       id: '',
       prizesData: {},
@@ -68,7 +68,7 @@
       let that = this
       if (options.id) {
         this.id = options.id
-        this.shareUrlId = options.id
+        this.commodityId = options.id
         this.$get({url: service.prizes + options.id + '/chance'}, {
           success: ({statusCode, data}) => {
             that.prizesData = data

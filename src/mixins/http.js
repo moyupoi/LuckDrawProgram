@@ -4,8 +4,7 @@ import base from '../mixins/base'
 
 export default class httpMixin extends wepy.mixin {
   data = {
-    accessToken: '',
-    shereUserId: ''
+    accessToken: ''
   }
   /* =================== [$get 发起GET请求] =================== */
   $get(
@@ -14,14 +13,10 @@ export default class httpMixin extends wepy.mixin {
   ) {
     const methods = 'GET'
     this.accessToken = wepy.getStorageSync(service.isFormal ? 'accessToken' : 'accessTokenInfo') || false
-    this.shereUserId = wepy.getStorageSync(service.isFormal ? 'userId' : 'userIdInfo') || false
-    if (this.accessToken && this.shereUserId) {
+    if (this.accessToken) {
       headers = Object.assign({
         'Authorization': this.accessToken
       }, headers)
-      data = Object.assign({
-        'share_user_id': this.shereUserId
-      }, data)
       this.$ajax(
         {url, headers, methods, data},
         {success, fail, complete }
@@ -38,14 +33,10 @@ export default class httpMixin extends wepy.mixin {
   ) {
     const methods = 'POST'
     this.accessToken = wepy.getStorageSync(service.isFormal ? 'accessToken' : 'accessTokenInfo') || false
-    this.shereUserId = wepy.getStorageSync(service.isFormal ? 'userId' : 'userIdInfo') || false
-    if (this.accessToken && this.shereUserId) {
+    if (this.accessToken) {
       headers = Object.assign({
         'Authorization': this.accessToken
       }, headers)
-      data = Object.assign({
-        'share_user_id': this.shereUserId
-      }, data)
       this.$ajax(
         {url, headers, methods, data},
         {success, fail, complete }
