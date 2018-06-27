@@ -11,7 +11,7 @@
   <view class="homeSurround">
     <PrizesListModule :switchTabName.sync="switchTabName" :prizesList.sync="prizesList" @communicationEmit.user="refreshFun"></PrizesListModule>
     <PreviewListModule :switchTabName.sync="switchTabName" :prizesQueuingList.sync="prizesQueuingList" @communicationEmit.user="refreshFun"></PreviewListModule>
-    <WelfareModule :switchTabName.sync="switchTabName" :WelfareList.sync="WelfareList"></WelfareModule>
+    <WelfareModule :switchTabName.sync="switchTabName" :welfareList.sync="welfareList"></WelfareModule>
   </view>
 </template>
 <script>
@@ -33,12 +33,12 @@
       titleText: '搞点福利',
       prizesList: [],
       prizesQueuingList: [],
-      WelfareList: [],
+      welfareList: [],
       bannerUrl: '',
       isShow: false,
       barHeight: 0,
       formId: null,
-      switchTabName: '0'
+      switchTabName: '2'
     }
     components = {
       LoadingZ,
@@ -60,7 +60,18 @@
     }
     onLoad() {}
     onShow() {
-      this.homeInit()
+      switch (this.switchTabName) {
+        case '0':
+          this.homeInit()
+          break
+        case '1':
+          this.homeInit()
+          break
+        case '2':
+          this.WelfareInit()
+          break
+        default:
+      }
     }
     homeInit() {
       let that = this
@@ -100,7 +111,7 @@
       }
     }
     WelfareInit() {
-      console.log('WelfareInit')
+      this.welfareList = [1, 2]
     }
     switchTabBtn(event) {
       this.switchTabName = event.target.dataset.wpyswitchtabbtnA
