@@ -7,8 +7,8 @@ export default class extends wepy.app {
   config = {
     pages: [
       'pages/home',
-      'pages/personalCenter',
       'pages/luckDraw',
+      'pages/personalCenter',
       'pages/past',
       'pages/prize',
       'pages/portraitList',

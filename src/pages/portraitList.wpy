@@ -24,6 +24,7 @@
       userAvatarsList: [],
       count: 0,
       page: 1,
+      perPage: 200,
       id: '',
       type: '',
       nextPage: true,
@@ -51,7 +52,7 @@
         type = '/chance'
       }
       if (that.nextPage) {
-        that.$get({url: service.prizes + id + type, data: {page: that.page}}, {
+        that.$get({url: service.prizes + id + type, data: {page: that.page, per_page: that.perPage}}, {
           success: ({statusCode, data}) => {
             that.isShow = false
             if (data.user_avatars.length <= 0) {

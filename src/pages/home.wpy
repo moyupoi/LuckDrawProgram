@@ -1,7 +1,6 @@
 <template>
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <TitleBar :titleText.sync="titleText"></TitleBar>
-  <Barrage></Barrage>
   <view class="homeSurround">
     <view class="topBanner">
       <view class="tab">
@@ -29,7 +28,7 @@
             <text class="number"> {{item.number}}件</text>
             <view>
               <text class="isJoin" wx:if="{{item.is_has_draw}}">已参加 |</text>
-              <label>满 {{item.reach_number}} 人参与开奖</label>
+              <label>满 {{item.reach_number}} 人次参与立即开奖</label>
             </view>
           </view>
         </navigator>
@@ -43,7 +42,7 @@
             <text class="number"> {{item.number}}件</text>
             <view>
               <text class="isJoin" wx:if="{{item.is_has_draw}}">已参加 |</text>
-              <label>满 {{item.reach_number}} 人参与开奖</label>
+              <label>满 {{item.reach_number}} 人次参与立即开奖</label>
               <form bindsubmit="remind({{item.id}})" wx:if="{{!item.has_remind}}" bindreset="formReset" report-submit="true">
                 <button formType="submit">提醒我</button>
               </form>
@@ -62,7 +61,6 @@
   import base from '../mixins/base'
   import LoadingZ from '../components/LoadingZ'
   import TitleBar from '../components/TitleBar'
-  import Barrage from '../components/Barrage'
   export default class Home extends wepy.page {
     mixins = [http, base]
     config = {
@@ -80,8 +78,7 @@
     }
     components = {
       LoadingZ,
-      TitleBar,
-      Barrage
+      TitleBar
     }
     methods = {}
     onLoad() {
@@ -137,14 +134,6 @@
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
   @import "../assets/stylesheets/layout.scss";
-  @keyframes first {
-    from {
-      left: 100%;
-    }
-    to {
-      left: -100%;
-    }
-  }
   .homeSurround {
     .topBanner {
       overflow: hidden;
