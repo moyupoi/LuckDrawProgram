@@ -1,5 +1,6 @@
 <template>
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
+  <TransmissionGate :transmissionType.sync="transmissionType"></TransmissionGate>
   <TitleBar :titleText.sync="titleText" :switchTabName.sync="switchTabName"></TitleBar>
   <view class="switchTab">
     <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true">
@@ -9,9 +10,9 @@
     </form>
   </view>
   <view class="homeSurround">
-    <PrizesListModule :switchTabName.sync="switchTabName" :prizesList.sync="prizesList" @communicationEmit.user="refreshFun"></PrizesListModule>
-    <PreviewListModule :switchTabName.sync="switchTabName" :prizesQueuingList.sync="prizesQueuingList" @communicationEmit.user="refreshFun"></PreviewListModule>
-    <WelfareModule :switchTabName.sync="switchTabName" :welfareList.sync="welfareList"></WelfareModule>
+    <PrizesListModule :switchTabName.sync="switchTabName" :prizesList.sync="prizesList" @communicationEmit.user="refreshFun" wx:if="{{switchTabName === '0'}}"></PrizesListModule>
+    <PreviewListModule :switchTabName.sync="switchTabName" :prizesQueuingList.sync="prizesQueuingList" @communicationEmit.user="refreshFun" wx:if="{{switchTabName === '1'}}"></PreviewListModule>
+    <WelfareModule :switchTabName.sync="switchTabName" :welfareList.sync="welfareList" wx:if="{{switchTabName === '2'}}"></WelfareModule>
   </view>
 </template>
 <script>
@@ -24,6 +25,7 @@
   import PrizesListModule from '../components/PrizesListModule'
   import PreviewListModule from '../components/PreviewListModule'
   import WelfareModule from '../components/WelfareModule'
+  import TransmissionGate from '../components/TransmissionGate'
   export default class Home extends wepy.page {
     mixins = [http, base]
     config = {
@@ -38,49 +40,73 @@
       isShow: false,
       barHeight: 0,
       formId: null,
-      switchTabName: '0'
+      switchTabName: '2',
+      transmissionType: 'personalCenter'
     }
     components = {
       LoadingZ,
       TitleBar,
       PrizesListModule,
       PreviewListModule,
-      WelfareModule
+      WelfareModule,
+      TransmissionGate
     }
     methods = {
       // 父函数给传递子组件
       refreshFun(event) {
         switch (event) {
-          case 'homeInit':
-            this.homeInit()
+          case 'indexForPreview':
+            this.indexForPreview()
             break
           default:
         }
       }
     }
-    onLoad() {}
+    onLoad(options) {
+      if (options.tabSwitch) {
+        // 返回首页第一个标签
+        this.switchTabName = options.tabSwitch
+      }
+    }
     onShow() {
       switch (this.switchTabName) {
         case '0':
-          this.homeInit()
+          this.indexForDraw()
           break
         case '1':
-          this.homeInit()
+          this.indexForPreview()
           break
         case '2':
-          this.WelfareInit()
+          this.welfareInit()
           break
         default:
       }
     }
-    homeInit() {
+    indexForDraw() {
       let that = this
-      this.$get({url: service.prizes}, {
+      this.$get({url: service.indexForDraw}, {
         success: ({statusCode, data}) => {
           that.prizesList = data['prizes']
-          that.prizesQueuingList = data['prizes_queuing']
-          that.bannerUrl = data.banner_url
           that.isShow = false
+        }
+      })
+    }
+    indexForPreview() {
+      let that = this
+      this.$get({url: service.indexForPreview}, {
+        success: ({statusCode, data}) => {
+          that.prizesQueuingList = data['prizes']
+          that.isShow = false
+        }
+      })
+    }
+    welfareInit() {
+      this.$get({url: service.userCoins}, {
+        success: ({statusCode, data}) => {
+          this.welfareList = data
+          this.welfareList.user_coin_pools.map((item, i) => {
+            this.welfareList.user_coin_pools[i].isShow = true
+          })
         }
       })
     }
@@ -100,7 +126,7 @@
       }, {
         success: ({statusCode, data}) => {
           this.$alert('设置提醒', data.message)
-          this.homeInit()
+          this.indexForPreview()
         }
       })
     }
@@ -110,26 +136,17 @@
         this.$updataFormId(this.formId)
       }
     }
-    WelfareInit() {
-      this.welfareList = [1, 2]
-    }
     switchTabBtn(event) {
       this.switchTabName = event.target.dataset.wpyswitchtabbtnA
       switch (event.target.dataset.wpyswitchtabbtnA) {
         case '0':
-          if (this.prizesList.length <= 0) {
-            this.homeInit()
-          }
+          this.indexForDraw()
           break
         case '1':
-          if (this.prizesQueuingList.length <= 0) {
-            this.homeInit()
-          }
+          this.indexForPreview()
           break
         case '2':
-          if (this.WelfareList.length <= 0) {
-            this.WelfareInit()
-          }
+          this.welfareInit()
           break
         default:
       }
@@ -138,36 +155,44 @@
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
   @import "../assets/stylesheets/layout.scss";
-  @keyframes first {
-    from {
-      left: 100%;
-    }
-    to {
-      left: -100%;
-    }
-  }
   .switchTab {
     position: fixed;
-    background: #FF471C;
+    background: #FFF;
     width: 100%;
     top: 170rpx;
-    height: 80rpx;
+    height: 108rpx;
     text-align: center;
     overflow: hidden;
     z-index: 2;
     .switchTabBtn {
       background: none;
-      color: #fff;
-      font-size: 32rpx;
-      line-height: 70rpx;
+      color: #666666;
+      font-size: 28rpx;
+      line-height: 108rpx;
       display: inline-block;
       text-align: center;
+      padding: 0;
       &:nth-of-type(2) {
-        margin: 0 100rpx;
+        margin: 0 132rpx;
       }
     }
     .active {
-      font-size: 40rpx;
+      font-size: 32rpx;
+      color: #FF471C;
+      position: relative;
+      &:before {
+        content: '';
+        position: absolute;
+        z-index: 9;
+        display: block;
+        background: #FFA38D;
+        background-size: 28rpx 8rpx;
+        border-radius: 20rpx;
+        width: 28rpx;
+        height: 8rpx;
+        top: 80rpx;
+        left: 16rpx;
+      }
     }
   }
   .homeSurround {
@@ -180,7 +205,7 @@
     //   top: 196rpx;
     //   right: 1rpx;
     // }
-    margin-top: 60rpx;
+    margin-top: 100rpx;
     .prizes {
       position: relative;
       z-index: 1;

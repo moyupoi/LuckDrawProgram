@@ -1,5 +1,5 @@
 <template>
-  <view class="prizes" wx:if="{{switchTabName === '0'}}">
+  <view class="prizes">
     <form bindsubmit="formSubmit" report-submit="true">
       <block wx:for="{{prizesList}}" wx:key="index">
         <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}" class="prizesItem">
@@ -57,11 +57,6 @@
       }
     }
     onLoad() {
-      // this.homeInit()
-      // let sys = wepy.getSystemInfoSync()
-      // let calculationHeight = sys.screenHeight - sys.windowHeight
-      // console.log(calculationHeight)
-      // this.barHeight = calculationHeight
     }
     remind(event) {
       let formId = event.detail.formId
@@ -79,7 +74,7 @@
       }, {
         success: ({statusCode, data}) => {
           this.$alert('设置提醒', data.message)
-          this.homeInit()
+          this.indexForPreview()
         }
       })
     }

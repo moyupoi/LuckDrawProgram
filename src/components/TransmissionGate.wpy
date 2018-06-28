@@ -1,0 +1,52 @@
+<template>
+  <view class="transmissionGate" @tap.stop="transmission({{transmissionType}})">
+    <image src="{{'../assets/images/home/personalCenter.png'}}" wx:if="{{transmissionType === 'personalCenter'}}"></image>
+    <image src="{{'../assets/images/home/home.png'}}" wx:if="{{transmissionType === 'home'}}"></image>
+  </view>
+  <view class="seat" style="height: {{barHeight}}rpx"></view>
+</template>
+<script>
+import wepy from 'wepy'
+import base from '../mixins/base'
+export default class TransmissionGate extends wepy.component {
+  mixins = [base]
+  props = {
+    transmissionType: {
+      type: [String],
+      default: 'home'
+    }
+  }
+  computed = {
+    init() {
+      if (this.isShareBtn) {
+        this.barBackBtn = '../assets/images/tabbars/home.png'
+      }
+      // let sys = wepy.getSystemInfoSync()
+      // let calculationHeight = sys.screenHeight - sys.windowHeight + sys.batteryLevel
+      // this.barHeight = calculationHeight
+      // this.barTitleHeight = sys.screenHeight - sys.windowHeight
+      this.barHeight = 180
+      this.barTitleHeight = 100
+    }
+  }
+  methods = {
+    transmission (url) {
+      // 返回首页第一个标签 tabSwitch=0
+      this.$goto(url + '?tabSwitch=0')
+    }
+  }
+}
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+.transmissionGate {
+  position: fixed;
+  z-index: 10;
+  bottom: 104rpx;
+  right: 18rpx;
+  image {
+    width: 132rpx;
+    height: 132rpx;
+    display: block;
+  }
+}
+</style>

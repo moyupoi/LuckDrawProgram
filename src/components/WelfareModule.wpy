@@ -1,8 +1,32 @@
 <template>
-  <view wx:if="{{switchTabName === '2'}}">
-    福利
-    <view wx:for="{{welfareList}}" wx:key="index">
-      {{item}}
+  <view>
+    <view class="floatingFoam">
+      <image src="../assets/images/WelfareModule/floatingFoam.png" class="floatingFoamImg"></image>
+      <view class="floatingFoamView">
+        <text class="number">23</text>
+        <text class="lab">FLC</text>
+        <label>今日获得</label>
+      </view>
+      <view class="foam">
+        <block wx:for="{{welfareList.user_coin_pools}}" wx:key="index" wx:if="{{item.isShow}}">
+          <view class="foamItem {{bubbleIndex === index ? 'bubbleIndex' : ''}}" style="top: {{position[index].top}};left: {{position[index].left}};">
+            <image src="../assets/images/WelfareModule/foam.png"></image>
+            <button @tap="foamBtn({{item.id}},{{item.coin}},{{index}})"></button>
+            <text>{{item.category_name}}+{{item.coin}}</text>
+          </view>
+        </block>
+      </view>
+    </view>
+    <view class="charges">
+      <view class="chargesItem" wx:for="{{welfareList.products}}" wx:key="index">
+        <image src="{{item.banner_url}}"></image>
+        <view>
+          <text>{{item.name}}20元话费充值·全网全国运营商吧啦吧啦吧啦吧吧啦吧啦吧啦</text>
+          <label class="number">{{item.coin}}</label>
+          <label class="symbol">FLC</label>
+        </view>
+        <button>兑换</button>
+      </view>
     </view>
   </view>
 </template>
@@ -20,17 +44,289 @@
       welfareList: {
         type: Array,
         default: []
+      },
+      isBubble: {
+        type: Boolean,
+        default: true
+      },
+      position: {
+        type: Array,
+        default: [{
+          top: '1rpx',
+          left: '190rpx'
+        }, {
+          top: '128rpx',
+          left: '166rpx'
+        }, {
+          top: '270rpx',
+          left: '196rpx'
+        }, {
+          top: '0rpx',
+          left: '314rpx'
+        }, {
+          top: '0rpx',
+          left: '484rpx'
+        }, {
+          top: '124rpx',
+          left: '522rpx'
+        }, {
+          top: '266rpx',
+          left: '480rpx'
+        }, {
+          top: '70rpx',
+          left: '70rpx'
+        }, {
+          top: '0rpx',
+          left: '6rpx'
+        }, {
+          top: '108rpx',
+          left: '20rpx'
+        }, {
+          top: '4rpx',
+          left: '612rpx'
+        }, {
+          top: '230rpx',
+          left: '612rpx'
+        }, {
+          top: '1rpx',
+          left: '190rpx'
+        }, {
+          top: '128rpx',
+          left: '166rpx'
+        }, {
+          top: '270rpx',
+          left: '196rpx'
+        }, {
+          top: '0rpx',
+          left: '314rpx'
+        }, {
+          top: '0rpx',
+          left: '484rpx'
+        }, {
+          top: '124rpx',
+          left: '522rpx'
+        }, {
+          top: '266rpx',
+          left: '480rpx'
+        }, {
+          top: '70rpx',
+          left: '70rpx'
+        }, {
+          top: '0rpx',
+          left: '6rpx'
+        }, {
+          top: '108rpx',
+          left: '20rpx'
+        }, {
+          top: '4rpx',
+          left: '612rpx'
+        }, {
+          top: '230rpx',
+          left: '612rpx'
+        }, {
+          top: '1rpx',
+          left: '190rpx'
+        }, {
+          top: '128rpx',
+          left: '166rpx'
+        }, {
+          top: '270rpx',
+          left: '196rpx'
+        }, {
+          top: '0rpx',
+          left: '314rpx'
+        }, {
+          top: '0rpx',
+          left: '484rpx'
+        }, {
+          top: '124rpx',
+          left: '522rpx'
+        }, {
+          top: '266rpx',
+          left: '480rpx'
+        }, {
+          top: '70rpx',
+          left: '70rpx'
+        }, {
+          top: '0rpx',
+          left: '6rpx'
+        }, {
+          top: '108rpx',
+          left: '20rpx'
+        }, {
+          top: '4rpx',
+          left: '612rpx'
+        }, {
+          top: '230rpx',
+          left: '612rpx'
+        }]
       }
     }
     data = {
-      switchTabName: '0'
+      switchTabName: '0',
+      foamItemTextAnimation: '',
+      bubbleIndex: 100
     }
     components = {}
-    methods = {}
+    methods = {
+      foamBtn(id, coin, index) {
+        console.log(id)
+        if (this.isBubble) {
+          this.isBubble = false
+          this.bubbleIndex = index
+          setTimeout(function() {
+            this.welfareList.user_coin_pools[index].isShow = false
+            this.isBubble = true
+          }.bind(this), 500)
+        }
+      }
+    }
     onLoad() {
     }
   }
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
   @import "../assets/stylesheets/layout.scss";
+  @keyframes slideUp {
+    from {
+      transform: translate3d(0, 100%, 0);
+    }
+    to {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+  .floatingFoam {
+    width: 100%;
+    height: 400rpx;
+    background: #fff;
+    position: relative;
+    .floatingFoamImg {
+      width: 288rpx;
+      height: 288rpx;
+      display: block;
+      position: absolute;
+      top: 70rpx;
+      left: 250rpx;
+    }
+    .floatingFoamView {
+      width: 288rpx;
+      height: 288rpx;
+      display: block;
+      position: absolute;
+      z-index: 2;
+      top: 70rpx;
+      left: 250rpx;
+      color: #fff;
+      text-align: center;
+      .number {
+        font-size: 48rpx;
+        display: inline-block;
+        margin-right: 18rpx;
+        margin-top: 80rpx;
+      }
+      .lab {
+        font-size: 36rpx;
+        display: inline-block;
+      }
+      label {
+        margin-top: 8rpx;
+        display: block;
+        font-size: 24rpx;
+      }
+    }
+    .foam {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      .foamItem {
+        width: 120rpx;
+        height: 140rpx;
+        position: absolute;
+        top: 0;
+        left: 0;
+        transition: opacity .5s ease-in-out;
+        image {
+          width: 80rpx;
+          height: 78rpx;
+          display: block;
+          margin: 0 auto;
+        }
+        button {
+          width: 100%;
+          height: 100%;
+          position: absolute;
+          background: rgba(255, 255, 255, 0);
+          top: 0;
+          left: 0;
+          right: 0;
+          button: 0;
+        }
+        text {
+          font-size: 20rpx;
+          color: #4560FF;
+        }
+      }
+      .bubbleIndex {
+        opacity:0;
+        filter: alpha(opacity=0);
+      }
+    }
+  }
+  .charges {
+    padding: 32rpx;
+    .chargesItem {
+      width: 686rpxs;
+      padding: 32rpx;
+      background: #fff;
+      border-radius: 20rpx;
+      display: block;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 32rpx;
+      box-shadow: rgba(0, 0, 0, 0.1) 0 2rpx 8rpx 0;
+      image {
+        width: 208rpx;
+        height: 156rpx;
+        display: block;
+        float: left;
+      }
+      view {
+        float: right;
+        text {
+          font-size: 26rpx;
+          color: #333333;
+          line-height: 36rpx;
+          width: 382rpx;
+          height: 72rpx;
+          overflow: hidden;
+          display: block;
+        }
+        label {
+          display: inline-block;
+          font-size: 30rpx;
+          margin-top: 52rpx;
+        }
+        .number {
+          color: #FF471C;
+        }
+        .symbol {
+          color: #999999;
+          margin-left: 8rpx;
+        }
+      }
+      button {
+        position: absolute;
+        width: 120rpx;
+        height: 50rpx;
+        background: #fff;
+        border: 2rpx solid #3799FA;
+        color: #3799FA;
+        font-size: 24rpx;
+        line-height: 49rpx;
+        border-radius: 25rpx;
+        top: 142rpx;
+        right: 32rpx;
+      }
+    }
+  }
 </style>

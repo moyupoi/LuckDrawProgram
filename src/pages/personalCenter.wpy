@@ -1,5 +1,6 @@
 <template>
-  <TitleBar :titleText.sync="titleText"></TitleBar>
+  <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
+  <TransmissionGate :transmissionType.sync="transmissionType"></TransmissionGate>
   <view class="banner">
     <view class="user">
       <view class="portraitView">
@@ -41,6 +42,7 @@
   import http from '../mixins/http'
   import base from '../mixins/base'
   import TitleBar from '../components/TitleBar'
+  import TransmissionGate from '../components/TransmissionGate'
   export default class PersonalCenter extends wepy.page {
     mixins = [http, base]
     config = {
@@ -48,10 +50,13 @@
     }
     data = {
       titleText: '我的',
-      count: 0
+      count: 0,
+      isBackBtn: true,
+      transmissionType: 'home'
     }
     components = {
-      TitleBar
+      TitleBar,
+      TransmissionGate
     }
     methods = {}
     onLoad() {}

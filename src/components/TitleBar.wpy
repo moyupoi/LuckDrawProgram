@@ -76,7 +76,7 @@ export default class TitleBar extends wepy.component {
 .tabBarCustom {
   width: 100%;
   z-index: 999;
-  background: #FF471C;
+  background: #FFF;
   overflow: hidden;
   position: fixed;
   image {
@@ -89,7 +89,7 @@ export default class TitleBar extends wepy.component {
     z-index: 3;
   }
   text {
-    color: #fff;
+    color: #333333;
     font-size: 32rpx;
     font-weight: 600;
     text-align: center;

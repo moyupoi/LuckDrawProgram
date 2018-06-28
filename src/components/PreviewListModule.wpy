@@ -1,5 +1,5 @@
 <template>
-  <view class="prizes" wx:if="{{switchTabName === '1'}}">
+  <view class="prizes">
     <form bindsubmit="formSubmit" report-submit="true">
       <view class="prizesItem" wx:for="{{prizesQueuingList}}" wx:key="index">
         <view class="banner">
@@ -52,7 +52,7 @@
           success: ({statusCode, data}) => {
             that.$alert('设置提醒', data.message)
             // 调用父函数刷新
-            that.$emit('communicationEmit', 'homeInit')
+            that.$emit('communicationEmit', 'indexForPreview')
           }
         })
       }
