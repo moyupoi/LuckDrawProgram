@@ -24,7 +24,7 @@
       userAvatarsList: [],
       count: 0,
       page: 1,
-      perPage: 200,
+      perPage: 275,
       id: '',
       type: '',
       nextPage: true,
@@ -52,6 +52,7 @@
         type = '/chance'
       }
       if (that.nextPage) {
+        that.nextPage = false
         that.$get({url: service.prizes + id + type, data: {page: that.page, per_page: that.perPage}}, {
           success: ({statusCode, data}) => {
             that.isShow = false
@@ -61,6 +62,7 @@
               that.userAvatarsList = that.userAvatarsList.concat(data.user_avatars)
               that.count = data.count
               that.page += 1
+              that.nextPage = true
             }
           }
         })
