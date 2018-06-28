@@ -38,7 +38,7 @@
       isShow: false,
       barHeight: 0,
       formId: null,
-      switchTabName: '2'
+      switchTabName: '0'
     }
     components = {
       LoadingZ,
