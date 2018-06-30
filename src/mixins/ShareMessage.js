@@ -24,25 +24,36 @@ export default class ShareMessage extends wepy.mixin {
       // }
       let userId = this.$getUserId()
       let resData = res.source.data
-      if (resData.bannerUrl && resData.isShare && resData.commodityId && resData.shareUrl && userId) {
+      let shareData = {}
+      debugger
+      if (resData.isShare) {
+        shareData.path = resData.shareUrl ? resData.shareUrl + '?id=' + resData.commodityId + '&share=true&shareUserId=' + userId : ''
+        shareData.imageUrl = resData.shareBannerUrl ? resData.shareBannerUrl : ''
+        shareData.title = resData.shareName ? resData.shareName : ''
         return {
-          path: resData.shareUrl + '?id=' + resData.commodityId + '&share=true&shereUserId=' + userId,
-          imageUrl: resData.bannerUrl,
-          title: resData.prizeName
-        }
-      } else if (resData.isShare && resData.commodityId && resData.shareUrl && userId) {
-        return {
-          path: resData.shareUrl + '?id=' + resData.commodityId + '&share=true&shereUserId=' + userId
-        }
-      } else if (resData.isShare && resData.commodityId) {
-        return {
-          path: resData.shareUrl + '?id=' + resData.commodityId + '&share=true'
-        }
-      } else if (resData.path) {
-        return {
-          path: resData.path
+          shareData
         }
       }
+      
+      // if (resData.shareBannerUrl && resData.isShare && resData.commodityId && resData.shareUrl && userId) {
+      //   return {
+      //     path: resData.shareUrl + '?id=' + resData.commodityId + '&share=true&shareUserId=' + userId,
+      //     imageUrl: resData.shareBannerUrl,
+      //     title: resData.shareName
+      //   }
+      // } else if (resData.isShare && resData.commodityId && resData.shareUrl && userId) {
+      //   return {
+      //     path: resData.shareUrl + '?id=' + resData.commodityId + '&share=true&shareUserId=' + userId
+      //   }
+      // } else if (resData.isShare && resData.commodityId) {
+      //   return {
+      //     path: resData.shareUrl + '?id=' + resData.commodityId + '&share=true'
+      //   }
+      // } else if (resData.path) {
+      //   return {
+      //     path: resData.path
+      //   }
+      // }
     }
   }
 }

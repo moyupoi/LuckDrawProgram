@@ -1,0 +1,241 @@
+<template>
+  <LoadingZ :isShow.sync="isShow"></LoadingZ>
+  <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
+  <view class="rankingList">
+    <view class="tabSwtich">
+      <button class="switchTabBtn {{switchTabName === '0' ? 'active' : ''}}" formType="submit" @tap="switchTabBtn('0')">总榜</button>
+      <button class="switchTabBtn {{switchTabName === '1' ? 'active' : ''}}" formType="submit" @tap="switchTabBtn('1')">好友榜</button>
+    </view>
+    <view class="own">
+      <view class="portraitView">
+        <open-data type="userAvatarUrl" class="portrait" style="clip-path: circle(50% at center)"></open-data>
+      </view>
+      <view class="userInfo">
+        <text>墨鱼卷</text>
+        <text>未进入前100名</text>
+      </view>
+      <view class="money">
+        <label>365</label>
+        <label>FLC</label>
+      </view>
+    </view>
+    <view class="generalList" wx:if="{{switchTabName === '0'}}">
+      <view class="participantList">
+        <view class="participant">
+          <view class="portraitView">
+            <image src="../assets/images/test/tx.jpg"></image>
+          </view>
+          <view class="userInfo">
+            <text>墨鱼卷</text>
+            <text>第1名</text>
+          </view>
+          <view class="money">
+            <label>365</label>
+            <label>FLC</label>
+          </view>
+        </view>
+        <view class="participant">
+          <view class="portraitView">
+            <image src="../assets/images/test/tx.jpg"></image>
+          </view>
+          <view class="userInfo">
+            <text>墨鱼卷</text>
+            <text>第1名</text>
+          </view>
+          <view class="money">
+            <label>365</label>
+            <label>FLC</label>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view class="friends" wx:if="{{switchTabName === '1'}}">
+      <view class="participantList">
+        <view class="participant">
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  // import { service } from '../config.js'
+  import http from '../mixins/http'
+  import base from '../mixins/base'
+  import LoadingZ from '../components/LoadingZ'
+  import TitleBar from '../components/TitleBar'
+  export default class RankingList extends wepy.page {
+    mixins = [http, base]
+    config = {
+      // navigationBarTitleText: '中奖纪录'
+    }
+    data = {
+      titleText: '排行榜',
+      isShow: false,
+      isBackBtn: true,
+      switchTabName: '0'
+    }
+    components = {
+      LoadingZ,
+      TitleBar
+    }
+    methods = {}
+    onLoad() {
+      // let that = this
+      // this.$get({url: service.prizesDrawsIndexForGet}, {
+      //   success: ({statusCode, data}) => {
+      //   }
+      // })
+    }
+    onShow() {}
+    switchTabBtn(event) {
+      this.switchTabName = event.target.dataset.wpyswitchtabbtnA
+    }
+  }
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  @import "../assets/stylesheets/layout.scss";
+  .rankingList {
+    .tabSwtich {
+      height: 108rpx;
+      background: #fff;
+      text-align: center;
+      .switchTabBtn {
+        background: none;
+        color: #666666;
+        font-size: 28rpx;
+        line-height: 108rpx;
+        display: inline-block;
+        text-align: center;
+        padding: 0;
+        &:nth-of-type(2) {
+          margin-left: 260rpx;
+        }
+      }
+      .active {
+        font-size: 32rpx;
+        color: #FF471C;
+        position: relative;
+        &:before {
+          content: '';
+          position: absolute;
+          z-index: 9;
+          display: block;
+          background: #FFA38D;
+          background-size: 28rpx 8rpx;
+          border-radius: 20rpx;
+          width: 50%;
+          height: 8rpx;
+          top: 80rpx;
+          left: 18rpx;
+        }
+      }
+    }
+    .own {
+      background: #FFEBE3;
+      overflow: hidden;
+      margin: 32rpx 0;
+      padding: 32rpx 64rpx;
+      position: relative;
+      .portraitView {
+        float: left;
+        width: 80rpx;
+        height: 80rpx;
+        display: block;
+        border-radius: 100rpx;
+        overflow: hidden;
+        .portrait {
+          display: block;
+          width: 80rpx;
+          height: 80rpx;
+          clip-path: circle(50% at center);
+          overflow: hidden;
+        }
+      }
+      .userInfo {
+        float: left;
+        margin: 5rpx 0 0 16rpx;
+        text {
+          display: block;
+          color: #333333;
+          font-size: 28rpx;
+          &:nth-of-type(2) {
+            margin-top: 0rpx;
+            color: #666666;
+            font-size: 24rpx;
+          }
+        }
+      }
+      .money {
+        position: absolute;
+        top: 45rpx;
+        right: 60rpx;
+        label {
+          color: #999999;
+          font-size: 28rpx;
+          display: inline-block;
+          &:nth-of-type(1) {
+            color: #FF471C;
+            margin-right: 12rpx;
+          }
+        }
+      }
+    }
+    .generalList, .friends {
+      .participantList {
+        background: #FFF;
+        .participant {
+          overflow: hidden;
+          padding: 32rpx 32rpx;
+          width: 655rpx;
+          margin-left: 32rpx;
+          border-bottom: 1rpx solid #EBEBEB;
+          position: relative;
+          .portraitView {
+            float: left;
+            width: 80rpx;
+            height: 80rpx;
+            display: block;
+            border-radius: 100rpx;
+            overflow: hidden;
+            image {
+              display: block;
+              width: 80rpx;
+              height: 80rpx;
+              clip-path: circle(50% at center);
+              overflow: hidden;
+            }
+          }
+          .userInfo {
+            float: left;
+            margin: 5rpx 0 0 16rpx;
+            text {
+              display: block;
+              color: #333333;
+              font-size: 28rpx;
+              &:nth-of-type(2) {
+                margin-top: 0rpx;
+                color: #666666;
+                font-size: 24rpx;
+              }
+            }
+          }
+          .money {
+            position: absolute;
+            top: 45rpx;
+            right: 60rpx;
+            label {
+              color: #999999;
+              font-size: 28rpx;
+              display: inline-block;
+              &:nth-of-type(1) {
+                color: #FF471C;
+                margin-right: 12rpx;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+</style>

@@ -1,0 +1,40 @@
+<template>
+  <LoadingZ :isShow.sync="isShow"></LoadingZ>
+  <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
+  <view class="">
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import { service } from '../config.js'
+  import http from '../mixins/http'
+  import base from '../mixins/base'
+  import LoadingZ from '../components/LoadingZ'
+  import TitleBar from '../components/TitleBar'
+  export default class Strategy extends wepy.page {
+    mixins = [http, base]
+    config = {
+      // navigationBarTitleText: '中奖纪录'
+    }
+    data = {
+      isShow: true,
+      isBackBtn: true
+    }
+    components = {
+      LoadingZ,
+      TitleBar
+    }
+    methods = {}
+    onLoad() {
+      // let that = this
+      this.$get({url: service.prizesDrawsIndexForGet}, {
+        success: ({statusCode, data}) => {
+        }
+      })
+    }
+    onShow() {}
+  }
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  @import "../assets/stylesheets/layout.scss";
+</style>

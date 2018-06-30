@@ -6,31 +6,71 @@
       <view class="portraitView">
         <open-data type="userAvatarUrl" class="portrait" style="clip-path: circle(50% at center)"></open-data>
       </view>
-      <open-data type="userNickName" class="userName"></open-data>
+      <view class="userInfo">
+        <open-data type="userNickName" class="userName"></open-data>
+        <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true">
+          <button open-type="getPhoneNumber" bindgetphonenumber="getphonenumber">{{phoneNumberAuthentication ? '手机已认证' : '手机号认证'}}</button>
+        </form>
+        <image src="../assets/images/personalCenter/phoneIcon01.png" class="phoneIcon" wx:if="{{!phoneNumberAuthentication}}" style="width: 20rpx;height: 28rpx;"></image>
+        <image src="../assets/images/personalCenter/phoneIcon02.png" class="phoneIcon" wx:if="{{phoneNumberAuthentication}}" style="width: 26rpx;height: 28rpx;"></image>
+      </view>
     </view>
-    <image src="../assets/images/personalCenter/banner.png"></image>
+    <image src="../assets/images/personalCenter/banner.png" class="bannerImg"></image>
+    <view class="informationBar" @tap="toFLBRecord">
+      <view>
+        <label>123</label>
+        <text>福利币</text>
+      </view>
+      <view>
+        <label>123</label>
+        <text>连续签到</text>
+      </view>
+      <view>
+        <label>123</label>
+        <text>抽奖机会</text>
+      </view>
+      <view>
+        <label>123</label>
+        <text>邀请好友</text>
+      </view>
+    </view>
   </view>
   <view class="option">
     <form bindsubmit="formSubmit" report-submit="true">
-      <navigator hover-class="none" url="/pages/past">
+      <navigator hover-class="none" url="/pages/rankingList">
         <button formType="submit"></button>
         <image src="../assets/images/personalCenter/icon01.png"></image>
-        <text>我参加的抽奖</text>
+        <text>排行榜</text>
+      </navigator>
+      <navigator hover-class="none" url="/pages/strategy">
+        <button formType="submit"></button>
+        <image src="../assets/images/personalCenter/icon02.png"></image>
+        <text>赚币攻略</text>
+      </navigator>
+      <navigator hover-class="none" url="/pages/past">
+        <button formType="submit"></button>
+        <image src="../assets/images/personalCenter/icon03.png"></image>
+        <text>抽奖记录</text>
       </navigator>
       <navigator hover-class="none" url="/pages/record">
         <button formType="submit"></button>
-        <image src="../assets/images/personalCenter/icon02.png"></image>
+        <image src="../assets/images/personalCenter/icon04.png"></image>
         <text>中奖纪录</text>
       </navigator>
-      <view class="opportunity">
+      <navigator hover-class="none" url="/pages/exchangeRecord">
         <button formType="submit"></button>
-        <image src="../assets/images/personalCenter/icon03.png"></image>
-        <text>剩余抽奖机会</text>
+        <image src="../assets/images/personalCenter/icon05.png"></image>
+        <text>兑换记录</text>
+      </navigator>
+      <view class="opportunity" wx:if="{{1===2}}">
+        <button formType="submit"></button>
+        <image src="../assets/images/personalCenter/icon05.png"></image>
+        <text>兑换记录</text>
         <label>{{count}}</label>
       </view>
       <view class="address" @tap="address">
         <button formType="submit"></button>
-        <image src="../assets/images/personalCenter/icon04.png"></image>
+        <image src="../assets/images/personalCenter/icon06.png"></image>
         <text>收货地址</text>
       </view>
     </form>
@@ -52,7 +92,8 @@
       titleText: '我的',
       count: 0,
       isBackBtn: true,
-      transmissionType: 'home'
+      transmissionType: 'home',
+      phoneNumberAuthentication: false
     }
     components = {
       TitleBar,
@@ -65,6 +106,9 @@
       this.$get({url: service.prizesMine}, {
         success: ({statusCode, data}) => {
           that.count = data.left_chance
+          if (data.mobile !== null) {
+            that.phoneNumberAuthentication = true
+          }
         }
       })
     }
@@ -79,42 +123,116 @@
         this.$updataFormId(formId)
       }
     }
+    getphonenumber(event) {
+      let that = this
+      if (event.detail.errMsg === 'getPhoneNumber:ok') {
+        this.$post({
+          url: service.updateMobile,
+          headers: {
+            'X-JINKU-WECHAT-FORM-ID': that.formId
+          },
+          data: {
+            encryptedData: event.detail.encryptedData,
+            iv: event.detail.iv
+          }
+        }, {
+          success: ({statusCode, data}) => {
+            if (statusCode === 200) {
+              this.phoneNumberAuthentication = true
+            }
+          }
+        })
+        console.log(event)
+      }
+    }
+    toFLBRecord() {
+      this.$goto('FLBRecord')
+    }
   }
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
   .banner {
     text-align: center;
     width: 100%;
-    height: 400rpx;
-    background: #fff;
+    height: 1342rpx;
     overflow: hidden;
+    position: relative;
     .user {
-      position: relative;
+      position: absolute;
       z-index: 2;
+      top: 32rpx;
+      left: 32rpx;
       .portraitView {
-        width: 176rpx;
-        height: 176rpx;
+        float: left;
+        width: 120rpx;
+        height: 120rpx;
         display: block;
         border-radius: 100rpx;
         overflow: hidden;
-        margin: 60rpx auto 0 auto;
         .portrait {
           display: block;
-          width: 176rpx;
-          height: 176rpx;
+          width: 120rpx;
+          height: 120rpx;
           clip-path: circle(50% at center);
           overflow: hidden;
         }
       }
-      .userName {
-        font-size: 40rpx;
-        line-height: 48rpx;
-        color: #4C4C4D;
-        margin-top: 20rpx;
-        display: block;
+      .userInfo {
+        float: left;
+        margin-left: 34rpx;
+        .userName {
+          font-size: 40rpx;
+          line-height: 48rpx;
+          color: #4C4C4D;
+          margin-top: 20rpx;
+          display: block;
+          text-align: left;
+        }
+        button {
+          background: none;
+          color: #666666;
+          text-align: left;
+          margin-top: 16rpx;
+          padding: 0;
+          font-size: 28rpx;
+          line-height: 30rpx;
+        }
+        .phoneIcon {
+          position: absolute;
+          top: 85rpx;
+          left: 308rpx;
+        }
       }
     }
-    image {
+    .informationBar {
+      position: absolute;
+      z-index: 2;
+      top: 216rpx;
+      width: 676rpx;
+      padding: 0 36rpx;
+      view {
+        display: inline-block;
+        width: 112rpx;
+        height: 82rpx;
+        margin: 0 70rpx 0 0rpx;
+        text-align: center;
+        &:nth-of-type(4) {
+          margin-right: 0;
+        }
+        label {
+          color: #FB5A35;
+          font-size: 36rpx;
+          display: block;
+        }
+        text {
+          margin-top: 14rpx;
+          font-size: 28rpx;
+          color: #4C4C4D;
+          display: block;
+        }
+      }
+    }
+    .bannerImg {
       position: absolute;
       top: 0;
       left: 0;
@@ -122,14 +240,16 @@
       bottom: 0;
       z-index: 1;
       width: 100%;
-      height: 400rpx;
+      height: 850rpx;
     }
   }
   .option {
-    background: #F2F3F5;
     padding: 32rpx;
-    position: relative;
+    position: absolute;
+    width: 686rpx;
     z-index: 10;
+    top: 517rpx;
+    background: none;
     navigator, .address, .opportunity {
       display: block;
       margin-bottom: 32rpx;

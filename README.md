@@ -50,6 +50,11 @@ $ wepy build --watch
 ├── prize                  中/未中奖展示页、分享页、通过通知点进去展示页
 ├── record                 中过奖的记录页
 ├── portraitList           头像列表
+├── FLBRecord              福利币领取记录
+├── exchangeDetails        兑换商品详情
+├── exchangeRecord         兑换商品记录
+├── rankingList            排行榜
+├── strategy               赚币攻略
 ```
 
 具体代码参照已实现的WePY

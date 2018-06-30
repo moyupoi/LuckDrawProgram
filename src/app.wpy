@@ -7,14 +7,19 @@ export default class extends wepy.app {
   config = {
     pages: [
       'pages/home',
-      'pages/preview',
+      'pages/rankingList',
       'pages/personalCenter',
+      'pages/exchangeDetails',
+      'pages/exchangeRecord',
+      'pages/preview',
       'pages/luckDraw',
       'pages/past',
       'pages/prize',
       'pages/portraitList',
       'pages/record',
-      'pages/probability'
+      'pages/probability',
+      'pages/FLBRecord',
+      'pages/strategy'
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -115,7 +120,7 @@ export default class extends wepy.app {
   }
 
   urlToString(path, query) {
-    return path + '?id=' + query.id + '&share=true&shereUserId=' + query.shereUserId
+    return path + '?id=' + query.id + '&share=true&shareUserId=' + query.shareUserId
   }
 }
 </script>

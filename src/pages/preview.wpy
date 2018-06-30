@@ -43,7 +43,8 @@
       titleText: '搞点福利',
       prizesList: [],
       prizesQueuingList: [],
-      bannerUrl: '',
+      shareBannerUrl: '',
+      shareName: '',
       isShow: true,
       barHeight: 0,
       tab: true,
@@ -70,7 +71,8 @@
         success: ({statusCode, data}) => {
           that.prizesList = data['prizes']
           that.prizesQueuingList = data['prizes_queuing']
-          that.bannerUrl = data.banner_url
+          that.shareBannerUrl = data.banner_url
+          that.shareName = data.name
           that.isShow = false
         }
       })

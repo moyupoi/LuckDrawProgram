@@ -1,0 +1,155 @@
+<template>
+  <LoadingZ :isShow.sync="isShow"></LoadingZ>
+  <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
+  <view class="goldCoin">
+    <view class="total">
+      <view>
+        <label>1234</label>
+        <text>福利币余额</text>
+      </view>
+      <view>
+        <label>1234</label>
+        <text>累计获得</text>
+      </view>
+    </view>
+    <view class="record">
+      <view class="stage">
+        <label>2018-06-23</label>
+        <view class="each">
+          <view>
+            <text>邀请好友抽奖</text>
+            <text>+5</text>
+          </view>
+        </view>
+        <view class="each">
+          <view>
+            <text>邀请好友抽奖</text>
+            <text>+5</text>
+          </view>
+        </view>
+        <view class="each">
+          <view>
+            <text>邀请好友抽奖</text>
+            <text>+5</text>
+          </view>
+        </view>
+      </view>
+      <view class="stage">
+        <label>2018-06-23</label>
+        <view class="each">
+          <view>
+            <text>邀请好友抽奖</text>
+            <text>+5</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import { service } from '../config.js'
+  import http from '../mixins/http'
+  import base from '../mixins/base'
+  import LoadingZ from '../components/LoadingZ'
+  import TitleBar from '../components/TitleBar'
+  export default class FLBRecord extends wepy.page {
+    mixins = [http, base]
+    config = {
+      // navigationBarTitleText: '中奖纪录'
+    }
+    data = {
+      titleText: '我的FLB',
+      isShow: false,
+      isBackBtn: true
+    }
+    components = {
+      LoadingZ,
+      TitleBar
+    }
+    methods = {}
+    onLoad() {
+      // let that = this
+      this.$get({url: service.prizesDrawsIndexForGet}, {
+        success: ({statusCode, data}) => {
+        }
+      })
+    }
+    onShow() {}
+  }
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  @import "../assets/stylesheets/layout.scss";
+  .goldCoin {
+    .total {
+      height: 212rpx;
+      background: #fff;
+      view {
+        margin-top: 64rpx;
+        width: 375rpx;
+        display: inline-block;
+        text-align: center;
+        position: relative;
+        &:nth-of-type(1):before {
+          content: '';
+          position: absolute;
+          background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAABACAYAAAA9ONYEAAAAAXNSR0IArs4c6QAAAEFJREFUOBFjYMAGbt68uRWEQXIsIOL///9eIBoEmCAUghwVQIQFiDUaHqPhgRQCQzg5gPM+IyPjNqB3/iN5CcEEAJ/hC/5VhwtWAAAAAElFTkSuQmCC') no-repeat;
+          background-size: 5rpx 70rpx;
+          width: 5rpx;
+          height: 264rpx;
+          top: 15rpx;
+          right: 0;
+        }
+        label {
+          color: #FB5A35;
+          font-size: 40rpx;
+          display: block;
+          margin-bottom: 5rpx;
+        }
+        text {
+          color: #888888;
+          font-size: 28rpx;
+          display: block;
+        }
+      }
+    }
+    .record {
+      .stage {
+        label {
+          width: 100%;
+          background: #F2F3F5;
+          height: 64rpx;
+          font-size: 24rpx;
+          color: #666666;
+          line-height: 64rpx;
+          padding-left:  64rpx;
+        }
+        .each {
+          background: #fff;
+          height: 95rpx;
+          view {
+            width: 654rpx;
+            height: 92rpx;
+            border-bottom: 1rpx solid #EBEBEB;
+            margin: 0 auto;
+            text {
+              float: left;
+              font-size: 28rpx;
+              line-height: 90rpx;
+              color: #333333;
+              margin-left: 20rpx;
+              &:nth-of-type(2) {
+                color: #FB5A35;
+                float: right;
+                margin-right: 20rpx;
+              }
+            }
+          }
+          &:nth-last-of-type(1) > view {
+            border: 0;
+          }
+        }
+      }
+    }
+  }
+</style>

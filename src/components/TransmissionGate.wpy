@@ -40,7 +40,7 @@ export default class TransmissionGate extends wepy.component {
 <style lang="scss" rel="stylesheet/scss" scoped>
 .transmissionGate {
   position: fixed;
-  z-index: 10;
+  z-index: 999;
   bottom: 104rpx;
   right: 18rpx;
   image {

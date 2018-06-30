@@ -3,7 +3,7 @@
     <view class="floatingFoam">
       <image src="../assets/images/WelfareModule/floatingFoam.png" class="floatingFoamImg"></image>
       <view class="floatingFoamView">
-        <text class="number">23</text>
+        <text class="number">{{welfareList.left_coin}}</text>
         <text class="lab">FLC</text>
         <label>今日获得</label>
       </view>
@@ -21,18 +21,18 @@
       <view class="chargesItem" wx:for="{{welfareList.products}}" wx:key="index">
         <image src="{{item.banner_url}}"></image>
         <view>
-          <text>{{item.name}}20元话费充值·全网全国运营商吧啦吧啦吧啦吧吧啦吧啦吧啦</text>
+          <text>{{item.name}}</text>
           <label class="number">{{item.coin}}</label>
           <label class="symbol">FLC</label>
         </view>
-        <button>兑换</button>
+        <button @tap="exchangeBtn({{item.id}})">兑换</button>
       </view>
     </view>
   </view>
 </template>
 <script>
   import wepy from 'wepy'
-  // import { service } from '../config.js'
+  import { service } from '../config.js'
   import http from '../mixins/http'
   import base from '../mixins/base'
   export default class WelfareModule extends wepy.component {
@@ -171,14 +171,30 @@
     methods = {
       foamBtn(id, coin, index) {
         console.log(id)
+        let that = this
         if (this.isBubble) {
           this.isBubble = false
           this.bubbleIndex = index
-          setTimeout(function() {
-            this.welfareList.user_coin_pools[index].isShow = false
-            this.isBubble = true
-          }.bind(this), 500)
+          this.$post({
+            url: service.userCoins + id + '/draw',
+            headers: {
+              'X-JINKU-WECHAT-FORM-ID': that.formId
+            }
+          }, {
+            success: ({statusCode, data}) => {
+              if (statusCode === 200) {
+                setTimeout(function() {
+                  that.welfareList.user_coin_pools[index].isShow = false
+                  that.isBubble = true
+                }, 500)
+              }
+            }
+          })
         }
+      },
+      exchangeBtn(id) {
+        console.log(id)
+        this.$goto('exchangeDetails?id=' + id)
       }
     }
     onLoad() {
@@ -299,7 +315,10 @@
           width: 382rpx;
           height: 72rpx;
           overflow: hidden;
-          display: block;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
         }
         label {
           display: inline-block;

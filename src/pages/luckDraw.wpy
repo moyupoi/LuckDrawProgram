@@ -102,8 +102,10 @@
       aasmState: '',
       isShow: true,
       commodityId: null,
-      shereUserId: null,
+      shareUserId: null,
       shareUrl: 'pages/luckDraw',
+      shareBannerUrl: '',
+      shareName: '',
       leftChance: 0,
       isCanDraw: false,
       isReachPrizeLimit: false,
@@ -118,7 +120,7 @@
     onLoad (options) {
       this.luckDrawId = options.id
       // options.id = '5b2c99544f14bf2c077cc43c'
-      this.shereUserId = options.shereUserId ? options.shereUserId : null
+      this.shareUserId = options.shareUserId ? options.shareUserId : null
       if (!this.isUndefined(options.share) && !this.isUndefined(options.id)) {
         this.isShareBtn = true
       }
@@ -145,6 +147,8 @@
           that.leftChance = data.left_chance
           that.isReachPrizeLimit = data.is_reach_prize_limit
           that.isLoading = false
+          that.shareBannerUrl = data.banner_url
+          that.shareName = data.name
           // that.isHasdraw = false
         }
       })
@@ -195,7 +199,7 @@
             'X-JINKU-WECHAT-FORM-ID': that.formId
           },
           data: {
-            share_user_id: this.shereUserId
+            share_user_id: this.shareUserId
           }
         }, {
           success: ({statusCode, data}) => {

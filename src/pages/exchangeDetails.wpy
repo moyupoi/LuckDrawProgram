@@ -1,0 +1,237 @@
+<template>
+  <LoadingZ :isShow.sync="isShow"></LoadingZ>
+  <LoadingX :isLoading.sync="isLoading"></LoadingX>
+  <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
+  <view class="commodityDetails">
+    <image class="banner" src="{{exchangeList.banner_url}}"></image>
+    <view class="describe">
+      <text>{{exchangeList.name}}</text>
+      <view class="price">
+        <label>{{exchangeList.coin}}</label>
+        <label>福利币</label>
+      </view>
+      <label class="stockNumber">剩余 {{exchangeList.stock_number}}</label>
+    </view>
+    <view class="explain">
+      <label>兑换说明</label>
+      <text>{{exchangeList.memo}}</text>
+    </view>
+    <view class="getPhone">
+      <label>手机号：</label>
+      <input type="number" placeholder="请填写要充值的手机号" maxlength="11" placeholder-class="phonePlaceholder" bindinput="bindinput" value="{{myPhone}}"></input>
+      <button open-type="getPhoneNumber" bindgetphonenumber="getphonenumber">使用本机号码</button>
+    </view>
+    <view class="exchangeBtn">
+      <button @tap="exchangeBtn">立即兑换</button>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import { service } from '../config.js'
+  import http from '../mixins/http'
+  import base from '../mixins/base'
+  import LoadingZ from '../components/LoadingZ'
+  import LoadingX from '../components/LoadingX'
+  import TitleBar from '../components/TitleBar'
+  export default class ExchangeDetails extends wepy.page {
+    mixins = [http, base]
+    config = {
+      // navigationBarTitleText: '中奖纪录'
+    }
+    data = {
+      isShow: true,
+      isBackBtn: true,
+      exchangeList: {},
+      myPhone: '',
+      isLoading: false,
+      id: ''
+    }
+    components = {
+      LoadingZ,
+      LoadingX,
+      TitleBar
+    }
+    methods = {}
+    onLoad(options) {
+      let id = options.id
+      this.id = options.id
+      this.exchangeInit(id)
+    }
+    onShow() {}
+    exchangeInit(id) {
+      let that = this
+      this.$get({url: service.products + id}, {
+        success: ({statusCode, data}) => {
+          that.exchangeList = data
+          that.isShow = false
+        }
+      })
+    }
+    bindinput(event) {
+      this.myPhone = event.detail.value
+    }
+    getphonenumber(event) {
+      let that = this
+      if (event.detail.errMsg === 'getPhoneNumber:ok') {
+        this.isLoading = true
+        this.$post({
+          url: service.updateMobile,
+          headers: {
+            'X-JINKU-WECHAT-FORM-ID': that.formId
+          },
+          data: {
+            encryptedData: event.detail.encryptedData,
+            iv: event.detail.iv
+          }
+        }, {
+          success: ({statusCode, data}) => {
+            if (statusCode === 200) {
+              that.myPhone = data.mobile
+              that.isLoading = false
+            }
+          }
+        })
+      }
+    }
+    exchangeBtn() {
+      if (this.myPhone.length !== 11 && !(/^1[3|4|5|7|8]\d{9}$/.test(this.myPhone))) {
+        this.$alert('What？您的手机号？')
+      } else {
+        let that = this
+        this.isLoading = true
+        this.$post({
+          url: service.products + that.id + '/exchange',
+          headers: {
+            'X-JINKU-WECHAT-FORM-ID': that.formId
+          },
+          data: {
+            mobile: that.myPhone
+          }
+        }, {
+          success: ({statusCode, data}) => {
+            if (statusCode === 200) {
+              this.isLoading = false
+              this.$alert(data.message)
+            }
+          }
+        })
+      }
+    }
+  }
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  @import "../assets/stylesheets/layout.scss";
+  .commodityDetails {
+    .banner {
+      width: 750rpx;
+      height: 400rpx;
+      display: block;
+    }
+    .describe {
+      background: #fff;
+      padding: 32rpx;
+      position: relative;
+      text {
+        font-size: 40rpx;
+        color: #333333;
+        line-height: 42rpx;
+        width: 680rpx;
+        height: 40rpx;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        text-align: left;
+      }
+      .price {
+        margin-top: 10rpx;
+        label {
+          font-size: 26rpx;
+          display: inline-block;
+          color: #999999;
+          &:nth-of-type(1) {
+            color: #FA5C37;
+            margin-right: 16rpx;
+          }
+        }
+      }
+      .stockNumber {
+        font-size: 26rpx;
+        color: #666666;
+        position: absolute;
+        top: 95rpx;
+        right: 32rpx;
+      }
+    }
+    .explain {
+      width: 100%;
+      background: #fff;
+      padding: 30rpx 28rpx 32rpx 28rpx;
+      margin-top: 32rpx;
+      label {
+        font-size: 28rpx;
+        color: #666666;
+      }
+      text {
+        margin-top: 16rpx;
+        font-size: 30rpx;
+        color: #333333;
+        line-height: 50rpx;
+        width: 686rpx;
+        display: block;
+      }
+    }
+    .getPhone {
+      width: 100%;
+      height: 100rpx;
+      background: #fff;
+      margin: 32rpx 0 158rpx;
+      padding: 0 32rpx;
+      label {
+        display: inline-block;
+        font-size: 28rpx;
+        color: #333333;
+        line-height: 100rpx;
+      }
+      input {
+        display: inline-block;
+        font-size: 28rpx;
+        vertical-align: middle;
+      }
+      .phonePlaceholder {
+        font-size: 28rpx;
+        color: #B2B2B2;
+      }
+      button {
+        width: 190rpx;
+        height: 50rpx;
+        border: 1rpx solid #3799FA;
+        color: #3799FA;
+        font-size: 24rpx;
+        line-height: 49rpx;
+        background: #fff;
+        border-radius: 50rpx;
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 90rpx;
+      }
+    }
+    .exchangeBtn {
+      background: #fff;
+      height: 132rpx;
+      overflow: hidden;
+      button {
+        margin-top: 20rpx;
+        width: 686rpx;
+        height: 92rpx;
+        font-size: 36rpx;
+        font-weight: 300;
+        color: #fff;
+        background: #FA5C37;
+        border-radius: 50rpx;
+      }
+    }
+  }
+</style>
