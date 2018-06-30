@@ -137,7 +137,9 @@
   .homeSurround {
     .topBanner {
       overflow: hidden;
-      position: relative;
+      position: fixed;
+      top: 180rpx;
+      z-index: 2;
       .tab {
         width: 100%;
         text-align: center;
@@ -201,6 +203,7 @@
       position: relative;
       z-index: 1;
       padding: 36rpx;
+      margin-top: 100rpx;
       overflow: hidden;
       .prizesItem {
         margin-bottom: 32rpx;
