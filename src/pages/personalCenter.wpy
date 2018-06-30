@@ -18,19 +18,19 @@
     <image src="../assets/images/personalCenter/banner.png" class="bannerImg"></image>
     <view class="informationBar" @tap="toFLBRecord">
       <view>
-        <label>123</label>
+        <label>{{userInfo.left_coin}}</label>
         <text>福利币</text>
       </view>
       <view>
-        <label>123</label>
+        <label>{{userInfo.continue_online_days}}</label>
         <text>连续签到</text>
       </view>
       <view>
-        <label>123</label>
+        <label>{{userInfo.left_chance}}</label>
         <text>抽奖机会</text>
       </view>
       <view>
-        <label>123</label>
+        <label>{{userInfo.invite_number}}</label>
         <text>邀请好友</text>
       </view>
     </view>
@@ -66,7 +66,7 @@
         <button formType="submit"></button>
         <image src="../assets/images/personalCenter/icon05.png"></image>
         <text>兑换记录</text>
-        <label>{{count}}</label>
+        <label>{{userInfo.count}}</label>
       </view>
       <view class="address" @tap="address">
         <button formType="submit"></button>
@@ -90,7 +90,7 @@
     }
     data = {
       titleText: '我的',
-      count: 0,
+      userInfo: {},
       isBackBtn: true,
       transmissionType: 'home',
       phoneNumberAuthentication: false
@@ -105,7 +105,7 @@
       let that = this
       this.$get({url: service.prizesMine}, {
         success: ({statusCode, data}) => {
-          that.count = data.left_chance
+          that.userInfo = data
           if (data.mobile !== null) {
             that.phoneNumberAuthentication = true
           }
