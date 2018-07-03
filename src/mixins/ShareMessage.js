@@ -25,7 +25,6 @@ export default class ShareMessage extends wepy.mixin {
       let userId = this.$getUserId()
       let resData = res.source.data
       let shareData = {}
-      debugger
       if (resData.isShare) {
         shareData.path = resData.shareUrl ? resData.shareUrl + '?id=' + resData.commodityId + '&share=true&shareUserId=' + userId : ''
         shareData.imageUrl = resData.shareBannerUrl ? resData.shareBannerUrl : ''
@@ -34,7 +33,7 @@ export default class ShareMessage extends wepy.mixin {
           shareData
         }
       }
-      
+
       // if (resData.shareBannerUrl && resData.isShare && resData.commodityId && resData.shareUrl && userId) {
       //   return {
       //     path: resData.shareUrl + '?id=' + resData.commodityId + '&share=true&shareUserId=' + userId,

@@ -6,52 +6,63 @@
       <button class="switchTabBtn {{switchTabName === '0' ? 'active' : ''}}" formType="submit" @tap="switchTabBtn('0')">总榜</button>
       <button class="switchTabBtn {{switchTabName === '1' ? 'active' : ''}}" formType="submit" @tap="switchTabBtn('1')">好友榜</button>
     </view>
-    <view class="own">
-      <view class="portraitView">
-        <open-data type="userAvatarUrl" class="portrait" style="clip-path: circle(50% at center)"></open-data>
-      </view>
-      <view class="userInfo">
-        <text>墨鱼卷</text>
-        <text>未进入前100名</text>
-      </view>
-      <view class="money">
-        <label>365</label>
-        <label>FLC</label>
-      </view>
-    </view>
     <view class="generalList" wx:if="{{switchTabName === '0'}}">
-      <view class="participantList">
-        <view class="participant">
-          <view class="portraitView">
-            <image src="../assets/images/test/tx.jpg"></image>
-          </view>
-          <view class="userInfo">
-            <text>墨鱼卷</text>
-            <text>第1名</text>
-          </view>
-          <view class="money">
-            <label>365</label>
-            <label>FLC</label>
-          </view>
+      <view class="own">
+        <view class="portraitView">
+          <image src="{{forAllList.ranking_self.avatar_url}}" type="userAvatarUrl" class="portrait" style="clip-path: circle(50% at center)"></image>
         </view>
-        <view class="participant">
-          <view class="portraitView">
-            <image src="../assets/images/test/tx.jpg"></image>
+        <view class="userInfo">
+          <text>{{forAllList.ranking_self.nick_name}}</text>
+          <text>{{forAllList.ranking_self.ranking_memo}}</text>
+        </view>
+        <view class="money">
+          <label>{{forAllList.ranking_self.left_coin}}</label>
+          <label>FLC</label>
+        </view>
+      </view>
+      <view class="participantList">
+        <view class="participant" wx:for="{{forAllList.ranking_users}}" wx:key="index">
+          <view class="portraitView" >
+            <image src="{{item.avatar_url}}"></image>
           </view>
           <view class="userInfo">
-            <text>墨鱼卷</text>
-            <text>第1名</text>
+            <text>{{item.nick_name}}</text>
+            <text>第{{item.ranking_index}}名</text>
           </view>
           <view class="money">
-            <label>365</label>
+            <label>{{item.left_coin}}</label>
             <label>FLC</label>
           </view>
         </view>
       </view>
     </view>
     <view class="friends" wx:if="{{switchTabName === '1'}}">
+      <view class="own">
+        <view class="portraitView">
+          <image src="{{forFriendList.ranking_self.avatar_url}}" type="userAvatarUrl" class="portrait" style="clip-path: circle(50% at center)"></image>
+        </view>
+        <view class="userInfo">
+          <text>{{forAllList.ranking_self.nick_name}}</text>
+          <text>{{forAllList.ranking_self.ranking_memo}}</text>
+        </view>
+        <view class="money">
+          <label>{{forAllList.ranking_self.left_coin}}</label>
+          <label>FLC</label>
+        </view>
+      </view>
       <view class="participantList">
-        <view class="participant">
+        <view class="participant" wx:for="{{forFriendList.ranking_users}}" wx:key="index">
+          <view class="portraitView" >
+            <image src="{{item.avatar_url}}"></image>
+          </view>
+          <view class="userInfo">
+            <text>{{item.nick_name}}</text>
+            <text>第{{item.ranking_index}}名</text>
+          </view>
+          <view class="money">
+            <label>{{item.left_coin}}</label>
+            <label>FLC</label>
+          </view>
         </view>
       </view>
     </view>
@@ -59,7 +70,7 @@
 </template>
 <script>
   import wepy from 'wepy'
-  // import { service } from '../config.js'
+  import { service } from '../config.js'
   import http from '../mixins/http'
   import base from '../mixins/base'
   import LoadingZ from '../components/LoadingZ'
@@ -71,9 +82,11 @@
     }
     data = {
       titleText: '排行榜',
-      isShow: false,
+      isShow: true,
       isBackBtn: true,
-      switchTabName: '0'
+      switchTabName: '0',
+      forAllList: [],
+      forFriendList: []
     }
     components = {
       LoadingZ,
@@ -81,15 +94,28 @@
     }
     methods = {}
     onLoad() {
-      // let that = this
-      // this.$get({url: service.prizesDrawsIndexForGet}, {
-      //   success: ({statusCode, data}) => {
-      //   }
-      // })
+      let that = this
+      this.$get({url: service.userCoinsRankingForAll}, {
+        success: ({statusCode, data}) => {
+          that.forAllList = data
+          that.isShow = false
+        }
+      })
     }
     onShow() {}
     switchTabBtn(event) {
       this.switchTabName = event.target.dataset.wpyswitchtabbtnA
+      if (event.target.dataset.wpyswitchtabbtnA === '1' && this.forFriendList.length <= 0) {
+        this.forFriendInit()
+      }
+    }
+    forFriendInit() {
+      let that = this
+      this.$get({url: service.userCoinsRankingForFriend}, {
+        success: ({statusCode, data}) => {
+          that.forFriendList = data
+        }
+      })
     }
   }
 </script>

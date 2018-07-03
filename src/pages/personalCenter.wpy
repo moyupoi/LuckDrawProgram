@@ -1,4 +1,5 @@
 <template>
+  <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
   <TransmissionGate :transmissionType.sync="transmissionType"></TransmissionGate>
   <view class="banner">
@@ -82,6 +83,7 @@
   import http from '../mixins/http'
   import base from '../mixins/base'
   import TitleBar from '../components/TitleBar'
+  import LoadingZ from '../components/LoadingZ'
   import TransmissionGate from '../components/TransmissionGate'
   export default class PersonalCenter extends wepy.page {
     mixins = [http, base]
@@ -91,13 +93,15 @@
     data = {
       titleText: '我的',
       userInfo: {},
+      isShow: true,
       isBackBtn: true,
       transmissionType: 'home',
       phoneNumberAuthentication: false
     }
     components = {
       TitleBar,
-      TransmissionGate
+      TransmissionGate,
+      LoadingZ
     }
     methods = {}
     onLoad() {}
@@ -106,6 +110,7 @@
       this.$get({url: service.prizesMine}, {
         success: ({statusCode, data}) => {
           that.userInfo = data
+          that.isShow = false
           if (data.mobile !== null) {
             that.phoneNumberAuthentication = true
           }

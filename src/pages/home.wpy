@@ -37,10 +37,10 @@
       prizesQueuingList: [],
       welfareList: [],
       bannerUrl: '',
-      isShow: false,
+      isShow: true,
       barHeight: 0,
       formId: null,
-      switchTabName: '2',
+      switchTabName: '0',
       transmissionType: 'personalCenter'
     }
     components = {
@@ -107,6 +107,7 @@
           this.welfareList.user_coin_pools.map((item, i) => {
             this.welfareList.user_coin_pools[i].isShow = true
           })
+          this.isShow = false
         }
       })
     }
@@ -138,6 +139,7 @@
     }
     switchTabBtn(event) {
       this.switchTabName = event.target.dataset.wpyswitchtabbtnA
+      this.isShow = true
       switch (event.target.dataset.wpyswitchtabbtnA) {
         case '0':
           this.indexForDraw()
