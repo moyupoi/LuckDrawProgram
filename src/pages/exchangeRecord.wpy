@@ -6,18 +6,20 @@
       <button class="switchTabBtn {{switchTabName === '0' ? 'active' : ''}}" formType="submit" @tap="switchTabBtn('0')">兑换中</button>
       <button class="switchTabBtn {{switchTabName === '1' ? 'active' : ''}}" formType="submit" @tap="switchTabBtn('1')">兑换成功</button>
     </view>
-    <view class="rechargeRecord">
-      <view>
-        <text class="title">20元话费充值·全网全国运营商吧啦吧啦吧啦吧吧啦吧啦吧吧啦吧啦吧吧啦吧啦吧啦吧吧</text>
-        <label>500</label>
+    <view class="rechargeRecord" wx:if="{{switchTabName === '0'}}">
+      <view wx:for="{{recordList.list_for_pending}}" wx:key="index">
+        <text class="title">{{item.product_name}}</text>
+        <label>{{item.coin}}</label>
         <label>FLB</label>
-        <text class="phone">充值手机号: 13000000000</text>
+        <text class="phone">充值手机号: {{item.mobile}}</text>
       </view>
-      <view>
-        <text class="title">20元话费充值·全网全国运营商吧啦吧啦吧啦吧吧啦吧啦吧吧啦吧啦吧吧啦吧啦吧啦吧吧</text>
-        <label>500</label>
+    </view>
+    <view class="rechargeRecord" wx:if="{{switchTabName === '1'}}">
+      <view wx:for="{{recordList.list_for_success}}" wx:key="index">
+        <text class="title">{{item.product_name}}</text>
+        <label>{{item.coin}}</label>
         <label>FLB</label>
-        <text class="phone">充值手机号: 13000000000</text>
+        <text class="phone">充值手机号: {{item.mobile}}</text>
       </view>
     </view>
   </view>
@@ -36,9 +38,10 @@
     }
     data = {
       titleText: '兑奖记录',
-      isShow: false,
+      isShow: true,
       isBackBtn: true,
-      switchTabName: '0'
+      switchTabName: '0',
+      recordList: []
     }
     components = {
       LoadingZ,
@@ -46,9 +49,11 @@
     }
     methods = {}
     onLoad() {
-      // let that = this
-      this.$get({url: service.prizesDrawsIndexForGet}, {
+      let that = this
+      this.$get({url: service.exchanges}, {
         success: ({statusCode, data}) => {
+          that.recordList = data
+          that.isShow = false
         }
       })
     }
@@ -107,7 +112,7 @@
           color: #333333;
           line-height: 36rpx;
           width: 622rpx;
-          height: 72rpx;
+          max-height: 72rpx;
           overflow: hidden;
           text-overflow: ellipsis;
           display: -webkit-box;
