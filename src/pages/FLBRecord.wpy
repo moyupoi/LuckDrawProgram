@@ -5,7 +5,7 @@
     <view class="total">
       <view>
         <label>{{leftCoin}}</label>
-        <text>福利币余额</text>
+        <text>福利分余额</text>
       </view>
       <view>
         <label>{{totalCoin}}</label>
@@ -40,7 +40,7 @@
       // navigationBarTitleText: '中奖纪录'
     }
     data = {
-      titleText: '我的FLB',
+      titleText: '我的福利分',
       isShow: true,
       isBackBtn: true,
       FLBList: [],

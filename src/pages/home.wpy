@@ -1,7 +1,7 @@
 <template>
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <TransmissionGate :transmissionType.sync="transmissionType"></TransmissionGate>
-  <TitleBar :titleText.sync="titleText" :switchTabName.sync="switchTabName"></TitleBar>
+  <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText" :switchTabName.sync="switchTabName"></TitleBar>
   <view class="switchTab">
     <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true">
       <button class="switchTabBtn {{switchTabName === '0' ? 'active' : '' }}" open-type="reLaunch" formType="submit" @tap="switchTabBtn('0')">抽奖</button>
@@ -20,6 +20,7 @@
   import { service } from '../config.js'
   import http from '../mixins/http'
   import base from '../mixins/base'
+  import ShareMessage from '../mixins/ShareMessage'
   import LoadingZ from '../components/LoadingZ'
   import TitleBar from '../components/TitleBar'
   import PrizesListModule from '../components/PrizesListModule'
@@ -27,7 +28,7 @@
   import WelfareModule from '../components/WelfareModule'
   import TransmissionGate from '../components/TransmissionGate'
   export default class Home extends wepy.page {
-    mixins = [http, base]
+    mixins = [http, base, ShareMessage]
     config = {
       // navigationBarTitleText: '搞点福利'
     }
@@ -41,7 +42,8 @@
       barHeight: 0,
       formId: null,
       switchTabName: '0',
-      transmissionType: 'personalCenter'
+      transmissionType: 'personalCenter',
+      isBackBtn: false
     }
     components = {
       LoadingZ,
@@ -101,13 +103,14 @@
       })
     }
     welfareInit() {
+      let that = this
       this.$get({url: service.userCoins}, {
         success: ({statusCode, data}) => {
-          this.welfareList = data
-          this.welfareList.user_coin_pools.map((item, i) => {
-            this.welfareList.user_coin_pools[i].isShow = true
+          that.welfareList = data
+          that.welfareList.user_coin_pools.map((item, i) => {
+            that.welfareList.user_coin_pools[i].isShow = true
           })
-          this.isShow = false
+          that.isShow = false
         }
       })
     }
@@ -259,10 +262,9 @@
           view {
             .isJoin {
               font-size: 24rpx;
-              color: #666666;
               line-height: 32rpx;
               display: inline-block;
-              color: #999999;
+              color: #FB5A35;
               margin-right: 10rpx;
               position: relative;
             }

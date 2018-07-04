@@ -2,6 +2,33 @@
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <LoadingX :isLoading.sync="isLoading"></LoadingX>
   <TitleBar :isBackBtn.sync="isBackBtn" :isShareBtn.sync="isShareBtn" :titleText.sync="titleText"></TitleBar>
+  <view class="canvasBox">
+    <canvas class="canvas" canvas-id="canvas" style="width: 750rpx;height: 1034rpx;"></canvas>
+  </view>
+  <view class="shareWicket" wx:if="{{isShareWicket}}">
+    <view class="forward" @tap="closeShareSwitch">
+      <view class="diagram">
+        <image src="{{titaList.banner_url}}" class="banner"></image>
+        <view class="detailed">
+          <text class="title">{{titaList.name}}</text>
+          <view class="person">
+            <label>已有</label>
+            <label>{{prizeDrawsCount}}</label>
+            <label>人次参加</label>
+          </view>
+          <image class="progressBar" src="../assets/images/luckDraw/progressBar.png"></image>
+          <image class="code" src="{{codeImg}}"></image>
+          <text class="participate">长按识别小程序，参加抽奖</text>
+          <text class="projectName">搞点福利</text>
+          <view class="hr"></view>
+        </view>
+      </view>
+      <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub">
+        <button class="shareIncrease" open-type="share" formType="submit">转发给好友</button>
+        <button @tap="shareFriends">生成朋友圈分享图</button>
+      </form>
+    </view>
+  </view>
   <view class="luckDrawSurround">
     <image src="{{titaList.banner_url}}" class="banner"></image>
     <view class="describe">
@@ -28,14 +55,14 @@
       <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub" wx:if="{{aasmState !== 'finishing' && aasmState !== 'finished' && !isReachPrizeLimit}}">
         <button class="drawBtn" @getuserinfo="drawBtn" open-type="getUserInfo" formType="submit" wx:if="{{!isHasdraw}}">立即抽奖</button>
         <button class="surplus {{leftChance === 0 ? 'active' : ''}}" @getuserinfo="drawBtn" open-type="getUserInfo" formType="submit" wx:if="{{isHasdraw}}">剩余抽奖机会{{leftChance}}次</button>
-        <button class="shareIncrease" open-type="share" formType="submit" wx:if="{{isHasdraw}}">分享增加抽奖机会</button>
+        <button class="shareIncrease" formType="submit" wx:if="{{isHasdraw}}" @tap="shareSwitch">分享增加抽奖机会</button>
       </form>
       <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub" wx:if="{{aasmState !== 'finishing' && aasmState !== 'finished' && isReachPrizeLimit}}">
         <button class="surplus active" @getuserinfo="drawBtn" open-type="getUserInfo" formType="submit">{{titaList.prize_limit_message}}</button>
-        <button class="shareIncrease" open-type="share" formType="submit" wx:if="{{isHasdraw}}">分享增加抽奖机会</button>
+        <button class="shareIncrease" formType="submit" wx:if="{{isHasdraw}}" @tap="shareSwitch">分享增加抽奖机会</button>
       </form>
       <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub" wx:if="{{aasmState === 'finishing' || aasmState === 'finished'}}">
-        <navigator hover-class="none" url="/pages/home" class="drawBtn" open-type="share" formType="submit">参加其他抽奖</navigator>
+        <navigator hover-class="none" url="/pages/home" class="drawBtn" formType="submit">参加其他抽奖</navigator>
         <text>本活动已结束</text>
       </form>
     </view>
@@ -59,7 +86,7 @@
         查看全部>
       </navigator>
       <form bindsubmit="formSubmit" report-submit="true" class="formSub">
-        <button class="shareIncrease" open-type="share" formType="submit">分享给好友</button>
+        <button class="shareIncrease" formType="submit" @tap="shareSwitch">分享给好友</button>
       </form>
     </view>
 
@@ -88,7 +115,6 @@
     data = {
       titleText: '抽奖详情',
       isBackBtn: true,
-      luckDrawId: '',
       isShare: true,
       isShareBtn: false,
       titaList: {},
@@ -109,7 +135,9 @@
       leftChance: 0,
       isCanDraw: false,
       isReachPrizeLimit: false,
-      isLoading: false
+      isLoading: false,
+      isShareWicket: false,
+      codeImg: ''
     }
     components = {
       LoadingZ,
@@ -118,20 +146,49 @@
     }
     methods = {}
     onLoad (options) {
-      this.luckDrawId = options.id
-      // options.id = '5b2c99544f14bf2c077cc43c'
-      this.shareUserId = options.shareUserId ? options.shareUserId : null
-      if (!this.isUndefined(options.share) && !this.isUndefined(options.id)) {
-        this.isShareBtn = true
-      }
-      if (!this.isUndefined(options.id) && options.id !== '') {
-        this.luckDrawInit(options.id)
+      // 通过二维码进入
+      if (!this.isUndefined(options.scene)) {
+        let scene = decodeURIComponent(options.scene)
+        this.wechatRestoreScene(scene)
+      } else {
+        // 分享或者直接进入
+        this.commodityId = options.id
+        // options.id = '5b2c99544f14bf2c077cc43c'
+        this.shareUserId = options.shareUserId ? options.shareUserId : null
+        if (!this.isUndefined(options.share) && !this.isUndefined(options.id)) {
+          this.isShareBtn = true
+        }
+        if (!this.isUndefined(options.id) && options.id !== '') {
+          this.luckDrawInit()
+        }
       }
     }
     onShow () {}
-    luckDrawInit(id) {
+    wechatRestoreScene(scene) {
+      this.$get({
+        url: service.wechatRestoreScene + '?scene=' + scene
+      }, {
+        success: ({statusCode, data}) => {
+          if (statusCode === 200) {
+            this.commodityId = data.prize_id
+            this.shareUserId = data.share_user_id
+            this.isShareBtn = true
+            switch (data.category) {
+              case 'share_prize':
+                this.shareUrl = 'pages/luckDraw'
+                break
+              default:
+                this.shareUrl = 'pages/home'
+                break
+            }
+            this.luckDrawInit()
+          }
+        }
+      })
+    }
+    luckDrawInit() {
       let that = this
-      this.$get({url: service.prizes + id}, {
+      this.$get({url: service.prizes + this.commodityId}, {
         success: ({statusCode, data}) => {
           that.titaList = data
           that.reachNumber = data.reach_number
@@ -150,6 +207,8 @@
           that.shareBannerUrl = data.banner_url
           that.shareName = data.name
           // that.isHasdraw = false
+          // this.createNewImg()
+          that.codeImg = service.wxacodeunlimit + '?scene=share_prize:' + this.commodityId + ':' + this.$getUserId() + '&page=' + this.shareUrl
         }
       })
     }
@@ -197,9 +256,6 @@
           url: service.prizes + this.titaList.id + '/draw',
           headers: {
             'X-JINKU-WECHAT-FORM-ID': that.formId
-          },
-          data: {
-            share_user_id: this.shareUserId
           }
         }, {
           success: ({statusCode, data}) => {
@@ -211,7 +267,7 @@
                 title: '参加成功',
                 icon: 'success'
               })
-              that.luckDrawInit(that.luckDrawId)
+              that.luckDrawInit()
             } else {
               that.isLoading = false
             }
@@ -219,13 +275,190 @@
         })
       }
     }
-    onShareAppMessage(res) {
-      return this.$parent.onShareAppMessage()
+    shareSwitch() {
+      // /v1/users/wxacodeunlimit?scene=12&page=pages/prize
+      // let scene = 'share_prize:' + this.commodityId + ':' + this.$getUserId()
+      // scene = service.wxacodeunlimit + '?scene=' + scene + '&page=' + this.shareUrl
+      // debugger
+      // this.$get({url: service.wxacodeunlimit + '?scene=' + scene + '&page=' + this.shareUrl}, {
+      //   success: ({statusCode, data}) => {
+      //     debugger
+      //   }
+      // })
+      this.isShareWicket = true
+    }
+    closeShareSwitch() {
+      this.isShareWicket = false
+    }
+    settextSentence(ctx) {
+      ctx.setFillStyle('#27303A')
+      ctx.fillRect(100, 100, 150, 75)
+      ctx.setFillStyle('red')
+      ctx.fillRect(10, 10, 150, 75)
+    }
+    createNewImg() {
+      let ctx = wepy.createCanvasContext('canvas', this)
+      // this.settextSentence(ctx)
+      let scene = 'share_prize:' + this.commodityId + ':' + this.$getUserId()
+      scene = service.wxacodeunlimit + '?scene=' + scene + '&page=' + this.shareUrl
+      this.drawImage(ctx, scene, 100, 100, 100, 100)
+      this.drawImage(ctx, scene, 200, 100, 100, 100)
+      ctx.draw()
+    }
+    setCanvasSize() {
+      var size = {}
+      try {
+        var res = wepy.getSystemInfoSync()
+        // 画布宽度
+        // var scale = 1300
+        // 生成图片的宽高比例
+        var scaleH = 2400 / 1300
+        // 画布宽度
+        var width = res.windowWidth
+        // 画布的高度
+        var height = res.windowWidth * scaleH
+        size.w = width
+        size.h = height
+      } catch (e) {
+        // Do something when catch error
+        // console.log("获取设备信息失败" + e)
+      }
+      return size
+    }
+
+    drawImage(ctx, url, left, top, width, height) {
+      ctx.save()
+      ctx.beginPath()
+      ctx.arc(width / 2 + left, height / 2 + top, width / 2, 0, Math.PI * 2, false)
+      ctx.clip()
+      return new Promise((resolve, reject) => {
+        wepy.getImageInfo({
+          src: url,
+          success: (res) => {
+            console.log('下载完成')
+            ctx.drawImage(res.path, left, top, width, height)
+            ctx.restore()
+            resolve()
+          },
+          fail: (e) => {
+            reject(e)
+          }
+        })
+      })
     }
   }
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
   @import "../assets/stylesheets/layout.scss";
+  .canvasBox {
+    position: fixed;
+    top: 999999rpx;
+    left: 0;
+    .canvas {
+      background: #fff;
+    }
+  }
+  .shareWicket {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, .5);
+    z-index: 12;
+    overflow: hidden;
+    .forward {
+      .diagram {
+        width: 532rpx;
+        display: block;
+        margin: 228rpx auto 50rpx auto;
+        overflow: hidden;
+        border-radius: 20rpx;
+        .banner {
+          width: 532rpx;
+          height: 296rpx;
+          display: block;
+        }
+        .detailed {
+          background: #fff;
+          padding: 32rpx;
+          position: relative;
+          .title {
+            font-size: 32rpx;
+            display: block;
+            color: #333333;
+            height: 40rpx;
+            overflow: hidden;
+          }
+          .person {
+            label {
+              font-size: 24rpx;
+              color: #0B0A0A;
+              display: inline-block;
+              &:nth-of-type(2) {
+                color: #FF4C21;
+              }
+            }
+          }
+          .progressBar {
+            width: 468rpx;
+            height: 21rpx;
+            display: block;
+            margin-top: 16rpx;
+          }
+          .code {
+            width: 200rpx;
+            height: 200rpx;
+            display: block;
+            margin: 32rpx auto 24rpx auto;
+            border-radius: 50rpx;
+          }
+          .participate {
+            font-size: 24rpx;
+            display: block;
+            text-align: center;
+          }
+          .projectName {
+            width: 140rpx;
+            height: 20rpx;
+            font-size: 20rpx;
+            display: block;
+            text-align: center;
+            background: #fff;
+            margin: 28rpx auto 0 auto;
+            position: relative;
+            z-index: 2;
+          }
+          .hr {
+            width: 468rpx;
+            height: 2rpx;
+            border: 0;
+            background: #ccc;
+            position: absolute;
+            bottom: 37rpx;
+            z-index: 0;
+          }
+        }
+      }
+      button {
+        width: 532rpx;
+        height: 80rpx;
+        border-radius: 50rpx;
+        background: #FA5C37;
+        color: #fff;
+        display: block;
+        font-size: 32rpx;
+        line-height: 80rpx;
+        &:nth-of-type(2) {
+          display: none;
+          margin-top: 32rpx;
+          background: #fff;
+          color: #FA5C37;
+          border: 1rpx solid #FA5C37;
+        }
+      }
+    }
+  }
   .luckDrawSurround {
     .banner {
       display: block;

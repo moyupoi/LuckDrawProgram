@@ -11,7 +11,8 @@
             <text class="name">{{item.brand}} · {{item.name}} · </text>
             <text class="number"> {{item.number}}件</text>
             <view>
-              <text class="isJoin" wx:if="{{item.is_has_draw}}">已参加 |</text>
+              <text class="isJoin" wx:if="{{item.is_has_draw}}">已参加</text>
+              <text class="isJoin2" wx:if="{{item.is_has_draw}}">|</text>
               <label>满 {{item.reach_number}} 人参与开奖</label>
             </view>
           </view>
@@ -49,7 +50,6 @@
     components = {}
     methods = {
       formSubmit (event) {
-        console.log(321)
         let formId = event.detail.formId
         if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
           this.$updataFormId(this.formId)
@@ -133,12 +133,18 @@
         view {
           .isJoin {
             font-size: 24rpx;
-            color: #666666;
             line-height: 32rpx;
             display: inline-block;
-            color: #999999;
+            color: #FB5A35;
             margin-right: 10rpx;
             position: relative;
+          }
+          .isJoin2 {
+            line-height: 32rpx;
+            font-size: 24rpx;
+            display: inline-block;
+            color: #666666;
+            margin-right: 10rpx;
           }
           label {
             font-size: 24rpx;

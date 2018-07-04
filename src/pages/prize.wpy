@@ -44,7 +44,7 @@
       </navigator>
     </view>
   </view>
-  <navigator hover-class="none" class="otherBtn" url="/pages/home" open-type="switchTab">
+  <navigator hover-class="none" class="otherBtn" url="/pages/home">
     参加其他抽奖
   </navigator>
 </template>

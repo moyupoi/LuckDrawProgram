@@ -17,10 +17,10 @@
       </view>
     </view>
     <image src="../assets/images/personalCenter/banner.png" class="bannerImg"></image>
-    <view class="informationBar" @tap="toFLBRecord">
-      <view>
+    <view class="informationBar">
+      <view @tap="toFLBRecord">
         <label>{{userInfo.left_coin}}</label>
-        <text>福利币</text>
+        <text>福利分</text>
       </view>
       <view>
         <label>{{userInfo.continue_online_days}}</label>
@@ -147,7 +147,6 @@
             }
           }
         })
-        console.log(event)
       }
     }
     toFLBRecord() {
@@ -252,7 +251,7 @@
     padding: 32rpx;
     position: absolute;
     width: 686rpx;
-    z-index: 10;
+    z-index: 1;
     top: 517rpx;
     background: none;
     navigator, .address, .opportunity {

@@ -75,8 +75,9 @@
   import base from '../mixins/base'
   import LoadingZ from '../components/LoadingZ'
   import TitleBar from '../components/TitleBar'
+  import ShareMessage from '../mixins/ShareMessage'
   export default class RankingList extends wepy.page {
-    mixins = [http, base]
+    mixins = [http, base, ShareMessage]
     config = {
       // navigationBarTitleText: '中奖纪录'
     }

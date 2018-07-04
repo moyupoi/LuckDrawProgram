@@ -60,7 +60,7 @@ export default class TitleBar extends wepy.component {
   methods = {
     back () {
       if (this.isShareBtn) {
-        wepy.switchTab({
+        wepy.redirectTo({
           url: 'home'
         })
       } else {

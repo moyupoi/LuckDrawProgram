@@ -34,8 +34,9 @@
   import LoadingZ from '../components/LoadingZ'
   import TitleBar from '../components/TitleBar'
   import Barrage from '../components/Barrage'
+  import ShareMessage from '../mixins/ShareMessage'
   export default class Preview extends wepy.page {
-    mixins = [http, base]
+    mixins = [http, base, ShareMessage]
     config = {
       // navigationBarTitleText: '搞点福利'
     }

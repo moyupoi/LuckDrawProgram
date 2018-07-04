@@ -4,6 +4,7 @@ import http from '../mixins/http'
 import base from '../mixins/base'
 
 export default class ShareMessage extends wepy.mixin {
+  mixins = [base]
   onLoad(e) {
     wepy.showShareMenu({
       withShareTicket: true
@@ -25,34 +26,25 @@ export default class ShareMessage extends wepy.mixin {
       let userId = this.$getUserId()
       let resData = res.source.data
       let shareData = {}
-      if (resData.isShare) {
-        shareData.path = resData.shareUrl ? resData.shareUrl + '?id=' + resData.commodityId + '&share=true&shareUserId=' + userId : ''
-        shareData.imageUrl = resData.shareBannerUrl ? resData.shareBannerUrl : ''
-        shareData.title = resData.shareName ? resData.shareName : ''
+      let shareImageUrl = !this.isUndefined(resData.shareBannerUrl) ? resData.shareBannerUrl + '-share' : 'https://oss-lottery.xinyongjinku.com/strategy/share.png'
+      let shareTitle = !this.isUndefined(resData.shareName) ? resData.shareName : '搞点福利'
+      // shareTitle += '-自古城市套路深，还是福利得人心'
+      let shareUrl = !this.isUndefined(resData.shareUrl) ? resData.shareUrl : getCurrentPages()[0].route
+      if (!this.isUndefined(userId)) {
+        shareUrl = shareUrl + '?shareUserId=' + userId + '&share=true'
+      }
+      if (resData.commodityId) {
         return {
-          shareData
+          path: shareUrl + '&id=' + resData.commodityId,
+          imageUrl: shareImageUrl,
+          title: shareTitle
+        }
+      } else {
+        return {
+          imageUrl: shareImageUrl,
+          title: shareTitle
         }
       }
-
-      // if (resData.shareBannerUrl && resData.isShare && resData.commodityId && resData.shareUrl && userId) {
-      //   return {
-      //     path: resData.shareUrl + '?id=' + resData.commodityId + '&share=true&shareUserId=' + userId,
-      //     imageUrl: resData.shareBannerUrl,
-      //     title: resData.shareName
-      //   }
-      // } else if (resData.isShare && resData.commodityId && resData.shareUrl && userId) {
-      //   return {
-      //     path: resData.shareUrl + '?id=' + resData.commodityId + '&share=true&shareUserId=' + userId
-      //   }
-      // } else if (resData.isShare && resData.commodityId) {
-      //   return {
-      //     path: resData.shareUrl + '?id=' + resData.commodityId + '&share=true'
-      //   }
-      // } else if (resData.path) {
-      //   return {
-      //     path: resData.path
-      //   }
-      // }
     }
   }
 }

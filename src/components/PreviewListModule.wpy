@@ -114,10 +114,9 @@
         view {
           .isJoin {
             font-size: 24rpx;
-            color: #666666;
             line-height: 32rpx;
             display: inline-block;
-            color: #999999;
+            color: #FB5A35;
             margin-right: 10rpx;
             position: relative;
           }

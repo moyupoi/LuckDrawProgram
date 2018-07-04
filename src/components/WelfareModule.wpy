@@ -18,14 +18,14 @@
       </view>
     </view>
     <view class="charges">
-      <view class="chargesItem" wx:for="{{welfareList.products}}" wx:key="index">
+      <view class="chargesItem" wx:for="{{welfareList.products}}" wx:key="index" @tap="exchangeBtn({{item.id}})">
         <image src="{{item.banner_url}}"></image>
         <view>
           <text>{{item.name}}</text>
           <label class="number">{{item.coin}}</label>
           <label class="symbol">FLC</label>
         </view>
-        <button @tap="exchangeBtn({{item.id}})">兑换</button>
+        <button>兑换</button>
       </view>
     </view>
   </view>
@@ -170,7 +170,6 @@
     components = {}
     methods = {
       foamBtn(id, coin, index) {
-        console.log(id)
         let that = this
         if (this.isBubble) {
           this.isBubble = false
@@ -183,6 +182,7 @@
           }, {
             success: ({statusCode, data}) => {
               if (statusCode === 200) {
+                that.welfareList.left_coin = data.left_coin
                 setTimeout(function() {
                   that.welfareList.user_coin_pools[index].isShow = false
                   that.isBubble = true
@@ -193,7 +193,6 @@
         }
       },
       exchangeBtn(id) {
-        console.log(id)
         this.$goto('exchangeDetails?id=' + id)
       }
     }
@@ -255,9 +254,10 @@
       height: 100%;
       position: relative;
       .foamItem {
-        width: 120rpx;
+        width: 130rpx;
         height: 140rpx;
         position: absolute;
+        z-index: 2;
         top: 0;
         left: 0;
         transition: opacity .5s ease-in-out;

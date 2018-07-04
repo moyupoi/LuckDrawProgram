@@ -67,7 +67,6 @@ export default class Barrage extends wepy.component {
       that.barrageList[i].time = Math.ceil(Math.random() * 15)
       that.barrageList[i].colors = that.$getRandomColor()
     })
-    console.log(that.barrageList)
   }
 }
 </script>
