@@ -35,6 +35,9 @@
           </view>
         </view>
       </view>
+      <view class="generalButton">
+        <button @tap="receive">领福利分</button>
+      </view>
     </view>
     <view class="friends" wx:if="{{switchTabName === '1'}}">
       <view class="own">
@@ -42,11 +45,11 @@
           <image src="{{forFriendList.ranking_self.avatar_url}}" type="userAvatarUrl" class="portrait" style="clip-path: circle(50% at center)"></image>
         </view>
         <view class="userInfo">
-          <text>{{forAllList.ranking_self.nick_name}}</text>
-          <text>{{forAllList.ranking_self.ranking_memo}}</text>
+          <text>{{forFriendList.ranking_self.nick_name}}</text>
+          <text>{{forFriendList.ranking_self.ranking_memo}}</text>
         </view>
         <view class="money">
-          <label>{{forAllList.ranking_self.left_coin}}</label>
+          <label>{{forFriendList.ranking_self.left_coin}}</label>
           <label>FLC</label>
         </view>
       </view>
@@ -64,6 +67,11 @@
             <label>FLC</label>
           </view>
         </view>
+      </view>
+      <view class="generalButton">
+        <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub">
+          <button @tap="invitation" open-type="share" formType="submit">邀请好友</button>
+        </form>
       </view>
     </view>
   </view>
@@ -87,7 +95,8 @@
       isBackBtn: true,
       switchTabName: '0',
       forAllList: [],
-      forFriendList: []
+      forFriendList: [],
+      shareUrl: 'pages/home'
     }
     components = {
       LoadingZ,
@@ -117,6 +126,18 @@
           that.forFriendList = data
         }
       })
+    }
+    receive() {
+      wepy.redirectTo({
+        url: 'home?tabSwitch=2'
+      })
+    }
+    formSubmit (event) {
+      let formId = event.detail.formId
+      if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
+        this.formId = formId
+        this.$updataFormId(this.formId)
+      }
     }
   }
 </script>
@@ -261,6 +282,25 @@
               }
             }
           }
+        }
+      }
+      .generalButton {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #fff;
+        height: 132rpx;
+        overflow: hidden;
+        button {
+          margin-top: 20rpx;
+          width: 686rpx;
+          height: 92rpx;
+          font-size: 36rpx;
+          font-weight: 300;
+          color: #fff;
+          background: #FA5C37;
+          border-radius: 50rpx;
         }
       }
     }

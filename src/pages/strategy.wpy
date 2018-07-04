@@ -8,15 +8,15 @@
     <image class="img01" src="https://oss-lottery.xinyongjinku.com/strategy/img01.png"></image>
     <text class="titleH2">2.认证手机号，将获得30福利分</text>
     <image class="img02" src="https://oss-lottery.xinyongjinku.com/strategy/img02.png"></image>
-    <text class="titleH2">3.坚持签到，每天签到将获得每日福利，连</text>
+    <text class="titleH2">3.坚持签到，每天签到将获得每日福利，连续7日/15日/30日更能获得额外福利币</text>
     <image class="img03" src="https://oss-lottery.xinyongjinku.com/strategy/img03.png"></image>
-    <label class="titleH3">如何获得更多福利分？</label>
+    <label class="titleH3">福利币获得途径：</label>
     <text class="detailed">
-      ·每日福利，可获得10福利分
-      ·参加抽奖，可获得5福利分
-      ·设置抽奖提醒，可获得5福利分
-      ·安慰奖，可获得10福利分
-      ·好友中奖，可获得10福利分
+      ·每日福利
+      ·参加抽奖
+      ·设置抽奖提醒
+      ·安慰奖
+      ·好友中奖
     </text>
   </view>
 </template>

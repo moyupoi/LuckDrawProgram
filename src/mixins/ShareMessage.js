@@ -39,6 +39,12 @@ export default class ShareMessage extends wepy.mixin {
           imageUrl: shareImageUrl,
           title: shareTitle
         }
+      } else if(!this.isUndefined(resData.shareUrl)) {
+        return {
+          path: shareUrl,
+          imageUrl: shareImageUrl,
+          title: shareTitle
+        }
       } else {
         return {
           imageUrl: shareImageUrl,

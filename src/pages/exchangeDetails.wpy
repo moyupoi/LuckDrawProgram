@@ -41,6 +41,7 @@
       // navigationBarTitleText: '中奖纪录'
     }
     data = {
+      titleText: '兑换福利',
       isShow: true,
       isBackBtn: true,
       exchangeList: {},
@@ -128,6 +129,7 @@
 <style lang="scss" rel="stylesheet/scss" scoped>
   @import "../assets/stylesheets/layout.scss";
   .commodityDetails {
+    overflow: hidden;
     .banner {
       width: 750rpx;
       height: 400rpx;

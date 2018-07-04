@@ -3,7 +3,7 @@
     <view class="floatingFoam">
       <image src="../assets/images/WelfareModule/floatingFoam.png" class="floatingFoamImg"></image>
       <view class="floatingFoamView">
-        <text class="number">{{welfareList.left_coin}}</text>
+        <text class="number">{{welfareList.today_coin}}</text>
         <text class="lab">FLC</text>
         <label>今日获得</label>
       </view>
@@ -221,7 +221,7 @@
       display: block;
       position: absolute;
       top: 70rpx;
-      left: 250rpx;
+      left: 234rpx;
     }
     .floatingFoamView {
       width: 288rpx;
@@ -230,7 +230,7 @@
       position: absolute;
       z-index: 2;
       top: 70rpx;
-      left: 250rpx;
+      left: 237rpx;
       color: #fff;
       text-align: center;
       .number {

@@ -63,7 +63,7 @@
       let that = this
       if (that.nextPage) {
         that.nextPage = false
-        this.$get({url: service.userCoinsBills, data: { page: that.page, per_page: '10' }}, {
+        this.$get({url: service.userCoinsBills, data: { page: that.page, per_page: '50' }}, {
           success: ({statusCode, data}) => {
             that.isShow = false
             if (data.user_coin_bills.length <= 0) {
