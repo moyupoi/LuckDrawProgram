@@ -46,7 +46,7 @@
       <navigator hover-class="none" url="/pages/strategy">
         <button formType="submit"></button>
         <image src="../assets/images/personalCenter/icon02.png"></image>
-        <text>赚币攻略</text>
+        <text>赚分攻略</text>
       </navigator>
       <navigator hover-class="none" url="/pages/past">
         <button formType="submit"></button>

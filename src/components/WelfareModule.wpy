@@ -2,7 +2,7 @@
   <view>
     <view class="floatingFoam">
       <image src="../assets/images/WelfareModule/floatingFoam.png" class="floatingFoamImg"></image>
-      <view class="floatingFoamView">
+      <view class="floatingFoamView" @tap="toFLBRecord">
         <text class="number">{{welfareList.today_coin}}</text>
         <text class="lab">FLC</text>
         <label>今日获得</label>
@@ -194,6 +194,9 @@
       },
       exchangeBtn(id) {
         this.$goto('exchangeDetails?id=' + id)
+      },
+      toFLBRecord() {
+        this.$goto('FLBRecord')
       }
     }
     onLoad() {

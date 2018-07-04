@@ -28,7 +28,7 @@
     mixins = [base]
     config = {}
     data = {
-      titleText: '赚币攻略',
+      titleText: '赚分攻略',
       isBackBtn: true
     }
     components = {
