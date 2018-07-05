@@ -1,0 +1,90 @@
+<template>
+  <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
+  <view class="strategy">
+    <label class="titleH1">什么是福利分？</label>
+    <text class="detailed">福利分是用户在「搞点福利」里获得的奖励，简称FLC；可用于在「搞点福利」平台上的各种兑换／购买。福利分总量有限，随着产出量增大及时间的推移获得难度越来越大，所以早期参与更有优势。</text>
+    <label class="titleH1">如何获得更多福利分？</label>
+    <text class="titleH2">1.邀请好友抽奖，将获得10福利分</text>
+    <image class="img01" src="https://oss-lottery.xinyongjinku.com/strategy/img01.png"></image>
+    <text class="titleH2">2.认证手机号，将获得30福利分</text>
+    <image class="img02" src="https://oss-lottery.xinyongjinku.com/strategy/img02.png"></image>
+    <text class="titleH2">3.坚持签到，每天签到将获得每日福利，连续7日/15日/30日更能获得额外福利分</text>
+    <image class="img03" src="https://oss-lottery.xinyongjinku.com/strategy/img03.png"></image>
+    <label class="titleH3">福利分获得途径：</label>
+    <text class="detailed">
+      ·每日福利
+      ·参加抽奖
+      ·设置抽奖提醒
+      ·未抽中奖品安慰奖
+      ·好友中奖
+    </text>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import base from '../mixins/base'
+  import TitleBar from '../components/TitleBar'
+  export default class Strategy extends wepy.page {
+    mixins = [base]
+    config = {}
+    data = {
+      titleText: '赚分攻略',
+      isBackBtn: true
+    }
+    components = {
+      TitleBar
+    }
+    methods = {}
+    onLoad() {}
+    onShow() {}
+  }
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  @import "../assets/stylesheets/layout.scss";
+  .strategy {
+    padding: 0 32rpx;
+    background: #fff;
+    overflow: hidden;
+    label, text, image {
+      display: block;
+    }
+    .titleH1 {
+      font-size: 40rpx;
+      color: #333333;
+      line-height: 42rpx;
+      margin-bottom: 32rpx;
+    }
+    .titleH3 {
+      font-size: 40rpx;
+      color: #333333;
+      line-height: 42rpx;
+    }
+    .detailed {
+      font-size: 28rpx;
+      color: #333333;
+      line-height: 40rpx;
+      margin-bottom: 64rpx;
+    }
+    .titleH2 {
+      font-size: 28rpx;
+      color: #333333;
+      line-height: 32rpx;
+      margin-bottom: 32rpx;
+    }
+    image {
+      margin: 0 auto;
+    }
+    .img01 {
+      width: 608rpx;
+      height: 622rpx;
+    }
+    .img02 {
+      width: 442rpx;
+      height: 622rpx;
+    }
+    .img03 {
+      width: 410rpx;
+      height: 622rpx;
+    }
+  }
+</style>

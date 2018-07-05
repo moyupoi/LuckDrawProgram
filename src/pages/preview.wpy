@@ -34,8 +34,9 @@
   import LoadingZ from '../components/LoadingZ'
   import TitleBar from '../components/TitleBar'
   import Barrage from '../components/Barrage'
-  export default class Home extends wepy.page {
-    mixins = [http, base]
+  import ShareMessage from '../mixins/ShareMessage'
+  export default class Preview extends wepy.page {
+    mixins = [http, base, ShareMessage]
     config = {
       // navigationBarTitleText: '搞点福利'
     }
@@ -43,7 +44,8 @@
       titleText: '搞点福利',
       prizesList: [],
       prizesQueuingList: [],
-      bannerUrl: '',
+      shareBannerUrl: '',
+      shareName: '',
       isShow: true,
       barHeight: 0,
       tab: true,
@@ -70,7 +72,8 @@
         success: ({statusCode, data}) => {
           that.prizesList = data['prizes']
           that.prizesQueuingList = data['prizes_queuing']
-          that.bannerUrl = data.banner_url
+          that.shareBannerUrl = data.banner_url
+          that.shareName = data.name
           that.isShow = false
         }
       })

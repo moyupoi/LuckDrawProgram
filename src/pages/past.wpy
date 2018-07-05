@@ -45,13 +45,14 @@
   import base from '../mixins/base'
   import LoadingZ from '../components/LoadingZ'
   import TitleBar from '../components/TitleBar'
+  import ShareMessage from '../mixins/ShareMessage'
   export default class Past extends wepy.page {
-    mixins = [http, base]
+    mixins = [http, base, ShareMessage]
     config = {
       // navigationBarTitleText: '我参加的抽奖'
     }
     data = {
-      titleText: '我参加的抽奖',
+      titleText: '抽奖记录',
       isBackBtn: true,
       prizesDrawsList: [],
       selected: true,

@@ -1,0 +1,194 @@
+<template>
+  <LoadingZ :isShow.sync="isShow"></LoadingZ>
+  <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
+  <view class="goldCoin">
+    <view class="total">
+      <view>
+        <label>{{leftCoin}}</label>
+        <text>福利分余额</text>
+      </view>
+      <view>
+        <label>{{totalCoin}}</label>
+        <text>累计获得</text>
+      </view>
+    </view>
+    <view class="record">
+      <block wx:for="{{FLBList}}" wx:key="index">
+        <view class="stage">
+          <label>{{item.date}}</label>
+          <view class="each" wx:for="{{item.list}}" wx:key="x" wx:for-item="nav">
+            <view>
+              <text>{{nav.category_name}}</text>
+              <text>{{nav.coin > 0 ? '+' + nav.coin : nav.coin}}</text>
+            </view>
+          </view>
+        </view>
+      </block>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import { service } from '../config.js'
+  import http from '../mixins/http'
+  import base from '../mixins/base'
+  import LoadingZ from '../components/LoadingZ'
+  import TitleBar from '../components/TitleBar'
+  export default class FLBRecord extends wepy.page {
+    mixins = [http, base]
+    config = {
+      // navigationBarTitleText: '中奖纪录'
+    }
+    data = {
+      titleText: '我的福利分',
+      isShow: true,
+      isBackBtn: true,
+      FLBList: [],
+      leftCoin: '',
+      totalCoin: '',
+      page: 1,
+      nextPage: true,
+      tempDate: []
+    }
+    components = {
+      LoadingZ,
+      TitleBar
+    }
+    methods = {}
+    onLoad() {
+      this.FLBRecordInit()
+    }
+    onShow() {}
+    FLBRecordInit() {
+      let that = this
+      if (that.nextPage) {
+        that.nextPage = false
+        this.$get({url: service.userCoinsBills, data: { page: that.page, per_page: '50' }}, {
+          success: ({statusCode, data}) => {
+            that.isShow = false
+            if (data.user_coin_bills.length <= 0) {
+              that.nextPage = false
+            } else {
+              that.leftCoin = data.left_coin
+              that.totalCoin = data.total_coin
+              let database = this.dataRecomposition(data.user_coin_bills)
+              that.FLBList = database
+              that.nextPage = true
+              that.page += 1
+            }
+          }
+        })
+      }
+    }
+    dataRecomposition(data) {
+      let database = this.FLBList
+      // 循环最新数据
+      for (let i = 0; i < data.length; i++) {
+        let currentData = data[i]
+        // 检测日期是否存在
+        if (this.tempDate.indexOf(currentData.created_at) !== -1) {
+          for (let x = 0; x < database.length; x++) {
+            // 追加到制定日期数组后面
+            if (database[x].date === currentData.created_at) {
+              database[x].list.push(currentData)
+            }
+          }
+        } else {
+          // 创建日期，并追加
+          let dataList = {}
+          dataList.date = ''
+          dataList.list = []
+          dataList['date'] = currentData.created_at
+          dataList['list'].push(currentData)
+          database.push(dataList)
+          // 标记已创建的日期
+          this.tempDate.push(currentData.created_at)
+        }
+      }
+      return database
+    }
+    onReachBottom() {
+      if (this.nextPage) {
+        wepy.showToast({
+          title: '正在加载更多'
+        })
+        this.FLBRecordInit()
+      }
+    }
+  }
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  @import "../assets/stylesheets/layout.scss";
+  .goldCoin {
+    .total {
+      height: 212rpx;
+      background: #fff;
+      view {
+        margin-top: 64rpx;
+        width: 375rpx;
+        display: inline-block;
+        text-align: center;
+        position: relative;
+        &:nth-of-type(1):before {
+          content: '';
+          position: absolute;
+          background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAABACAYAAAA9ONYEAAAAAXNSR0IArs4c6QAAAEFJREFUOBFjYMAGbt68uRWEQXIsIOL///9eIBoEmCAUghwVQIQFiDUaHqPhgRQCQzg5gPM+IyPjNqB3/iN5CcEEAJ/hC/5VhwtWAAAAAElFTkSuQmCC') no-repeat;
+          background-size: 5rpx 70rpx;
+          width: 5rpx;
+          height: 264rpx;
+          top: 15rpx;
+          right: 0;
+        }
+        label {
+          color: #FB5A35;
+          font-size: 40rpx;
+          display: block;
+          margin-bottom: 5rpx;
+        }
+        text {
+          color: #888888;
+          font-size: 28rpx;
+          display: block;
+        }
+      }
+    }
+    .record {
+      .stage {
+        label {
+          width: 100%;
+          background: #F2F3F5;
+          height: 64rpx;
+          font-size: 24rpx;
+          color: #666666;
+          line-height: 64rpx;
+          padding-left:  64rpx;
+        }
+        .each {
+          background: #fff;
+          height: 95rpx;
+          view {
+            width: 654rpx;
+            height: 92rpx;
+            border-bottom: 1rpx solid #EBEBEB;
+            margin: 0 auto;
+            text {
+              float: left;
+              font-size: 28rpx;
+              line-height: 90rpx;
+              color: #333333;
+              margin-left: 20rpx;
+              &:nth-of-type(2) {
+                color: #FB5A35;
+                float: right;
+                margin-right: 20rpx;
+              }
+            }
+          }
+          &:nth-last-of-type(1) > view {
+            border: 0;
+          }
+        }
+      }
+    }
+  }
+</style>

@@ -7,7 +7,9 @@
 </template>
 <script>
 import wepy from 'wepy'
+import base from '../mixins/base'
 export default class TitleBar extends wepy.component {
+  mixins = [base]
   props = {
     barHeight: {
       type: [String, Number],
@@ -32,6 +34,14 @@ export default class TitleBar extends wepy.component {
     titleText: {
       type: [String],
       default: '搞点福利'
+    },
+    formId: {
+      type: [String],
+      default: null
+    },
+    switchTabName: {
+      type: [String],
+      default: '0'
     }
   }
   computed = {
@@ -50,7 +60,7 @@ export default class TitleBar extends wepy.component {
   methods = {
     back () {
       if (this.isShareBtn) {
-        wepy.switchTab({
+        wepy.redirectTo({
           url: 'home'
         })
       } else {
@@ -66,7 +76,7 @@ export default class TitleBar extends wepy.component {
 .tabBarCustom {
   width: 100%;
   z-index: 999;
-  background: #fff;
+  background: #FFF;
   overflow: hidden;
   position: fixed;
   image {
@@ -79,6 +89,7 @@ export default class TitleBar extends wepy.component {
     z-index: 3;
   }
   text {
+    color: #333333;
     font-size: 32rpx;
     font-weight: 600;
     text-align: center;
