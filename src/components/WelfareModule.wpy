@@ -182,7 +182,7 @@
           }, {
             success: ({statusCode, data}) => {
               if (statusCode === 200) {
-                that.welfareList.left_coin = data.left_coin
+                that.welfareList.today_coin = data.today_coin
                 setTimeout(function() {
                   that.welfareList.user_coin_pools[index].isShow = false
                   that.isBubble = true

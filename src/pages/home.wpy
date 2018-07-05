@@ -142,7 +142,7 @@
     }
     switchTabBtn(event) {
       this.switchTabName = event.target.dataset.wpyswitchtabbtnA
-      this.isShow = true
+      // this.isShow = true
       switch (event.target.dataset.wpyswitchtabbtnA) {
         case '0':
           this.indexForDraw()
