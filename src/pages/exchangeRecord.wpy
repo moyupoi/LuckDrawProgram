@@ -1,0 +1,141 @@
+<template>
+  <LoadingZ :isShow.sync="isShow"></LoadingZ>
+  <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
+  <view class="exchangeRecord">
+    <view class="tabSwtich">
+      <button class="switchTabBtn {{switchTabName === '0' ? 'active' : ''}}" formType="submit" @tap="switchTabBtn('0')">兑换中</button>
+      <button class="switchTabBtn {{switchTabName === '1' ? 'active' : ''}}" formType="submit" @tap="switchTabBtn('1')">兑换成功</button>
+    </view>
+    <view class="rechargeRecord" wx:if="{{switchTabName === '0'}}">
+      <view wx:for="{{recordList.list_for_pending}}" wx:key="index">
+        <text class="title">{{item.product_name}}</text>
+        <label>{{item.coin}}</label>
+        <label>FLB</label>
+        <text class="phone">充值手机号: {{item.mobile}}</text>
+      </view>
+    </view>
+    <view class="rechargeRecord" wx:if="{{switchTabName === '1'}}">
+      <view wx:for="{{recordList.list_for_success}}" wx:key="index">
+        <text class="title">{{item.product_name}}</text>
+        <label>{{item.coin}}</label>
+        <label>FLB</label>
+        <text class="phone">充值手机号: {{item.mobile}}</text>
+      </view>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import { service } from '../config.js'
+  import http from '../mixins/http'
+  import base from '../mixins/base'
+  import LoadingZ from '../components/LoadingZ'
+  import TitleBar from '../components/TitleBar'
+  export default class ExchangeRecord extends wepy.page {
+    mixins = [http, base]
+    config = {
+      // navigationBarTitleText: '中奖纪录'
+    }
+    data = {
+      titleText: '兑换记录',
+      isShow: true,
+      isBackBtn: true,
+      switchTabName: '0',
+      recordList: []
+    }
+    components = {
+      LoadingZ,
+      TitleBar
+    }
+    methods = {}
+    onLoad() {
+      let that = this
+      this.$get({url: service.exchanges}, {
+        success: ({statusCode, data}) => {
+          that.recordList = data
+          that.isShow = false
+        }
+      })
+    }
+    onShow() {}
+    switchTabBtn(event) {
+      this.switchTabName = event.target.dataset.wpyswitchtabbtnA
+    }
+  }
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  @import "../assets/stylesheets/layout.scss";
+  .exchangeRecord {
+    height: 108rpx;
+    background: #fff;
+    text-align: center;
+    .switchTabBtn {
+      background: none;
+      color: #666666;
+      font-size: 28rpx;
+      line-height: 108rpx;
+      display: inline-block;
+      text-align: center;
+      padding: 0;
+      &:nth-of-type(2) {
+        margin-left: 260rpx;
+      }
+    }
+    .active {
+      font-size: 32rpx;
+      color: #FF471C;
+      position: relative;
+      &:before {
+        content: '';
+        position: absolute;
+        z-index: 9;
+        display: block;
+        background: #FFA38D;
+        background-size: 28rpx 8rpx;
+        border-radius: 20rpx;
+        width: 50%;
+        height: 8rpx;
+        top: 80rpx;
+        left: 28rpx;
+      }
+    }
+    .rechargeRecord {
+      padding: 32rpx;
+      view {
+        background: #fff;
+        border-radius: 25rpx;
+        margin-bottom: 32rpx;
+        padding: 32rpx;
+        text-align: left;
+        .title {
+          font-size: 26rpx;
+          color: #333333;
+          line-height: 36rpx;
+          width: 622rpx;
+          max-height: 72rpx;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          text-align: justify;
+        }
+        label {
+          margin: 16rpx 0;
+          display: inline-block;
+          font-size: 26rpx;
+          color: #999999;
+          &:nth-of-type(1) {
+            color: #FF471C;
+            margin-right: 16rpx;
+          }
+        }
+        .phone {
+          font-size: 24rpx;
+          color: #808080;
+          display: block;
+        }
+      }
+    }
+  }
+</style>

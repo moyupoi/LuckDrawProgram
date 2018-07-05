@@ -1,58 +1,18 @@
 <template>
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
-  <TitleBar :titleText.sync="titleText"></TitleBar>
-  <Barrage></Barrage>
+  <TransmissionGate :transmissionType.sync="transmissionType"></TransmissionGate>
+  <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText" :switchTabName.sync="switchTabName"></TitleBar>
+  <view class="switchTab">
+    <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true">
+      <button class="switchTabBtn {{switchTabName === '0' ? 'active' : '' }}" open-type="reLaunch" formType="submit" @tap="switchTabBtn('0')">抽奖</button>
+      <button class="switchTabBtn {{switchTabName === '1' ? 'active' : '' }}" open-type="reLaunch" formType="submit" @tap="switchTabBtn('1')">预告</button>
+      <button class="switchTabBtn {{switchTabName === '2' ? 'active' : '' }}" open-type="reLaunch" formType="submit" @tap="switchTabBtn('2')">福利</button>
+    </form>
+  </view>
   <view class="homeSurround">
-    <view class="topBanner">
-      <view class="tab">
-        <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true">
-          <button @tap="haveInHand(1)" formType="submit">
-            <text class="{{tab ? 'active' : ''}}">进行中</text>
-            <view class="{{tab ? 'selected' : ''}}"></view>
-          </button>
-          <button @tap="haveInHand(0)" formType="submit">
-            <text class="{{!tab ? 'active' : ''}}">即将开始</text>
-            <view class="{{!tab ? 'selected' : ''}}"></view>
-          </button>
-        </form>
-      </view>
-    </view>
-    <view class="prizes">
-      <form bindsubmit="formSubmit" report-submit="true">
-        <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}" class="prizesItem"  wx:for="{{prizesList}}" wx:key="index" wx:if="{{tab}}">
-          <view class="banner">
-            <image src="{{item.banner_url}}"></image>
-          </view>
-          <button formType="submit" class="prizesItemFormSubmit"></button>
-          <view class="describe">
-            <text class="name">{{item.brand}} · {{item.name}} · </text>
-            <text class="number"> {{item.number}}件</text>
-            <view>
-              <text class="isJoin" wx:if="{{item.is_has_draw}}">已参加 |</text>
-              <label>满 {{item.reach_number}} 人参与开奖</label>
-            </view>
-          </view>
-        </navigator>
-        <view class="prizesItem" wx:for="{{prizesQueuingList}}" wx:key="index" wx:if="{{!tab}}">
-          <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}" class="banner">
-            <image src="{{item.banner_url}}"></image>
-          </navigator>
-          <button formType="submit" class="prizesItemFormSubmit"></button>
-          <view class="describe">
-            <text class="name">{{item.brand}} · {{item.name}} · </text>
-            <text class="number"> {{item.number}}件</text>
-            <view>
-              <text class="isJoin" wx:if="{{item.is_has_draw}}">已参加 |</text>
-              <label>满 {{item.reach_number}} 人参与开奖</label>
-              <form bindsubmit="remind({{item.id}})" wx:if="{{!item.has_remind}}" bindreset="formReset" report-submit="true">
-                <button formType="submit">提醒我</button>
-              </form>
-              <button wx:if="{{item.has_remind}}" class="already">已提醒</button>
-            </view>
-          </view>
-        </view>
-      </form>
-    </view>
+    <PrizesListModule :switchTabName.sync="switchTabName" :prizesList.sync="prizesList" @communicationEmit.user="refreshFun" wx:if="{{switchTabName === '0'}}"></PrizesListModule>
+    <PreviewListModule :switchTabName.sync="switchTabName" :prizesQueuingList.sync="prizesQueuingList" @communicationEmit.user="refreshFun" wx:if="{{switchTabName === '1'}}"></PreviewListModule>
+    <WelfareModule :switchTabName.sync="switchTabName" :welfareList.sync="welfareList" wx:if="{{switchTabName === '2'}}"></WelfareModule>
   </view>
 </template>
 <script>
@@ -60,11 +20,15 @@
   import { service } from '../config.js'
   import http from '../mixins/http'
   import base from '../mixins/base'
+  import ShareMessage from '../mixins/ShareMessage'
   import LoadingZ from '../components/LoadingZ'
   import TitleBar from '../components/TitleBar'
-  import Barrage from '../components/Barrage'
+  import PrizesListModule from '../components/PrizesListModule'
+  import PreviewListModule from '../components/PreviewListModule'
+  import WelfareModule from '../components/WelfareModule'
+  import TransmissionGate from '../components/TransmissionGate'
   export default class Home extends wepy.page {
-    mixins = [http, base]
+    mixins = [http, base, ShareMessage]
     config = {
       // navigationBarTitleText: '搞点福利'
     }
@@ -72,40 +36,83 @@
       titleText: '搞点福利',
       prizesList: [],
       prizesQueuingList: [],
+      welfareList: [],
       bannerUrl: '',
       isShow: true,
       barHeight: 0,
-      tab: true,
-      formId: null
+      formId: null,
+      switchTabName: '0',
+      transmissionType: 'personalCenter',
+      isBackBtn: false
     }
     components = {
       LoadingZ,
       TitleBar,
-      Barrage
+      PrizesListModule,
+      PreviewListModule,
+      WelfareModule,
+      TransmissionGate
     }
-    methods = {}
-    onLoad() {
-      // let sys = wepy.getSystemInfoSync()
-      // let calculationHeight = sys.screenHeight - sys.windowHeight
-      // console.log(calculationHeight)
-      // this.barHeight = calculationHeight
+    methods = {
+      // 父函数给传递子组件
+      refreshFun(event) {
+        switch (event) {
+          case 'indexForPreview':
+            this.indexForPreview()
+            break
+          default:
+        }
+      }
+    }
+    onLoad(options) {
+      if (options.tabSwitch) {
+        // 返回首页第一个标签
+        this.switchTabName = options.tabSwitch
+      }
     }
     onShow() {
-      this.homeInit()
+      switch (this.switchTabName) {
+        case '0':
+          this.indexForDraw()
+          break
+        case '1':
+          this.indexForPreview()
+          break
+        case '2':
+          this.welfareInit()
+          break
+        default:
+      }
     }
-    homeInit() {
+    indexForDraw() {
       let that = this
-      this.$get({url: service.prizes}, {
+      this.$get({url: service.indexForDraw}, {
         success: ({statusCode, data}) => {
           that.prizesList = data['prizes']
-          that.prizesQueuingList = data['prizes_queuing']
-          that.bannerUrl = data.banner_url
           that.isShow = false
         }
       })
     }
-    haveInHand(event) {
-      this.tab = parseInt(event.currentTarget.dataset.wpyhaveinhandA)
+    indexForPreview() {
+      let that = this
+      this.$get({url: service.indexForPreview}, {
+        success: ({statusCode, data}) => {
+          that.prizesQueuingList = data['prizes']
+          that.isShow = false
+        }
+      })
+    }
+    welfareInit() {
+      let that = this
+      this.$get({url: service.userCoins}, {
+        success: ({statusCode, data}) => {
+          that.welfareList = data
+          that.welfareList.user_coin_pools.map((item, i) => {
+            that.welfareList.user_coin_pools[i].isShow = true
+          })
+          that.isShow = false
+        }
+      })
     }
     remind(event) {
       let formId = event.detail.formId
@@ -123,7 +130,7 @@
       }, {
         success: ({statusCode, data}) => {
           this.$alert('设置提醒', data.message)
-          this.homeInit()
+          this.indexForPreview()
         }
       })
     }
@@ -133,72 +140,67 @@
         this.$updataFormId(this.formId)
       }
     }
+    switchTabBtn(event) {
+      this.switchTabName = event.target.dataset.wpyswitchtabbtnA
+      // this.isShow = true
+      switch (event.target.dataset.wpyswitchtabbtnA) {
+        case '0':
+          this.indexForDraw()
+          break
+        case '1':
+          this.indexForPreview()
+          break
+        case '2':
+          this.welfareInit()
+          break
+        default:
+      }
+    }
   }
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
   @import "../assets/stylesheets/layout.scss";
-  @keyframes first {
-    from {
-      left: 100%;
+  .switchTab {
+    position: fixed;
+    background: #FFF;
+    width: 100%;
+    top: 170rpx;
+    height: 108rpx;
+    text-align: center;
+    overflow: hidden;
+    z-index: 2;
+    .switchTabBtn {
+      background: none;
+      color: #666666;
+      font-size: 28rpx;
+      line-height: 108rpx;
+      display: inline-block;
+      text-align: center;
+      padding: 0;
+      &:nth-of-type(2) {
+        margin: 0 132rpx;
+      }
     }
-    to {
-      left: -100%;
+    .active {
+      font-size: 32rpx;
+      color: #FF471C;
+      position: relative;
+      &:before {
+        content: '';
+        position: absolute;
+        z-index: 9;
+        display: block;
+        background: #FFA38D;
+        background-size: 28rpx 8rpx;
+        border-radius: 20rpx;
+        width: 28rpx;
+        height: 8rpx;
+        top: 80rpx;
+        left: 16rpx;
+      }
     }
   }
   .homeSurround {
-    .topBanner {
-      overflow: hidden;
-      position: relative;
-      .tab {
-        width: 100%;
-        text-align: center;
-        button {
-          width: 375rpx;
-          height: 108rpx;
-          background: #fff;
-          border: 0;
-          border-radius: 0;
-          display: inline-block;
-          text {
-            position: relative;
-            z-index: 10;
-            font-size: 28rpx;
-            color: #666666;
-          }
-          .selected {
-            position: absolute;
-            top: 50rpx;
-            left: 125rpx;
-            z-index: 0;
-          }
-        }
-        .active {
-          color: #FF471C;
-        }
-        .selected {
-          content: '';
-          width: 120rpx;
-          height: 24rpx;
-          position: absolute;
-          z-index: 10;
-          top: 10rpx;
-          left: 100rpx;
-          background: #FFEBE3;
-          border-radius: 5rpx;
-        }
-      }
-      &:before {
-        content: '';
-        border-right: 1rpx solid #ccc;
-        position: absolute;
-        z-index: 10;
-        top: 25rpx;
-        left: 375rpx;
-        width: 1rpx;
-        height: 48rpx;
-        background: #D8D8D8;
-      }
-    }
     // .logoRight {
     //   position: absolute;
     //   z-index: 3;
@@ -208,10 +210,12 @@
     //   top: 196rpx;
     //   right: 1rpx;
     // }
+    margin-top: 100rpx;
     .prizes {
       position: relative;
       z-index: 1;
       padding: 36rpx;
+      margin-top: 100rpx;
       overflow: hidden;
       .prizesItem {
         margin-bottom: 32rpx;
@@ -259,10 +263,9 @@
           view {
             .isJoin {
               font-size: 24rpx;
-              color: #666666;
               line-height: 32rpx;
               display: inline-block;
-              color: #999999;
+              color: #FB5A35;
               margin-right: 10rpx;
               position: relative;
             }

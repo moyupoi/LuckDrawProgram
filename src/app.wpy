@@ -7,42 +7,48 @@ export default class extends wepy.app {
   config = {
     pages: [
       'pages/home',
+      'pages/rankingList',
       'pages/personalCenter',
+      'pages/exchangeDetails',
+      'pages/exchangeRecord',
+      'pages/preview',
       'pages/luckDraw',
       'pages/past',
       'pages/prize',
       'pages/portraitList',
       'pages/record',
-      'pages/probability'
+      'pages/probability',
+      'pages/FLBRecord',
+      'pages/strategy'
     ],
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
       navigationBarTextStyle: 'black',
-      navigationBarTitleText: 'tabBar', // 配置底部导航
+      // navigationBarTitleText: 'tabBar', // 配置底部导航
       onReachBottom: true,
       navigationStyle: 'custom'
-    },
-    tabBar: {
-      color: '#999999',
-      selectedColor: '#FA5C37',
-      backgroundColor: '#fff',
-      borderStyle: 'black',
-      list: [
-        {
-          text: '首页',
-          pagePath: 'pages/home',
-          iconPath: './assets/images/tabbars/icon-home.png',
-          selectedIconPath: './assets/images/tabbars/icon-home-active.png'
-        },
-        {
-          text: '我的',
-          pagePath: 'pages/personalCenter',
-          iconPath: './assets/images/tabbars/icon-personal.png',
-          selectedIconPath: './assets/images/tabbars/icon-personal-active.png'
-        }
-      ]
     }
+    // tabBar: {
+    //   color: '#999999',
+    //   selectedColor: '#FA5C37',
+    //   backgroundColor: '#fff',
+    //   borderStyle: 'black',
+    //   list: [
+    //     {
+    //       text: '首页',
+    //       pagePath: 'pages/home',
+    //       iconPath: './assets/images/tabbars/icon-home.png',
+    //       selectedIconPath: './assets/images/tabbars/icon-home-active.png'
+    //     },
+    //     {
+    //       text: '我的',
+    //       pagePath: 'pages/personalCenter',
+    //       iconPath: './assets/images/tabbars/icon-personal.png',
+    //       selectedIconPath: './assets/images/tabbars/icon-personal-active.png'
+    //     }
+    //   ]
+    // }
   }
 
   globalData = {
@@ -114,7 +120,7 @@ export default class extends wepy.app {
   }
 
   urlToString(path, query) {
-    return path + '?id=' + query.id + '&share=true&shereUserId=' + query.shereUserId
+    return path + '?id=' + query.id + '&share=true&shareUserId=' + query.shareUserId
   }
 }
 </script>

@@ -1,0 +1,308 @@
+<template>
+  <LoadingZ :isShow.sync="isShow"></LoadingZ>
+  <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
+  <view class="rankingList">
+    <view class="tabSwtich">
+      <button class="switchTabBtn {{switchTabName === '0' ? 'active' : ''}}" formType="submit" @tap="switchTabBtn('0')">总榜</button>
+      <button class="switchTabBtn {{switchTabName === '1' ? 'active' : ''}}" formType="submit" @tap="switchTabBtn('1')">好友榜</button>
+    </view>
+    <view class="generalList" wx:if="{{switchTabName === '0'}}">
+      <view class="own">
+        <view class="portraitView">
+          <image src="{{forAllList.ranking_self.avatar_url}}" type="userAvatarUrl" class="portrait" style="clip-path: circle(50% at center)"></image>
+        </view>
+        <view class="userInfo">
+          <text>{{forAllList.ranking_self.nick_name}}</text>
+          <text>{{forAllList.ranking_self.ranking_memo}}</text>
+        </view>
+        <view class="money">
+          <label>{{forAllList.ranking_self.left_coin}}</label>
+          <label>FLC</label>
+        </view>
+      </view>
+      <view class="participantList">
+        <view class="participant" wx:for="{{forAllList.ranking_users}}" wx:key="index">
+          <view class="portraitView" >
+            <image src="{{item.avatar_url}}"></image>
+          </view>
+          <view class="userInfo">
+            <text>{{item.nick_name}}</text>
+            <text>第{{item.ranking_index}}名</text>
+          </view>
+          <view class="money">
+            <label>{{item.left_coin}}</label>
+            <label>FLC</label>
+          </view>
+        </view>
+      </view>
+      <view class="generalButton">
+        <button @tap="receive">领福利分</button>
+      </view>
+    </view>
+    <view class="friends" wx:if="{{switchTabName === '1'}}">
+      <view class="own">
+        <view class="portraitView">
+          <image src="{{forFriendList.ranking_self.avatar_url}}" type="userAvatarUrl" class="portrait" style="clip-path: circle(50% at center)"></image>
+        </view>
+        <view class="userInfo">
+          <text>{{forFriendList.ranking_self.nick_name}}</text>
+          <text>{{forFriendList.ranking_self.ranking_memo}}</text>
+        </view>
+        <view class="money">
+          <label>{{forFriendList.ranking_self.left_coin}}</label>
+          <label>FLC</label>
+        </view>
+      </view>
+      <view class="participantList">
+        <view class="participant" wx:for="{{forFriendList.ranking_users}}" wx:key="index">
+          <view class="portraitView" >
+            <image src="{{item.avatar_url}}"></image>
+          </view>
+          <view class="userInfo">
+            <text>{{item.nick_name}}</text>
+            <text>第{{item.ranking_index}}名</text>
+          </view>
+          <view class="money">
+            <label>{{item.left_coin}}</label>
+            <label>FLC</label>
+          </view>
+        </view>
+      </view>
+      <view class="generalButton">
+        <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub">
+          <button @tap="invitation" open-type="share" formType="submit">邀请好友</button>
+        </form>
+      </view>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import { service } from '../config.js'
+  import http from '../mixins/http'
+  import base from '../mixins/base'
+  import LoadingZ from '../components/LoadingZ'
+  import TitleBar from '../components/TitleBar'
+  import ShareMessage from '../mixins/ShareMessage'
+  export default class RankingList extends wepy.page {
+    mixins = [http, base, ShareMessage]
+    config = {
+      // navigationBarTitleText: '中奖纪录'
+    }
+    data = {
+      titleText: '排行榜',
+      isShow: true,
+      isBackBtn: true,
+      switchTabName: '0',
+      forAllList: [],
+      forFriendList: [],
+      shareUrl: 'pages/home'
+    }
+    components = {
+      LoadingZ,
+      TitleBar
+    }
+    methods = {}
+    onLoad() {
+      let that = this
+      this.$get({url: service.userCoinsRankingForAll}, {
+        success: ({statusCode, data}) => {
+          that.forAllList = data
+          that.isShow = false
+        }
+      })
+    }
+    onShow() {}
+    switchTabBtn(event) {
+      this.switchTabName = event.target.dataset.wpyswitchtabbtnA
+      if (event.target.dataset.wpyswitchtabbtnA === '1' && this.forFriendList.length <= 0) {
+        this.forFriendInit()
+      }
+    }
+    forFriendInit() {
+      let that = this
+      this.$get({url: service.userCoinsRankingForFriend}, {
+        success: ({statusCode, data}) => {
+          that.forFriendList = data
+        }
+      })
+    }
+    receive() {
+      wepy.redirectTo({
+        url: 'home?tabSwitch=2'
+      })
+    }
+    formSubmit (event) {
+      let formId = event.detail.formId
+      if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
+        this.formId = formId
+        this.$updataFormId(this.formId)
+      }
+    }
+  }
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  @import "../assets/stylesheets/layout.scss";
+  .rankingList {
+    .tabSwtich {
+      height: 108rpx;
+      background: #fff;
+      text-align: center;
+      .switchTabBtn {
+        background: none;
+        color: #666666;
+        font-size: 28rpx;
+        line-height: 108rpx;
+        display: inline-block;
+        text-align: center;
+        padding: 0;
+        &:nth-of-type(2) {
+          margin-left: 260rpx;
+        }
+      }
+      .active {
+        font-size: 32rpx;
+        color: #FF471C;
+        position: relative;
+        &:before {
+          content: '';
+          position: absolute;
+          z-index: 9;
+          display: block;
+          background: #FFA38D;
+          background-size: 28rpx 8rpx;
+          border-radius: 20rpx;
+          width: 50%;
+          height: 8rpx;
+          top: 80rpx;
+          left: 18rpx;
+        }
+      }
+    }
+    .own {
+      background: #FFEBE3;
+      overflow: hidden;
+      margin: 32rpx 0;
+      padding: 32rpx 64rpx;
+      position: relative;
+      .portraitView {
+        float: left;
+        width: 80rpx;
+        height: 80rpx;
+        display: block;
+        border-radius: 100rpx;
+        overflow: hidden;
+        .portrait {
+          display: block;
+          width: 80rpx;
+          height: 80rpx;
+          clip-path: circle(50% at center);
+          overflow: hidden;
+        }
+      }
+      .userInfo {
+        float: left;
+        margin: 5rpx 0 0 16rpx;
+        text {
+          display: block;
+          color: #333333;
+          font-size: 28rpx;
+          &:nth-of-type(2) {
+            margin-top: 0rpx;
+            color: #666666;
+            font-size: 24rpx;
+          }
+        }
+      }
+      .money {
+        position: absolute;
+        top: 45rpx;
+        right: 60rpx;
+        label {
+          color: #999999;
+          font-size: 28rpx;
+          display: inline-block;
+          &:nth-of-type(1) {
+            color: #FF471C;
+            margin-right: 12rpx;
+          }
+        }
+      }
+    }
+    .generalList, .friends {
+      .participantList {
+        background: #FFF;
+        .participant {
+          overflow: hidden;
+          padding: 32rpx 32rpx;
+          width: 655rpx;
+          margin-left: 32rpx;
+          border-bottom: 1rpx solid #EBEBEB;
+          position: relative;
+          .portraitView {
+            float: left;
+            width: 80rpx;
+            height: 80rpx;
+            display: block;
+            border-radius: 100rpx;
+            overflow: hidden;
+            image {
+              display: block;
+              width: 80rpx;
+              height: 80rpx;
+              clip-path: circle(50% at center);
+              overflow: hidden;
+            }
+          }
+          .userInfo {
+            float: left;
+            margin: 5rpx 0 0 16rpx;
+            text {
+              display: block;
+              color: #333333;
+              font-size: 28rpx;
+              &:nth-of-type(2) {
+                margin-top: 0rpx;
+                color: #666666;
+                font-size: 24rpx;
+              }
+            }
+          }
+          .money {
+            position: absolute;
+            top: 45rpx;
+            right: 60rpx;
+            label {
+              color: #999999;
+              font-size: 28rpx;
+              display: inline-block;
+              &:nth-of-type(1) {
+                color: #FF471C;
+                margin-right: 12rpx;
+              }
+            }
+          }
+        }
+      }
+      .generalButton {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #fff;
+        height: 132rpx;
+        overflow: hidden;
+        button {
+          margin-top: 20rpx;
+          width: 686rpx;
+          height: 92rpx;
+          font-size: 36rpx;
+          font-weight: 300;
+          color: #fff;
+          background: #FA5C37;
+          border-radius: 50rpx;
+        }
+      }
+    }
+  }
+</style>

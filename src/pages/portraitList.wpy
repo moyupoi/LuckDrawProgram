@@ -13,8 +13,9 @@
   import base from '../mixins/base'
   import LoadingZ from '../components/LoadingZ'
   import TitleBar from '../components/TitleBar'
+  import ShareMessage from '../mixins/ShareMessage'
   export default class PortraitList extends wepy.page {
-    mixins = [http, base]
+    mixins = [http, base, ShareMessage]
     config = {
       // navigationBarTitleText: '中奖纪录'
     }
@@ -24,6 +25,7 @@
       userAvatarsList: [],
       count: 0,
       page: 1,
+      perPage: 275,
       id: '',
       type: '',
       nextPage: true,
@@ -51,7 +53,8 @@
         type = '/chance'
       }
       if (that.nextPage) {
-        that.$get({url: service.prizes + id + type, data: {page: that.page}}, {
+        that.nextPage = false
+        that.$get({url: service.prizes + id + type, data: {page: that.page, per_page: that.perPage}}, {
           success: ({statusCode, data}) => {
             that.isShow = false
             if (data.user_avatars.length <= 0) {
@@ -60,6 +63,7 @@
               that.userAvatarsList = that.userAvatarsList.concat(data.user_avatars)
               that.count = data.count
               that.page += 1
+              that.nextPage = true
             }
           }
         })

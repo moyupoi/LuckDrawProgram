@@ -4,6 +4,7 @@ import http from '../mixins/http'
 import base from '../mixins/base'
 
 export default class ShareMessage extends wepy.mixin {
+  mixins = [base]
   onLoad(e) {
     wepy.showShareMenu({
       withShareTicket: true
@@ -24,23 +25,30 @@ export default class ShareMessage extends wepy.mixin {
       // }
       let userId = this.$getUserId()
       let resData = res.source.data
-      if (resData.bannerUrl && resData.isShare && resData.commodityId && resData.shareUrl && userId) {
+      let shareData = {}
+      let shareImageUrl = !this.isUndefined(resData.shareBannerUrl) ? resData.shareBannerUrl + '-share' : 'https://oss-lottery.xinyongjinku.com/strategy/share.png'
+      let shareTitle = !this.isUndefined(resData.shareName) ? resData.shareName : '搞点福利'
+      // shareTitle += '-自古城市套路深，还是福利得人心'
+      let shareUrl = !this.isUndefined(resData.shareUrl) ? resData.shareUrl : getCurrentPages()[0].route
+      if (!this.isUndefined(userId)) {
+        shareUrl = shareUrl + '?shareUserId=' + userId + '&share=true'
+      }
+      if (resData.commodityId) {
         return {
-          path: resData.shareUrl + '?id=' + resData.commodityId + '&share=true&shereUserId=' + userId,
-          imageUrl: resData.bannerUrl,
-          title: resData.prizeName
+          path: shareUrl + '&id=' + resData.commodityId,
+          imageUrl: shareImageUrl,
+          title: shareTitle
         }
-      } else if (resData.isShare && resData.commodityId && resData.shareUrl && userId) {
+      } else if(!this.isUndefined(resData.shareUrl)) {
         return {
-          path: resData.shareUrl + '?id=' + resData.commodityId + '&share=true&shereUserId=' + userId
+          path: shareUrl,
+          imageUrl: shareImageUrl,
+          title: shareTitle
         }
-      } else if (resData.isShare && resData.commodityId) {
+      } else {
         return {
-          path: resData.shareUrl + '?id=' + resData.commodityId + '&share=true'
-        }
-      } else if (resData.path) {
-        return {
-          path: resData.path
+          imageUrl: shareImageUrl,
+          title: shareTitle
         }
       }
     }

@@ -3,8 +3,15 @@ import { service } from '../config.js'
 import base from '../mixins/base'
 
 export default class httpMixin extends wepy.mixin {
+  mixins = [base]
   data = {
-    accessToken: ''
+    accessToken: '',
+    shareUserId: ''
+  }
+  onLoad(options) {
+    if (!this.isUndefined(options) && !this.isUndefined(options.shareUserId)) {
+      this.shareUserId = options.shareUserId
+    }
   }
   /* =================== [$get 发起GET请求] =================== */
   $get(
@@ -15,7 +22,8 @@ export default class httpMixin extends wepy.mixin {
     this.accessToken = wepy.getStorageSync(service.isFormal ? 'accessToken' : 'accessTokenInfo') || false
     if (this.accessToken) {
       headers = Object.assign({
-        'Authorization': this.accessToken
+        'Authorization': this.accessToken,
+        'X-JINKU-WECHAT-SHARE-USER-ID': this.shareUserId
       }, headers)
       this.$ajax(
         {url, headers, methods, data},
@@ -35,7 +43,8 @@ export default class httpMixin extends wepy.mixin {
     this.accessToken = wepy.getStorageSync(service.isFormal ? 'accessToken' : 'accessTokenInfo') || false
     if (this.accessToken) {
       headers = Object.assign({
-        'Authorization': this.accessToken
+        'Authorization': this.accessToken,
+        'X-JINKU-WECHAT-SHARE-USER-ID': this.shareUserId
       }, headers)
       this.$ajax(
         {url, headers, methods, data},
