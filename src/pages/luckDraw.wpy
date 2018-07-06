@@ -3,7 +3,7 @@
   <LoadingX :isLoading.sync="isLoading"></LoadingX>
   <TitleBar :isBackBtn.sync="isBackBtn" :isShareBtn.sync="isShareBtn" :titleText.sync="titleText"></TitleBar>
   <view class="canvasBox">
-    <canvas class="canvas" canvas-id="canvas" style="width: 750rpx;height: 1034rpx;"></canvas>
+    <canvas class="canvas" canvas-id="canvas" style="width: 750px;height: 1248px;"></canvas>
   </view>
   <view class="shareWicket" wx:if="{{isShareWicket}}">
     <view class="forward" @tap="closeShareSwitch">
@@ -107,8 +107,9 @@
   import LoadingZ from '../components/LoadingZ'
   import LoadingX from '../components/LoadingX'
   import TitleBar from '../components/TitleBar'
+  import painter from '../mixins/painter'
   export default class LuckDraw extends wepy.page {
-    mixins = [http, base, ShareMessage]
+    mixins = [http, base, ShareMessage, painter]
     config = {
       // navigationBarTitleText: '抽奖详情'
     }
@@ -137,7 +138,8 @@
       isReachPrizeLimit: false,
       isLoading: false,
       isShareWicket: false,
-      codeImg: ''
+      codeImg: '',
+      canvasImg: ''
     }
     components = {
       LoadingZ,
@@ -163,7 +165,7 @@
         }
       }
     }
-    onShow () {}
+    onShow() {}
     wechatRestoreScene(scene) {
       this.$get({
         url: service.wechatRestoreScene + '?scene=' + scene
@@ -207,7 +209,7 @@
           that.shareBannerUrl = data.banner_url
           that.shareName = data.name
           // that.isHasdraw = false
-          // this.createNewImg()
+          this.createCanvas()
           that.codeImg = service.wxacodeunlimit + '?scene=share_prize:' + this.commodityId + ':' + this.$getUserId() + '&page=' + this.shareUrl
         }
       })
@@ -290,61 +292,23 @@
     closeShareSwitch() {
       this.isShareWicket = false
     }
-    settextSentence(ctx) {
-      ctx.setFillStyle('#27303A')
-      ctx.fillRect(100, 100, 150, 75)
-      ctx.setFillStyle('red')
-      ctx.fillRect(10, 10, 150, 75)
-    }
-    createNewImg() {
-      let ctx = wepy.createCanvasContext('canvas', this)
-      // this.settextSentence(ctx)
-      let scene = 'share_prize:' + this.commodityId + ':' + this.$getUserId()
-      scene = service.wxacodeunlimit + '?scene=' + scene + '&page=' + this.shareUrl
-      this.drawImage(ctx, scene, 100, 100, 100, 100)
-      this.drawImage(ctx, scene, 200, 100, 100, 100)
-      ctx.draw()
-    }
-    setCanvasSize() {
-      var size = {}
-      try {
-        var res = wepy.getSystemInfoSync()
-        // 画布宽度
-        // var scale = 1300
-        // 生成图片的宽高比例
-        var scaleH = 2400 / 1300
-        // 画布宽度
-        var width = res.windowWidth
-        // 画布的高度
-        var height = res.windowWidth * scaleH
-        size.w = width
-        size.h = height
-      } catch (e) {
-        // Do something when catch error
-        // console.log("获取设备信息失败" + e)
-      }
-      return size
-    }
-
-    drawImage(ctx, url, left, top, width, height) {
-      ctx.save()
-      ctx.beginPath()
-      ctx.arc(width / 2 + left, height / 2 + top, width / 2, 0, Math.PI * 2, false)
-      ctx.clip()
-      return new Promise((resolve, reject) => {
+    shareFriends() {
+      if (this.canvasImg !== '') {
         wepy.getImageInfo({
-          src: url,
-          success: (res) => {
-            console.log('下载完成')
-            ctx.drawImage(res.path, left, top, width, height)
-            ctx.restore()
-            resolve()
-          },
-          fail: (e) => {
-            reject(e)
+          src: this.canvasImg,
+          success: function(res) {
+            wepy.saveImageToPhotosAlbum({
+              filePath: res.path,
+              success(result) {
+                wepy.showToast({
+                  title: '图片保存成功',
+                  icon: 'success'
+                })
+              }
+            })
           }
         })
-      })
+      }
     }
   }
 </script>
@@ -354,6 +318,7 @@
     position: fixed;
     top: 999999rpx;
     left: 0;
+    z-index: 99999;
     .canvas {
       background: #fff;
     }
@@ -450,7 +415,6 @@
         font-size: 32rpx;
         line-height: 80rpx;
         &:nth-of-type(2) {
-          display: none;
           margin-top: 32rpx;
           background: #fff;
           color: #FA5C37;
