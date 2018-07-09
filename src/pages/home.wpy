@@ -164,7 +164,6 @@
     position: fixed;
     background: #FFF;
     width: 100%;
-    top: 170rpx;
     height: 108rpx;
     text-align: center;
     overflow: hidden;
@@ -210,12 +209,12 @@
     //   top: 196rpx;
     //   right: 1rpx;
     // }
-    margin-top: 100rpx;
+    margin-top: 84rpx;
     .prizes {
       position: relative;
       z-index: 1;
       padding: 36rpx;
-      margin-top: 100rpx;
+      // margin-top: 100rpx;
       overflow: hidden;
       .prizesItem {
         margin-bottom: 32rpx;
