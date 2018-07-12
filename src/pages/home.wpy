@@ -72,6 +72,7 @@
       if (options.tabSwitch) {
         // 返回首页第一个标签
         this.switchTabName = options.tabSwitch
+        this.isBackBtn = true
       }
     }
     onShow() {
