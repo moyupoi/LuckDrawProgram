@@ -94,7 +94,7 @@
       titleText: '我的',
       userInfo: {},
       isShow: true,
-      isBackBtn: true,
+      isBackBtn: false,
       transmissionType: 'home',
       phoneNumberAuthentication: false
     }
@@ -252,7 +252,7 @@
     position: absolute;
     width: 686rpx;
     z-index: 1;
-    top: 517rpx;
+    top: 490rpx;
     background: none;
     navigator, .address, .opportunity {
       display: block;

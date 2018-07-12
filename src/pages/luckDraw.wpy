@@ -641,12 +641,12 @@
       }
       navigator {
         width: 136rpx;
-        color: #FF471C;
+        color: #4A90E2;
         font-size: 28rpx;
         display: block;
         text-align: center;
         margin: 34rpx auto 0 auto;
-        border-bottom: 1rpx solid #ff471c;
+        border-bottom: 1rpx solid #4A90E2;
       }
       button {
         width: 552rpx;

@@ -9,6 +9,9 @@
       <button class="switchTabBtn {{switchTabName === '1' ? 'active' : '' }}" open-type="reLaunch" formType="submit" @tap="switchTabBtn('1')">预告</button>
       <button class="switchTabBtn {{switchTabName === '2' ? 'active' : '' }}" open-type="reLaunch" formType="submit" @tap="switchTabBtn('2')">福利</button>
     </form>
+    <view class="new">new</view>
+    <view class="hot">hot</view>
+    <view class="remindSpot" wx:if="{{userInfo.pending_coin_count > 0}}"></view>
   </view>
   <view class="homeSurround">
     <PrizesListModule :switchTabName.sync="switchTabName" :prizesList.sync="prizesList" @communicationEmit.user="refreshFun" wx:if="{{switchTabName === '0'}}"></PrizesListModule>
@@ -47,7 +50,8 @@
       isBackBtn: false,
       animationData: '',
       isMore: false,
-      foamBtnAnimationData: ''
+      foamBtnAnimationData: '',
+      userInfo: {}
     }
     components = {
       LoadingZ,
@@ -87,12 +91,18 @@
           break
         default:
       }
+      let that = this
+      this.$get({url: service.prizesMine}, {
+        success: ({statusCode, data}) => {
+          that.userInfo = data
+        }
+      })
     }
     indexForDraw() {
       let that = this
       this.$get({url: service.indexForDraw}, {
         success: ({statusCode, data}) => {
-          that.prizesList = data['prizes']
+          that.prizesList = data
           that.isShow = false
         }
       })
@@ -183,7 +193,7 @@
     display: block;
     position: absolute;
     z-index: 10;
-    top: 230rpx;
+    top: 330rpx;
     left: 0;
     font-size: 22rpx;
     line-height: 50rpx;
@@ -202,7 +212,7 @@
     height: 108rpx;
     text-align: center;
     overflow: hidden;
-    z-index: 2;
+    z-index: 20;
     .switchTabBtn {
       background: none;
       color: #666666;
@@ -233,8 +243,44 @@
         left: 16rpx;
       }
     }
+    .new {
+      position: absolute;
+      top: 17rpx;
+      left: 222rpx;
+      width: 66rpx;
+      height: 33rpx;
+      background: linear-gradient(to bottom, #00B7EB , #0093F2);
+      border-top-left-radius: 50rpx;
+      border-top-right-radius: 50rpx;
+      border-bottom-right-radius: 50rpx;
+      font-size: 20rpx;
+      color: #fff;
+    }
+    .hot {
+      position: absolute;
+      top: 17rpx;
+      left: 407rpx;
+      width: 66rpx;
+      height: 33rpx;
+      background: linear-gradient(to bottom, #FF7854 , #FF4E36);
+      border-top-left-radius: 50rpx;
+      border-top-right-radius: 50rpx;
+      border-bottom-right-radius: 50rpx;
+      font-size: 20rpx;
+      color: #fff;
+    }
+    .remindSpot {
+      position: absolute;
+      top: 23rpx;
+      left: 596rpx;
+      width: 20rpx;
+      height: 20rpx;
+      background: #FF471C;
+      border-radius: 50rpx;
+    }
   }
   .homeSurround {
+    overflow: hidden;
     // .logoRight {
     //   position: absolute;
     //   z-index: 3;
@@ -244,7 +290,7 @@
     //   top: 196rpx;
     //   right: 1rpx;
     // }
-    margin-top: 84rpx;
+    margin-top: 110rpx;
     .prizes {
       position: relative;
       z-index: 1;
