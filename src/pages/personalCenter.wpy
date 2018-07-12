@@ -117,36 +117,44 @@
         }
       })
     }
-    address () {
+    address() {
       wepy.chooseAddress({
-        success: function (res) {}
+        success: function(res) {}
       })
     }
-    formSubmit (event) {
+    formSubmit(event) {
       let formId = event.detail.formId
-      if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
+      if (
+        formId !== 'the formId is a mock one' &&
+        !this.isUndefined(formId) &&
+        formId !== '' &&
+        formId !== null
+      ) {
         this.$updataFormId(formId)
       }
     }
     getphonenumber(event) {
       let that = this
       if (event.detail.errMsg === 'getPhoneNumber:ok') {
-        this.$post({
-          url: service.updateMobile,
-          headers: {
-            'X-JINKU-WECHAT-FORM-ID': that.formId
+        this.$post(
+          {
+            url: service.updateMobile,
+            headers: {
+              'X-JINKU-WECHAT-FORM-ID': that.formId
+            },
+            data: {
+              encryptedData: event.detail.encryptedData,
+              iv: event.detail.iv
+            }
           },
-          data: {
-            encryptedData: event.detail.encryptedData,
-            iv: event.detail.iv
-          }
-        }, {
-          success: ({statusCode, data}) => {
-            if (statusCode === 200) {
-              this.phoneNumberAuthentication = true
+          {
+            success: ({ statusCode, data }) => {
+              if (statusCode === 200) {
+                this.phoneNumberAuthentication = true
+              }
             }
           }
-        })
+        )
       }
     }
     toFLBRecord() {
@@ -155,57 +163,57 @@
   }
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
-  .banner {
-    text-align: center;
-    width: 100%;
-    height: 1342rpx;
-    overflow: hidden;
-    position: relative;
-    .user {
-      position: absolute;
-      z-index: 2;
-      top: 32rpx;
-      left: 32rpx;
-      .portraitView {
-        float: left;
+.banner {
+  text-align: center;
+  width: 100%;
+  height: 1342rpx;
+  overflow: hidden;
+  position: relative;
+  .user {
+    position: absolute;
+    z-index: 2;
+    top: 32rpx;
+    left: 32rpx;
+    .portraitView {
+      float: left;
+      width: 120rpx;
+      height: 120rpx;
+      display: block;
+      border-radius: 100rpx;
+      overflow: hidden;
+      .portrait {
+        display: block;
         width: 120rpx;
         height: 120rpx;
-        display: block;
         border-radius: 100rpx;
+        display: block;
         overflow: hidden;
-        .portrait {
-          display: block;
-          width: 120rpx;
-          height: 120rpx;
-          clip-path: circle(50% at center);
-          overflow: hidden;
-        }
       }
-      .userInfo {
-        float: left;
-        margin-left: 34rpx;
-        .userName {
-          font-size: 40rpx;
-          line-height: 48rpx;
-          color: #4C4C4D;
-          margin-top: 20rpx;
-          display: block;
-          text-align: left;
-        }
-        button {
-          background: none;
-          color: #666666;
-          text-align: left;
-          margin-top: 16rpx;
-          padding: 0;
-          font-size: 28rpx;
-          line-height: 30rpx;
-        }
-        .phoneIcon {
-          position: absolute;
-          top: 85rpx;
-          left: 308rpx;
-        }
+    }
+    .userInfo {
+      float: left;
+      margin-left: 34rpx;
+      .userName {
+        font-size: 40rpx;
+        line-height: 48rpx;
+        color: #4C4C4D;
+        margin-top: 20rpx;
+        display: block;
+        text-align: left;
+      }
+      button {
+        background: none;
+        color: #666666;
+        text-align: left;
+        margin-top: 16rpx;
+        padding: 0;
+        font-size: 28rpx;
+        line-height: 30rpx;
+      }
+      .phoneIcon {
+        position: absolute;
+        top: 85rpx;
+        left: 308rpx;
       }
     }
     .informationBar {
@@ -276,39 +284,128 @@
         width: 64rpx;
         height: 64rpx;
         display: block;
-        float: left;
-      }
-      text {
-        font-size: 28rpx;
-        line-height: 36rpx;
-        color: #333333;
-        display: block;
-        float: left;
-        margin: 14rpx 0 0 16rpx;
+        text-align: left;
       }
       button {
-        width: 686rpx;
-        height: 120rpx;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(255, 255, 255, 0);
-      }
-    }
-    .opportunity {
-      &:before {
         background: none;
-      }
-      label {
-        position: absolute;
-        display: block;
-        top: 42rpx;
-        right: 32rpx;
-        color: #FF471C;
+        color: #666666;
+        text-align: left;
+        margin-top: 16rpx;
+        padding: 0;
         font-size: 28rpx;
+        line-height: 30rpx;
+      }
+      .phoneIcon {
+        position: absolute;
+        top: 85rpx;
+        left: 308rpx;
       }
     }
   }
+  .informationBar {
+    position: absolute;
+    z-index: 2;
+    top: 216rpx;
+    width: 676rpx;
+    padding: 0 36rpx;
+    view {
+      display: inline-block;
+      width: 112rpx;
+      height: 82rpx;
+      margin: 0 70rpx 0 0rpx;
+      text-align: center;
+      &:nth-of-type(4) {
+        margin-right: 0;
+      }
+      label {
+        color: #fb5a35;
+        font-size: 36rpx;
+        display: block;
+      }
+      text {
+        margin-top: 14rpx;
+        font-size: 28rpx;
+        color: #4c4c4d;
+        display: block;
+      }
+    }
+  }
+  .bannerImg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    width: 100%;
+    height: 850rpx;
+  }
+}
+.option {
+  padding: 32rpx;
+  position: absolute;
+  width: 686rpx;
+  z-index: 1;
+  top: 517rpx;
+  background: none;
+  navigator,
+  .address,
+  .opportunity {
+    display: block;
+    margin-bottom: 32rpx;
+    background: #fff;
+    border-radius: 20rpx;
+    position: relative;
+    padding: 28rpx 32rpx;
+    overflow: hidden;
+    &:before {
+      content: '';
+      position: absolute;
+      background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAYCAYAAADKx8xXAAAAAXNSR0IArs4c6QAAAf5JREFUOBGFVMtOVEEQrepG/YThGuNiZkjuwJegLtCMEDDGEFAWxK9hQZT4XpgoEKJh4cqvcGYS77Ai3IGlKwWnyzow1d5hHnTSqe7Tdfp0dVc1/8jyWRJ5SdqY/fPpamkP46ua65FuqaP2sN1sdxavImHdFZ1ExGv/0GofPyriw8YOx2Pmri2CHCS8b/w8emzYMOsQkwgtaYR/zUHJTgN+28zyJ4ZdtmxA6yCvd7v0kUgmDNOTBMe0mlaSN4aZjTGm5WTbOVlQ5TNbhHIQetU46KwYZjYqGtDIjudEwidVvmaYKgsTr9Wqk1uGRUUDELMnruv81DBVZiF50cyO1gwbULQFfc97IYQdnV83DMrEtD5dSTZHEuHcaOd3KciOEN0wMqy+4fJYIpx6KYk0jMr6VCcDMcK52DQnb+sR40X11n6NVWxmnae4FFyObcZMvzU77oxUxNsNkIj+sPi5tJp8H0pstfNlvZStPiUlCfP92lTpG9TjEewoyE+9xdfIGsPUnrLjB/oM+4bFvASAihhGct7Va+XJSIJv3PW8BrUi+pX4zJN7qKSvcC62c0VUvdbgu8skZjefVktfigQbM5IaX4aSvIGoTVRKrXJz9z/WP5oQ6W4o1EfynhbT8mgStogxYqIZgi9kCbWJ+biGL+KZOhxedFefmUo+jyPY2j8L8NKoRhpQsgAAAABJRU5ErkJggg==')
+        no-repeat;
+      background-size: 10rpx 20rpx;
+      width: 10rpx;
+      height: 20rpx;
+      top: 50rpx;
+      right: 35rpx;
+    }
+    image {
+      width: 64rpx;
+      height: 64rpx;
+      display: block;
+      float: left;
+    }
+    text {
+      font-size: 28rpx;
+      line-height: 36rpx;
+      color: #333333;
+      display: block;
+      float: left;
+      margin: 14rpx 0 0 16rpx;
+    }
+    button {
+      width: 686rpx;
+      height: 120rpx;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0);
+    }
+  }
+  .opportunity {
+    &:before {
+      background: none;
+    }
+    label {
+      position: absolute;
+      display: block;
+      top: 42rpx;
+      right: 32rpx;
+      color: #ff471c;
+      font-size: 28rpx;
+    }
+  }
+}
 </style>

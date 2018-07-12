@@ -202,7 +202,7 @@
         this.$goto('exchangeDetails?id=' + id)
       },
       toFLBRecord() {
-        this.$goto('FLBRecord')
+        this.$goto('getMoreFLC?userFlc=' + this.welfareList.today_coin)
       }
     }
     onLoad() {
