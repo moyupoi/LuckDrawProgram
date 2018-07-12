@@ -56,7 +56,7 @@ export default class FLBRecord extends wepy.page {
     isShow: true,
     isBackBtn: true,
     phoneNumberAuthentication: false,
-    userFlc:'1'
+    userFlc: '1'
   }
   components = {
     LoadingZ,
