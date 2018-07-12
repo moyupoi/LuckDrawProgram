@@ -54,7 +54,6 @@ export default class TitleBar extends wepy.component {
         this.barBackBtn = '../assets/images/tabbars/home.png'
       }
       let sys = wepy.getSystemInfoSync()
-      console.log(sys)
       this.barTitleImgHeight = sys.statusBarHeight + 3
       this.barTitleHeight = sys.statusBarHeight + 8
       this.barHeight = sys.statusBarHeight + 32 + 16

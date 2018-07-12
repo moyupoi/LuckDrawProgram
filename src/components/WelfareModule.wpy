@@ -9,7 +9,7 @@
       </view>
       <view class="foam">
         <block wx:for="{{welfareList.user_coin_pools}}" wx:key="index" wx:if="{{item.isShow}}">
-          <view class="foamItem {{bubbleIndex === index ? 'bubbleIndex' : ''}}" style="top: {{position[index].top}};left: {{position[index].left}};">
+          <view class="foamItem {{bubbleIndex === index ? 'bubbleIndex' : ''}}" style="top: {{position[index].top}};left: {{position[index].left}};" animation="{{foamBtnAnimationData}}">
             <image src="../assets/images/WelfareModule/foam.png"></image>
             <button @tap="foamBtn({{item.id}},{{item.coin}},{{index}})"></button>
             <text>{{item.category_name}}+{{item.coin}}</text>
@@ -41,6 +41,10 @@
       // navigationBarTitleText: '搞点福利'
     }
     props = {
+      foamBtnAnimationData: {
+        type: String,
+        default: ''
+      },
       welfareList: {
         type: Array,
         default: []
@@ -167,7 +171,8 @@
       foamItemTextAnimation: '',
       bubbleIndex: 100
     }
-    components = {}
+    components = {
+    }
     methods = {
       foamBtn(id, coin, index) {
         let that = this
@@ -200,6 +205,14 @@
       }
     }
     onLoad() {
+      // var foamBtnAnimationData = wepy.createAnimation({
+      //   duration: 1000,
+      //   delay: 3000,
+      //   timingFunction: 'ease-in-out'
+      // })
+      // foamBtnAnimationData.translateX(375).step({ duration: 2000 })
+      // this.foamBtnAnimationData = foamBtnAnimationData
+      // console.log(123)
     }
   }
 </script>
@@ -212,6 +225,19 @@
     to {
       transform: translate3d(0, 0, 0);
     }
+  }
+  @keyframes myfirst
+  {
+    0%   { top: 0px; }
+    20%  { top: -2px; }
+    30%  { top: -4px; }
+    40%  { top: -3px; }
+    50%  { top: -1px; }
+    60%  { top: 0px; }
+    70%  { top: 2px; }
+    80%  { top: 4px; }
+    90%  { top: 3px; }
+    100% { top: 0px; }
   }
   .floatingFoam {
     width: 100%;
@@ -263,7 +289,11 @@
         z-index: 2;
         top: 0;
         left: 0;
-        transition: opacity .5s ease-in-out;
+        // transition: opacity .5s ease-in-out;
+        // animation: myfirst 2s;
+        // animation-iteration-count: infinite;
+        // transform: translate(10px, 10px);
+        // transition:width 2s ease 0s;
         image {
           width: 80rpx;
           height: 78rpx;

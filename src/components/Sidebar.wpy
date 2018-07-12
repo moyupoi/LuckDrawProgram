@@ -1,0 +1,59 @@
+<template>
+  <view class="moreBtn" animation="{{animationData}}">更多免费抽奖</view>
+</template>
+<script>
+import wepy from 'wepy'
+import base from '../mixins/base'
+export default class TitleBar extends wepy.component {
+  mixins = [base]
+  props = {
+    animationData: {
+      type: String,
+      default: ''
+    }
+  }
+  computed = {
+  }
+  methods = {
+    back () {
+    }
+  }
+  onLoad() {
+    var animationData = wepy.createAnimation({
+      duration: 1000,
+      delay: 3000,
+      timingFunction: 'ease-in-out'
+    })
+    animationData.translateX(375).step({ duration: 2000 })
+    this.animationData = animationData
+    // this.animation = wepy.createAnimation({
+    //   // 动画持续时间，单位ms，默认值 400
+    //   duration: 1000,
+    //   // 延迟多长时间开始
+    //   delay: 0,
+    //   transformOrigin: '50% 50%',
+    //   timingFunction: 'ease',
+    //   left: '30px'
+    // })
+  }
+}
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  .moreBtn {
+    width: 160rpx;
+    height: 50rpx;
+    display: block;
+    position: absolute;
+    z-index: 10;
+    top: 230rpx;
+    left: 0;
+    font-size: 19rpx;
+    line-height: 50rpx;
+    background: #FF471C;
+    color: #fff;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 50rpx;
+    border-bottom-right-radius: 50rpx;
+  }
+</style>
