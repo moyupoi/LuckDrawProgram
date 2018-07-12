@@ -1,13 +1,42 @@
 {
-  "description": "A WePY project",
-  "setting": {
-    "urlCheck": true,
-    "es6": false,
-    "postcss": false,
-    "minified": false
-  },
-  "compileType": "miniprogram",
-  "appid": "wx18543dc90827b752",
-  "projectname": "luckdraw",
-  "miniprogramRoot": "./dist"
+	"description": "A WePY project",
+	"setting": {
+		"urlCheck": true,
+		"es6": false,
+		"postcss": false,
+		"minified": false,
+		"newFeature": true
+	},
+	"compileType": "miniprogram",
+	"appid": "wx025841df48304564",
+	"projectname": "luckdraw",
+	"miniprogramRoot": "./dist",
+	"condition": {
+		"search": {
+			"current": -1,
+			"list": []
+		},
+		"conversation": {
+			"current": -1,
+			"list": []
+		},
+		"plugin": {
+			"current": -1,
+			"list": []
+		},
+		"game": {
+			"list": []
+		},
+		"miniprogram": {
+			"current": 0,
+			"list": [
+				{
+					"id": -1,
+					"name": "flc",
+					"pathName": "pages/getMoreFLC",
+					"query": ""
+				}
+			]
+		}
+	}
 }

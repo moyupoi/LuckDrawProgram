@@ -29,7 +29,7 @@ $ wepy build --watch
 
 ```
 ├── dist                   小程序运行代码目录（该目录由WePY的build指令自动编译生成，请不要直接修改该目录下的文件）
-├── node_modules           
+├── node_modules
 ├── src                    代码编写的目录（该目录为使用WePY后的开发目录）
 |   ├── components         WePY组件目录（组件不属于完整页面，仅供完整页面或其他组件引用）
 |   |   ├── com_a.wpy      可复用的WePY组件a
@@ -55,6 +55,7 @@ $ wepy build --watch
 ├── exchangeRecord         兑换商品记录
 ├── rankingList            排行榜
 ├── strategy               赚币攻略
+|—— getMoreFLC             福利分页面 获得更多福利分
 ```
 
 具体代码参照已实现的WePY
