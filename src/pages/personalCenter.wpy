@@ -161,7 +161,7 @@ export default class PersonalCenter extends wepy.page {
     }
   }
   toFLBRecord() {
-    this.$goto('getMoreFLC?userFlc=' + this.userInfo.left_coin)
+    this.$goto('FLBRecord')
   }
 }
 </script>

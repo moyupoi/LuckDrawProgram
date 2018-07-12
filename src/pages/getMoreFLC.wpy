@@ -2,7 +2,7 @@
   <!-- <LoadingZ :isShow.sync="isShow"></LoadingZ> -->
   <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
   <view class="todayCoin">
-    <label>1234</label>
+    <label>{{userFlc}}</label>
     <text>今日获得</text>
   </view>
   <view class="moreCoin">
@@ -55,7 +55,8 @@ export default class FLBRecord extends wepy.page {
     titleText: '福利分',
     isShow: true,
     isBackBtn: true,
-    phoneNumberAuthentication: false
+    phoneNumberAuthentication: false,
+    userFlc:'1'
   }
   components = {
     LoadingZ,
@@ -112,7 +113,7 @@ export default class FLBRecord extends wepy.page {
   }
   onLoad(e) {
     console.log(e)
-
+    this.userFlc = e.userFlc
     // this.FLBRecordInit()
   }
   onShow() {}
