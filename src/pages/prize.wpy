@@ -43,7 +43,7 @@
         查看全部>
       </navigator>
     </view>
-    <view class="ling"></view>
+    <view class="ling" @tap="gotoPersonCenter"></view>
   </view>
   <navigator hover-class="none" class="otherBtn" url="/pages/home">
     参加其他抽奖
@@ -80,7 +80,11 @@ export default class Prize extends wepy.page {
     LoadingZ,
     TitleBar
   }
-  methods = {}
+  methods = {
+    gotoPersonCenter() {
+      this.$goto('personalCenter')
+    }
+  }
   onLoad(options) {
     let that = this
     if (!this.isUndefined(options.share) && !this.isUndefined(options.id)) {
