@@ -2,21 +2,24 @@
   <view class="prizes">
     <form bindsubmit="formSubmit" report-submit="true">
       <block wx:for="{{prizesList.prizes}}" wx:key="index">
-        <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}" class="prizesItem">
-          <view class="banner">
+        <view class="prizesItem">
+          <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}" class="banner">
             <image src="{{item.banner_url}}"></image>
-          </view>
-          <button formType="submit" class="prizesItemFormSubmit"></button>
+            <button formType="submit" class="prizesItemFormSubmit"></button>
+          </navigator>
           <view class="describe">
-            <text class="name">{{item.brand}} · {{item.name}} · </text>
-            <text class="number"> {{item.number}}件</text>
-            <view>
-              <text class="isJoin" wx:if="{{item.is_has_draw}}">已参加</text>
-              <text class="isJoin2" wx:if="{{item.is_has_draw}}">|</text>
-              <label>满 {{item.reach_number}} 人参与开奖</label>
-            </view>
+            <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}">
+              <text class="name">{{item.brand}} · {{item.name}}</text>
+              <view>
+                <text class="isJoin" wx:if="{{item.is_has_draw}}">已参加</text>
+                <text class="isJoin2" wx:if="{{item.is_has_draw}}">|</text>
+                <label>满 {{item.reach_number}} 人参与开奖</label>
+                <text class="number"> | {{item.number}}件</text>
+              </view>
+            </navigator>
+            <button class="luckDrawBtn" @tap="luckDraw({{item.is_has_draw}}, {{item.id}})">{{item.is_has_draw ? '继续抽奖' : '免费抽奖' }}</button>
           </view>
-        </navigator>
+        </view>
       </block>
     </form>
     <navigator hover-class="none" url="/pages/home" class="historicalRecords">历史记录</navigator>
@@ -36,7 +39,7 @@
 </template>
 <script>
   import wepy from 'wepy'
-  import { service } from '../config.js'
+  // import { service } from '../config.js'
   import http from '../mixins/http'
   import base from '../mixins/base'
   export default class PrizesListModule extends wepy.component {
@@ -45,13 +48,13 @@
       // navigationBarTitleText: '搞点福利'
     }
     props = {
-      isShow: {
-        type: Boolean,
-        default: true
-      },
       prizesList: {
         type: Array,
         default: []
+      },
+      isLoading: {
+        type: Boolean,
+        default: false
       }
     }
     data = {
@@ -67,29 +70,16 @@
         if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
           this.$updataFormId(this.formId)
         }
+      },
+      luckDraw(isHasDraw, id) {
+        if (isHasDraw) {
+          this.$goto('luckDraw?id=' + id)
+        } else {
+          this.$emit('communicationEmit', 'luckDraw', id)
+        }
       }
     }
     onLoad() {
-    }
-    remind(event) {
-      let formId = event.detail.formId
-      if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
-        formId = event.detail.formId
-      } else {
-        formId = null
-      }
-      let id = event.target.dataset.wpyremindA
-      this.$post({
-        url: service.prizes + id + '/remind',
-        headers: {
-          'X-JINKU-WECHAT-FORM-ID': formId
-        }
-      }, {
-        success: ({statusCode, data}) => {
-          this.$alert('设置提醒', data.message)
-          this.indexForPreview()
-        }
-      })
     }
   }
 </script>
@@ -107,18 +97,17 @@
       border-radius: 20rpx;
       position: relative;
       .banner {
-        border-bottom: 1rpx solid #F1F2F4;
         image {
           border-top-left-radius: 20rpx;
           border-top-right-radius: 20rpx;
           width: 100%;
           height: 386rpx;
           display: block;
+          overflow: hidden;
         }
       }
       .prizesItemFormSubmit {
         width: 686rpx;
-        height: 534rpx;
         position: absolute;
         top: 0;
         left: 0;
@@ -131,17 +120,38 @@
         border-bottom-right-radius: 20rpx;
         background: #fff;
         padding: 32rpx;
-        .name, .number {
+        position: relative;
+        .name {
+          width: 460rpx;
+          max-height: 90rpx;
           font-size: 32rpx;
           color: #333333;
-          line-height: 36rpx;
+          line-height: 48rpx;
           display: inline-block;
-          margin-bottom: 16rpx;
-          text-align: justify;
+          text-align: left;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
         }
-        .number {
-          margin-left: 16rpx;
-          color: #666666;
+        .luckDrawBtn {
+          position: absolute;
+          top: 0;
+          right: 0;
+          height: 100%;
+          width: 106rpx;
+          background: linear-gradient(to bottom, #FF7854 , #FF4E36);
+          border-radius: 0;
+          border-bottom-right-radius: 25rpx;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          letter-spacing: 4rpx;
+          font-size: 28rpx;
+          color: #fff;
+          line-height: 42rpx;
+          padding: 0 15rpx;
         }
         view {
           .isJoin {
@@ -158,6 +168,12 @@
             display: inline-block;
             color: #666666;
             margin-right: 10rpx;
+          }
+          .number {
+            font-size: 24rpx;
+            display: inline-block;
+            margin-left: 16rpx;
+            color: #666666;
           }
           label {
             font-size: 24rpx;

@@ -1,4 +1,5 @@
 <template>
+  <LoadingX :isLoading.sync="isLoading"></LoadingX>
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <TransmissionGate :transmissionType.sync="transmissionType"></TransmissionGate>
   <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText" :switchTabName.sync="switchTabName"></TitleBar>
@@ -14,7 +15,7 @@
     <view class="remindSpot" wx:if="{{userInfo.pending_coin_count > 0}}"></view>
   </view>
   <view class="homeSurround">
-    <PrizesListModule :switchTabName.sync="switchTabName" :prizesList.sync="prizesList" @communicationEmit.user="refreshFun" wx:if="{{switchTabName === '0'}}"></PrizesListModule>
+    <PrizesListModule :switchTabName.sync="switchTabName" :prizesList.sync="prizesList" @communicationEmit.user="refreshFun" :isLoading.sync="isLoading" wx:if="{{switchTabName === '0'}}"></PrizesListModule>
     <PreviewListModule :switchTabName.sync="switchTabName" :prizesQueuingList.sync="prizesQueuingList" @communicationEmit.user="refreshFun" wx:if="{{switchTabName === '1'}}"></PreviewListModule>
     <WelfareModule :switchTabName.sync="switchTabName" :welfareList.sync="welfareList" wx:if="{{switchTabName === '2'}}"></WelfareModule>
   </view>
@@ -26,6 +27,7 @@
   import base from '../mixins/base'
   import ShareMessage from '../mixins/ShareMessage'
   import LoadingZ from '../components/LoadingZ'
+  import LoadingX from '../components/LoadingX'
   import TitleBar from '../components/TitleBar'
   import PrizesListModule from '../components/PrizesListModule'
   import PreviewListModule from '../components/PreviewListModule'
@@ -51,10 +53,12 @@
       animationData: '',
       isMore: false,
       foamBtnAnimationData: '',
-      userInfo: {}
+      userInfo: {},
+      isLoading: false
     }
     components = {
       LoadingZ,
+      LoadingX,
       TitleBar,
       PrizesListModule,
       PreviewListModule,
@@ -63,10 +67,13 @@
     }
     methods = {
       // 父函数给传递子组件
-      refreshFun(event) {
+      refreshFun(event, id) {
         switch (event) {
           case 'indexForPreview':
             this.indexForPreview()
+            break
+          case 'luckDraw':
+            this.luckDraw(id)
             break
           default:
         }
@@ -183,6 +190,27 @@
         this.isMore = true
       }
       this.animationData = animationData
+    }
+    luckDraw(id) {
+      let that = this
+      that.isLoading = true
+      this.$post({
+        url: service.prizes + id + '/draw',
+        headers: {
+          'X-JINKU-WECHAT-FORM-ID': that.formId
+        }
+      }, {
+        success: ({statusCode, data}) => {
+          that.isLoading = false
+          if (statusCode === 200) {
+            wepy.showToast({
+              title: '参加成功',
+              icon: 'success'
+            })
+            this.indexForDraw()
+          }
+        }
+      })
     }
   }
 </script>
