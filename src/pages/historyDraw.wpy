@@ -43,7 +43,7 @@ export default class Home extends wepy.page {
     historyList: [],
     isShow: true,
     formId: null,
-    isBackBtn: false
+    isBackBtn: true
   }
   components = {
     LoadingZ,
