@@ -11,7 +11,8 @@
       <view class="foam">
         <block wx:for="{{welfareList.user_coin_pools}}" wx:key="index" wx:if="{{item.isShow}}">
           <view class="foamItem {{bubbleIndex === index ? 'bubbleIndex' : ''}}" style="top: {{position[index].top}};left: {{position[index].left}};" animation="{{foamBtnAnimationData}}">
-            <image src="../assets/images/WelfareModule/foam.png"></image>
+            <image src="../assets/images/WelfareModule/foam.png" class="foamImg"></image>
+            <image src="../assets/images/WelfareModule/hand.png" class="handImg" wx:if="{{item.id === handPoint}}"></image>
             <button @tap="foamBtn({{item.id}},{{item.coin}},{{index}})"></button>
             <text>{{item.category_name}}+{{item.coin}}</text>
           </view>
@@ -43,6 +44,10 @@
     }
     props = {
       foamBtnAnimationData: {
+        type: String,
+        default: ''
+      },
+      handPoint: {
         type: String,
         default: ''
       },
@@ -191,6 +196,16 @@
                 that.welfareList.today_coin = data.today_coin
                 setTimeout(function() {
                   that.welfareList.user_coin_pools[index].isShow = false
+                  if (id === that.handPoint) {
+                    let arr = []
+                    that.welfareList.user_coin_pools.map((item, i) => {
+                      if (item.isShow) {
+                        arr.push(item.id)
+                      }
+                    })
+                    that.handPoint = arr[Math.floor(Math.random() * arr.length)]
+                    that.$apply()
+                  }
                   that.isBubble = true
                 }, 500)
               }
@@ -304,11 +319,20 @@
         // animation-iteration-count: infinite;
         // transform: translate(10px, 10px);
         // transition:width 2s ease 0s;
-        image {
+        .foamImg {
           width: 132rpx;
           height: 118rpx;
           display: block;
           margin: 0 auto;
+        }
+        .handImg {
+          width: 44rpx;
+          height: 48rpx;
+          display: block;
+          position: absolute;
+          top: 64rpx;
+          right: 0;
+          z-index: 2;
         }
         button {
           width: 100%;

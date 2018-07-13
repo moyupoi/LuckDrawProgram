@@ -3,7 +3,6 @@
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <TransmissionGate :transmissionType.sync="transmissionType"></TransmissionGate>
   <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText" :switchTabName.sync="switchTabName"></TitleBar>
-  <view class="moreBtn" animation="{{animationData}}" wx:if="{{switchTabName === '2'}}" @tap="moreOpen">123福利币</view>
   <view class="switchTab">
     <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true">
       <button class="switchTabBtn {{switchTabName === '0' ? 'active' : '' }}" open-type="reLaunch" formType="submit" @tap="switchTabBtn('0')">抽奖</button>
@@ -15,9 +14,10 @@
     <view class="remindSpot" wx:if="{{userInfo.pending_coin_count > 0}}"></view>
   </view>
   <view class="homeSurround">
+    <view class="moreBtn" animation="{{animationData}}" wx:if="{{switchTabName === '2'}}" @tap="moreOpen">{{welfareList.total_coin}}福利分</view>
     <PrizesListModule :switchTabName.sync="switchTabName" :prizesList.sync="prizesList" @communicationEmit.user="refreshFun" :isLoading.sync="isLoading" wx:if="{{switchTabName === '0'}}"></PrizesListModule>
     <PreviewListModule :switchTabName.sync="switchTabName" :prizesQueuingList.sync="prizesQueuingList" @communicationEmit.user="refreshFun" wx:if="{{switchTabName === '1'}}"></PreviewListModule>
-    <WelfareModule :switchTabName.sync="switchTabName" :welfareList.sync="welfareList" wx:if="{{switchTabName === '2'}}"></WelfareModule>
+    <WelfareModule :switchTabName.sync="switchTabName" :welfareList.sync="welfareList" :handPoint.sync="handPoint" wx:if="{{switchTabName === '2'}}"></WelfareModule>
   </view>
 </template>
 <script>
@@ -54,7 +54,8 @@
       isMore: false,
       foamBtnAnimationData: '',
       userInfo: {},
-      isLoading: false
+      isLoading: false,
+      handPoint: ''
     }
     components = {
       LoadingZ,
@@ -131,6 +132,7 @@
           that.welfareList.user_coin_pools.map((item, i) => {
             that.welfareList.user_coin_pools[i].isShow = true
           })
+          that.handPoint = that.welfareList.user_coin_pools[0].id
           that.isShow = false
           let animationData = wepy.createAnimation({}).translateX(-70).step({ delay: 5000, duration: 2000 })
           this.animationData = animationData
@@ -215,24 +217,6 @@
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
   @import "../assets/stylesheets/layout.scss";
-  .moreBtn {
-    width: 160rpx;
-    height: 50rpx;
-    display: block;
-    position: absolute;
-    z-index: 10;
-    top: 330rpx;
-    left: 0;
-    font-size: 22rpx;
-    line-height: 50rpx;
-    background: #FF471C;
-    color: #fff;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    border-top-right-radius: 50rpx;
-    border-bottom-right-radius: 50rpx;
-    text-align: center;
-  }
   .switchTab {
     position: fixed;
     background: #FFF;
@@ -309,6 +293,7 @@
   }
   .homeSurround {
     overflow: hidden;
+    position: relative;
     // .logoRight {
     //   position: absolute;
     //   z-index: 3;
@@ -319,6 +304,25 @@
     //   right: 1rpx;
     // }
     margin-top: 110rpx;
+    .moreBtn {
+      width: 168rpx;
+      height: 60rpx;
+      display: block;
+      position: absolute;
+      z-index: 999;
+      top: 34rpx;
+      left: 0;
+      font-size: 22rpx;
+      line-height: 60rpx;
+      background: rgba(0, 0, 0, .3);
+      color: #fff;
+      border: 2rpx solid #fff;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      border-top-right-radius: 50rpx;
+      border-bottom-right-radius: 50rpx;
+      text-align: center;
+    }
     .prizes {
       position: relative;
       z-index: 1;

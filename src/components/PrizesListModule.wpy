@@ -215,7 +215,7 @@
       border-bottom: 1rpx solid #4A90E2;
     }
     .chargesBanner {
-      width: 282rpx;
+      width: 280rpx;
       height: 52rpx;
       display: block;
       margin: 52rpx auto 32rpx auto;
@@ -226,7 +226,7 @@
         width: 686rpxs;
         padding: 32rpx;
         background: #fff;
-        border-radius: 20rpx;
+        border-radius: 5rpx;
         display: block;
         position: relative;
         overflow: hidden;
