@@ -28,12 +28,24 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": -1,
+			"current": 1,
 			"list": [
 				{
 					"id": -1,
 					"name": "flc",
 					"pathName": "pages/getMoreFLC",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "history",
+					"pathName": "pages/historyDraw",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "prize",
+					"pathName": "pages/prize",
 					"query": ""
 				}
 			]
