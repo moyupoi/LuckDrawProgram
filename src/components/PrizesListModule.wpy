@@ -17,7 +17,7 @@
                 <text class="number"> | {{item.number}}件</text>
               </view>
             </navigator>
-            <button class="luckDrawBtn" @tap="luckDraw({{item.is_has_draw}}, {{item.id}})">{{item.is_has_draw ? '继续抽奖' : '免费抽奖' }}</button>
+            <button formType="submit" class="luckDrawBtn" @tap="luckDraw({{item.is_has_draw}}, {{item.id}})">{{item.is_has_draw ? '继续抽奖' : '免费抽奖' }}</button>
           </view>
         </view>
       </block>
@@ -68,19 +68,21 @@
       formSubmit (event) {
         let formId = event.detail.formId
         if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
-          this.$updataFormId(this.formId)
+          this.$updataFormId(formId)
         }
       },
       luckDraw(isHasDraw, id) {
         if (isHasDraw) {
           this.$goto('luckDraw?id=' + id)
-        } else {
+        } else if (!isHasDraw && !this.isLoading) {
           this.$emit('communicationEmit', 'luckDraw', id)
         }
+      },
+      exchangeBtn(id) {
+        this.$goto('exchangeDetails?id=' + id)
       }
     }
-    onLoad() {
-    }
+    onLoad() {}
   }
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
@@ -213,7 +215,7 @@
       border-bottom: 1rpx solid #4A90E2;
     }
     .chargesBanner {
-      width: 282rpx;
+      width: 280rpx;
       height: 52rpx;
       display: block;
       margin: 52rpx auto 32rpx auto;
@@ -224,7 +226,7 @@
         width: 686rpxs;
         padding: 32rpx;
         background: #fff;
-        border-radius: 20rpx;
+        border-radius: 5rpx;
         display: block;
         position: relative;
         overflow: hidden;

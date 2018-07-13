@@ -12,10 +12,8 @@
           <view>
             <text class="isJoin" wx:if="{{item.is_has_draw}}">已参加 |</text>
             <label>满 {{item.reach_number}} 人参与开奖</label>
-            <form bindsubmit="remind({{item.id}})" wx:if="{{!item.has_remind}}" bindreset="formReset" report-submit="true">
-              <button formType="submit">提醒我</button>
-            </form>
-            <button wx:if="{{item.has_remind}}" class="already">已提醒</button>
+            <button formType="submit" wx:if="{{!item.has_remind}}" @tap="remind({{item.id}})">提醒我</button>
+            <button wx:if="{{item.has_remind}}" class="already" formType="submit">已提醒</button>
           </view>
         </view>
       </view>
@@ -41,7 +39,7 @@
     methods = {
       formSubmit (formId) {
         if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
-          this.$updataFormId(this.formId)
+          this.$updataFormId(formId)
         }
       },
       remind(id) {
@@ -57,8 +55,7 @@
         })
       }
     }
-    onLoad() {
-    }
+    onLoad() {}
   }
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>

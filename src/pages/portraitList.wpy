@@ -20,7 +20,7 @@
       // navigationBarTitleText: '中奖纪录'
     }
     data = {
-      titleText: '邀请记录',
+      titleText: '抽奖记录',
       isBackBtn: true,
       userAvatarsList: [],
       count: 0,
