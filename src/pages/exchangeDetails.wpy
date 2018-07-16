@@ -44,7 +44,7 @@ export default class ExchangeDetails extends wepy.page {
   data = {
     titleText: '兑换福利',
     isShow: true,
-    isBackBtn: false,
+    isBackBtn: true,
     exchangeList: {},
     myPhone: '',
     isLoading: false,
