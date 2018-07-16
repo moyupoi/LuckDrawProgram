@@ -14,7 +14,7 @@
     <view class="remindSpot" wx:if="{{userInfo.pending_coin_count > 0}}"></view>
   </view>
   <view class="homeSurround">
-    <view class="moreBtn" animation="{{animationData}}" wx:if="{{switchTabName === '2'}}" @tap="moreOpen">{{welfareList.total_coin}}福利分</view>
+    <view class="moreBtn" wx:if="{{switchTabName === '2'}}" @tap="moreOpen">{{welfareList.total_coin}}福利分</view>
     <PrizesListModule :switchTabName.sync="switchTabName" :prizesList.sync="prizesList" @communicationEmit.user="refreshFun" :isLoading.sync="isLoading" wx:if="{{switchTabName === '0'}}"></PrizesListModule>
     <PreviewListModule :switchTabName.sync="switchTabName" :prizesQueuingList.sync="prizesQueuingList" @communicationEmit.user="refreshFun" wx:if="{{switchTabName === '1'}}"></PreviewListModule>
     <WelfareModule :switchTabName.sync="switchTabName" :welfareList.sync="welfareList" :handPoint.sync="handPoint" wx:if="{{switchTabName === '2'}}"></WelfareModule>
@@ -184,15 +184,18 @@
       }
     }
     moreOpen() {
-      let animationData = ''
-      if (this.isMore) {
-        animationData = wepy.createAnimation({}).translateX(0).step({ duration: 500 })
-        this.isMore = false
-      } else {
-        animationData = wepy.createAnimation({}).translateX(-70).step({ duration: 500 })
-        this.isMore = true
-      }
-      this.animationData = animationData
+      wepy.navigateTo({
+        url: '/pages/FLBRecord'
+      })
+      // let animationData = ''
+      // if (this.isMore) {
+      //   animationData = wepy.createAnimation({}).translateX(0).step({ duration: 500 })
+      //   this.isMore = false
+      // } else {
+      //   animationData = wepy.createAnimation({}).translateX(-70).step({ duration: 500 })
+      //   this.isMore = true
+      // }
+      // this.animationData = animationData
     }
     luckDraw(id) {
       let that = this

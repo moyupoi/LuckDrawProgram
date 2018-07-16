@@ -1,34 +1,32 @@
 <template>
-  <view>
-    <view class="floatingFoam">
-      <image class="welfareBannerBack" src="../assets/images/WelfareModule/welfareBannerBack.png"></image>
-      <image src="../assets/images/WelfareModule/floatingFoam.png" class="floatingFoamImg"></image>
-      <view class="floatingFoamView" @tap="toFLBRecord">
-        <label>今日获得</label>
-        <text class="number">{{welfareList.today_coin}}</text>
-        <text class="lab">FLC</text>
-      </view>
-      <view class="foam">
-        <block wx:for="{{welfareList.user_coin_pools}}" wx:key="index" wx:if="{{item.isShow}}">
-          <view class="foamItem {{bubbleIndex === index ? 'bubbleIndex' : ''}}" style="top: {{position[index].top}};left: {{position[index].left}};" animation="{{foamBtnAnimationData}}">
-            <image src="../assets/images/WelfareModule/foam.png" class="foamImg"></image>
-            <image src="../assets/images/WelfareModule/hand.png" class="handImg" wx:if="{{item.id === handPoint}}"></image>
-            <button @tap="foamBtn({{item.id}},{{item.coin}},{{index}})"></button>
-            <text>{{item.category_name}}+{{item.coin}}</text>
-          </view>
-        </block>
-      </view>
+  <view class="floatingFoam">
+    <image class="welfareBannerBack" src="../assets/images/WelfareModule/welfareBannerBack.png"></image>
+    <image src="../assets/images/WelfareModule/floatingFoam.png" class="floatingFoamImg"></image>
+    <view class="floatingFoamView" @tap="toFLBRecord">
+      <label>今日获得</label>
+      <text class="number">{{welfareList.today_coin}}</text>
+      <text class="lab">FLC</text>
     </view>
-    <view class="charges">
-      <view class="chargesItem" wx:for="{{welfareList.products}}" wx:key="index" @tap="exchangeBtn({{item.id}})">
-        <image src="{{item.banner_url}}"></image>
-        <view>
-          <text>{{item.name}}</text>
-          <label class="number">{{item.coin}}</label>
-          <label class="symbol">FLC</label>
+    <view class="foam">
+      <block wx:for="{{welfareList.user_coin_pools}}" wx:key="index" wx:if="{{item.isShow}}">
+        <view class="foamItem {{bubbleIndex === index ? 'bubbleIndex' : ''}}" style="top: {{position[index].top}};left: {{position[index].left}};" animation="{{foamBtnAnimationData}}">
+          <image src="../assets/images/WelfareModule/foam.png" class="foamImg"></image>
+          <image src="../assets/images/WelfareModule/hand.png" class="handImg" wx:if="{{item.id === handPoint}}"></image>
+          <button @tap="foamBtn({{item.id}},{{item.coin}},{{index}})"></button>
+          <text>{{item.category_name}}+{{item.coin}}</text>
         </view>
-        <button>兑换</button>
+      </block>
+    </view>
+  </view>
+  <view class="charges">
+    <view class="chargesItem" wx:for="{{welfareList.products}}" wx:key="index" @tap="exchangeBtn({{item.id}})">
+      <image src="{{item.banner_url}}"></image>
+      <view>
+        <text>{{item.name}}</text>
+        <label class="number">{{item.coin}}</label>
+        <label class="symbol">FLC</label>
       </view>
+      <button>兑换</button>
     </view>
   </view>
 </template>
@@ -242,8 +240,15 @@
       transform: translate3d(0, 0, 0);
     }
   }
-  @keyframes myfirst
-  {
+  @keyframes alarm {
+    from {
+      transform: rotate(1deg);
+    }
+    to {
+      transform: rotate(-30deg);
+    }
+  }
+  @keyframes myfirst {
     0%   { top: 0px; }
     20%  { top: -2px; }
     30%  { top: -4px; }
@@ -333,6 +338,7 @@
           top: 64rpx;
           right: 0;
           z-index: 2;
+          animation: alarm .5s linear infinite;
         }
         button {
           width: 100%;
