@@ -129,10 +129,12 @@
       this.$get({url: service.userCoins}, {
         success: ({statusCode, data}) => {
           that.welfareList = data
-          that.welfareList.user_coin_pools.map((item, i) => {
-            that.welfareList.user_coin_pools[i].isShow = true
-          })
-          that.handPoint = that.welfareList.user_coin_pools[0].id
+          if (that.welfareList.user_coin_pools.length > 0) {
+            that.welfareList.user_coin_pools.map((item, i) => {
+              that.welfareList.user_coin_pools[i].isShow = true
+            })
+            that.handPoint = that.welfareList.user_coin_pools[0].id
+          }
           that.isShow = false
           let animationData = wepy.createAnimation({}).translateX(-70).step({ delay: 5000, duration: 2000 })
           this.animationData = animationData
