@@ -13,11 +13,11 @@ export default class painterMixin extends wepy.mixin {
     scene = service.wxacodeunlimit + '?scene=' + scene + '&page=' + this.shareUrl
     const bannerPromise = new Promise((resolve, reject) => {
       wepy.getImageInfo({
-        src: this.titaList.banner_url,
+        src: this.prizesDetails.banner_url,
         success: (res) => {
           console.log('下载完成')
           let obj = {
-            titaList: that.titaList,
+            prizesDetails: that.prizesDetails,
             path: res.path
           }
           resolve(obj)
@@ -35,7 +35,7 @@ export default class painterMixin extends wepy.mixin {
     })
     const portraitPromise = new Promise((resolve, reject) => {
       wepy.getImageInfo({
-        src: this.titaList.user_avatar_url,
+        src: this.prizesDetails.user_avatar_url,
         success: (res) => {
           console.log('下载完成')
           resolve(res.path)
@@ -52,15 +52,15 @@ export default class painterMixin extends wepy.mixin {
       // 绘制商品名
       ctx.setFontSize(40)
       ctx.setFillStyle("#333333")
-      ctx.fillText(result[0].titaList.name, 30, 530)
+      ctx.fillText(result[0].prizesDetails.name, 30, 530)
       // 绘制已有xxx人参加
       ctx.setFontSize(30)
       ctx.setFillStyle("#FF4C21")
-      ctx.fillText('已有' + result[0].titaList.prize_draws_count + '人次参加', 30, 590)
+      ctx.fillText('已有' + result[0].prizesDetails.prize_draws_count + '人次参加', 30, 590)
       // 绘制一段话
       ctx.setFontSize(32)
       ctx.setFillStyle("#0B0A0A")
-      let paragraph = '我是' + result[0].titaList.user_nick_name + '邀你一起免费抽奖'
+      let paragraph = '我是' + result[0].prizesDetails.user_nick_name + '邀你一起免费抽奖'
       if (paragraph.length > 17) {
         ctx.fillText(paragraph.substr(0, 17), 160, 1272)
         ctx.fillText(paragraph.substr(17, 17), 160, 1315)

@@ -11,9 +11,9 @@
   <view class="shareWicket" wx:if="{{isShareWicket}}">
     <view class="forward" @tap="closeShareSwitch">
       <view class="diagram">
-        <image src="{{titaList.banner_url}}" class="banner"></image>
+        <image src="{{prizesDetails.banner_url}}" class="banner"></image>
         <view class="detailed">
-          <text class="title">{{titaList.name}}</text>
+          <text class="title">{{prizesDetails.name}}</text>
           <view class="person">
             <label>已有</label>
             <label>{{prizeDrawsCount}}</label>
@@ -25,9 +25,9 @@
           <text class="projectName">搞点福利</text>
           <view class="hr"></view>
           <view class="userInfo">
-            <image src="{{titaList.user_avatar_url}}"></image>
+            <image src="{{prizesDetails.user_avatar_url}}"></image>
             <view>
-              我是<label>墨鱼卷</label>，邀你一起免费抽奖
+              我是<label>{{prizesDetails.user_nick_name}}</label>，邀你一起免费抽奖
             </view>
           </view>
         </view>
@@ -39,11 +39,11 @@
     </view>
   </view>
   <view class="luckDrawSurround">
-    <image src="{{titaList.banner_url}}" class="banner"></image>
+    <image src="{{prizesDetails.banner_url}}" class="banner"></image>
     <view class="describe">
-      <text class="name">{{titaList.name}}</text>
-      <text class="number">{{titaList.number}}件</text>
-      <label class="reachNumber">满 {{titaList.reach_number}}人次参与，立即开奖</label>
+      <text class="name">{{prizesDetails.name}}</text>
+      <text class="number">{{prizesDetails.number}}件</text>
+      <label class="reachNumber">满 {{prizesDetails.reach_number}}人次参与，立即开奖</label>
       <view class="awardProgress">
         <text class="percentageTitle">开奖进度:</text>
         <view class="progress">
@@ -52,13 +52,13 @@
       </view>
       <view class="participate" wx:if="{{prizeDrawsCount > 0}}">
         <text>已有{{prizeDrawsCount}}人参加，</text>
-        <navigator hover-class="none" url="/pages/portraitList?id={{titaList.id}}&type=luckDraw">
+        <navigator hover-class="none" url="/pages/portraitList?id={{prizesDetails.id}}&type=luckDraw">
           查看全部>
         </navigator>
       </view>
       <view class="participatePeople" wx:if="{{prizeDrawsCount > 0}}">
         <image src="{{item}}" wx:for="{{prizeDrawUserAvatars}}" wx:key="index" wx:if="{{index <= 6}}"></image>
-        <label wx:if="{{titaList.get_prize_percent !== 0}}">{{titaList.get_prize_percent}}%</label>
+        <label wx:if="{{prizesDetails.get_prize_percent !== 0}}">{{prizesDetails.get_prize_percent}}%</label>
         <view class="ellipsis" wx:if="{{prizeDrawsCount >= 6}}"></view>
       </view>
       <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub" wx:if="{{aasmState !== 'finishing' && aasmState !== 'finished' && !isReachPrizeLimit}}">
@@ -67,7 +67,7 @@
         <button class="shareIncrease" formType="submit" wx:if="{{isHasdraw}}" @tap="shareSwitch">分享增加抽奖机会</button>
       </form>
       <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub" wx:if="{{aasmState !== 'finishing' && aasmState !== 'finished' && isReachPrizeLimit}}">
-        <button class="surplus active" @getuserinfo="drawBtn" open-type="getUserInfo" formType="submit">{{titaList.prize_limit_message}}</button>
+        <button class="surplus active" @getuserinfo="drawBtn" open-type="getUserInfo" formType="submit">{{prizesDetails.prize_limit_message}}</button>
         <button class="shareIncrease" formType="submit" wx:if="{{isHasdraw}}" @tap="shareSwitch">分享增加抽奖机会</button>
       </form>
       <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub" wx:if="{{aasmState === 'finishing' || aasmState === 'finished'}}">
@@ -85,13 +85,13 @@
         <text class="awardRed">提高中奖概率（参加抽奖次数/开奖所需人次）</text>
       </view>
       <view class="number">
-        <text>已邀请{{titaList.shared_count}}人参加抽奖，抽奖机会 </text>
-        <text class="awardRed" wx:if="{{titaList.shared_count > 0}}"> + {{titaList.shared_count}}</text>
+        <text>已邀请{{prizesDetails.shared_count}}人参加抽奖，抽奖机会 </text>
+        <text class="awardRed" wx:if="{{prizesDetails.shared_count > 0}}"> + {{prizesDetails.shared_count}}</text>
       </view>
       <view class="participatePeople">
-        <image src="{{item}}" wx:for="{{titaList.shared_user_avatars}}" wx:key="index" wx:if="{{index < 3}}"></image>
+        <image src="{{item}}" wx:for="{{prizesDetails.shared_user_avatars}}" wx:key="index" wx:if="{{index < 3}}"></image>
       </view>
-      <navigator hover-class="none" url="/pages/portraitList?id={{titaList.id}}&type=probability" wx:if="{{titaList.shared_count > 0}}">
+      <navigator hover-class="none" url="/pages/portraitList?id={{prizesDetails.id}}&type=probability" wx:if="{{prizesDetails.shared_count > 0}}">
         查看全部>
       </navigator>
       <form bindsubmit="formSubmit" report-submit="true" class="formSub">
@@ -102,9 +102,9 @@
     <view class="sponsor">
       <text>赞助商</text>
       <image src="../assets/images/luckDraw/officialLogo.png"></image>
-      <label>{{titaList.sponsor}}</label>
+      <label>{{prizesDetails.sponsor}}</label>
     </view>
-    <image src="{{titaList.detail_url}}" class="commodityDisplay" mode="widthFix"></image>
+    <image src="{{prizesDetails.detail_url}}" class="commodityDisplay" mode="widthFix"></image>
   </view>
 </template>
 <script>
@@ -127,7 +127,7 @@
       isBackBtn: true,
       isShare: true,
       isShareBtn: false,
-      titaList: {},
+      prizesDetails: {},
       percentage: 0,
       reachNumber: 0,
       isHasdraw: true,
@@ -200,7 +200,7 @@
       let that = this
       this.$get({url: service.prizes + this.commodityId}, {
         success: ({statusCode, data}) => {
-          that.titaList = data
+          that.prizesDetails = data
           that.reachNumber = data.reach_number
           that.percentage = data.prize_draws_count > 0 ? parseInt(data.prize_draws_count / data.reach_number * 100) : 0
           that.isHasdraw = data.is_has_draw
@@ -263,7 +263,7 @@
       if (that.isCanDraw) {
         that.isLoading = true
         this.$post({
-          url: service.prizes + this.titaList.id + '/draw',
+          url: service.prizes + this.prizesDetails.id + '/draw',
           headers: {
             'X-JINKU-WECHAT-FORM-ID': that.formId
           }
