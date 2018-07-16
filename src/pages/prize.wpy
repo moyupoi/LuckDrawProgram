@@ -43,7 +43,7 @@
         查看全部>
       </navigator>
     </view>
-    <view class="ling" @tap="gotoPersonCenter"></view>
+    <view class="ling" @tap="gotoLingFLC"></view>
   </view>
   <navigator hover-class="none" class="otherBtn" url="/pages/home">
     参加其他抽奖
@@ -81,8 +81,8 @@ export default class Prize extends wepy.page {
     TitleBar
   }
   methods = {
-    gotoPersonCenter() {
-      this.$goto('personalCenter')
+    gotoLingFLC() {
+      this.$goto('home?tabSwitch=2')
     }
   }
   onLoad(options) {
