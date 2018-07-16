@@ -1,4 +1,5 @@
 <template>
+  <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
   <view class="todayCoin">
     <label>{{userFlc}}</label>
@@ -108,12 +109,27 @@ export default class FLBRecord extends wepy.page {
       }
     }
   }
+  initGetPhone() {
+    let that = this
+    this.$get(
+      { url: service.prizesMine },
+      {
+        success: ({ statusCode, data }) => {
+          this.phoneNumberAuthentication =
+            data.mobile !== 'null' ? 'true' : 'false'
+          that.isShow = false
+        }
+      }
+    )
+  }
   onLoad(e) {
     console.log(e)
     this.userFlc = e.userFlc
     // this.FLBRecordInit()
   }
-  onShow() {}
+  onShow() {
+    this.initGetPhone()
+  }
 
   onReachBottom() {
     if (this.nextPage) {
