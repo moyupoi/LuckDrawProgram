@@ -47,6 +47,12 @@
 					"name": "prize",
 					"pathName": "pages/prize",
 					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "changedetails",
+					"pathName": "pages/exchangeDetails",
+					"query": ""
 				}
 			]
 		}

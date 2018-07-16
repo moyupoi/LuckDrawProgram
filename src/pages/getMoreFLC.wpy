@@ -68,7 +68,7 @@ export default class FLBRecord extends wepy.page {
       this.$goto('home?tabSwitch=1')
     },
     gotostrategy() {
-      this.$goto('strategy?tabSwitch=1')
+      this.$goto('strategy?')
     },
     formSubmit(event) {
       let formId = event.detail.formId

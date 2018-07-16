@@ -4,6 +4,7 @@
   <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
   <view class="commodityDetails">
     <image class="banner" src="{{exchangeList.banner_url}}"></image>
+    <view class="get" @tap="gotoGetFLC">获取FLC</view>
     <view class="describe">
       <text>{{exchangeList.name}}</text>
       <view class="price">
@@ -27,58 +28,66 @@
   </view>
 </template>
 <script>
-  import wepy from 'wepy'
-  import { service } from '../config.js'
-  import http from '../mixins/http'
-  import base from '../mixins/base'
-  import LoadingZ from '../components/LoadingZ'
-  import LoadingX from '../components/LoadingX'
-  import TitleBar from '../components/TitleBar'
-  import ShareMessage from '../mixins/ShareMessage'
-  export default class ExchangeDetails extends wepy.page {
-    mixins = [http, base, ShareMessage]
-    config = {
-      // navigationBarTitleText: '中奖纪录'
+import wepy from 'wepy'
+import { service } from '../config.js'
+import http from '../mixins/http'
+import base from '../mixins/base'
+import LoadingZ from '../components/LoadingZ'
+import LoadingX from '../components/LoadingX'
+import TitleBar from '../components/TitleBar'
+import ShareMessage from '../mixins/ShareMessage'
+export default class ExchangeDetails extends wepy.page {
+  mixins = [http, base, ShareMessage]
+  config = {
+    // navigationBarTitleText: '中奖纪录'
+  }
+  data = {
+    titleText: '兑换福利',
+    isShow: true,
+    isBackBtn: false,
+    exchangeList: {},
+    myPhone: '',
+    isLoading: false,
+    id: ''
+  }
+  components = {
+    LoadingZ,
+    LoadingX,
+    TitleBar
+  }
+  methods = {
+    gotoGetFLC() {
+      this.$goto('home?tabSwitch=2')
     }
-    data = {
-      titleText: '兑换福利',
-      isShow: true,
-      isBackBtn: true,
-      exchangeList: {},
-      myPhone: '',
-      isLoading: false,
-      id: ''
-    }
-    components = {
-      LoadingZ,
-      LoadingX,
-      TitleBar
-    }
-    methods = {}
-    onLoad(options) {
-      let id = options.id
-      this.id = options.id
-      this.exchangeInit(id)
-    }
-    onShow() {}
-    exchangeInit(id) {
-      let that = this
-      this.$get({url: service.products + id}, {
-        success: ({statusCode, data}) => {
+  }
+  onLoad(options) {
+    let id = options.id
+    this.id = options.id
+    this.exchangeInit(id)
+  }
+  onShow() {}
+  exchangeInit(id) {
+    let that = this
+    this.$get(
+      { url: service.products + id },
+      {
+        success: ({ statusCode, data }) => {
           that.exchangeList = data
           that.isShow = false
           that.myPhone = data.mobile
         }
-      })
-    }
-    bindinput(event) {
-      this.myPhone = event.detail.value
-    }
-    getphonenumber(event) {
-      let that = this
-      if (event.detail.errMsg === 'getPhoneNumber:ok') {
-        this.isLoading = true
-        this.$post({
+      }
+    )
+  }
+  bindinput(event) {
+    this.myPhone = event.detail.value
+  }
+  getphonenumber(event) {
+    let that = this
+    if (event.detail.errMsg === 'getPhoneNumber:ok') {
+      this.isLoading = true
+      this.$post(
+        {
           url: service.updateMobile,
           headers: {
             'X-JINKU-WECHAT-FORM-ID': that.formId
@@ -87,23 +96,29 @@
             encryptedData: event.detail.encryptedData,
             iv: event.detail.iv
           }
-        }, {
-          success: ({statusCode, data}) => {
+        },
+        {
+          success: ({ statusCode, data }) => {
             if (statusCode === 200) {
               that.myPhone = data.mobile
               that.isLoading = false
             }
           }
-        })
-      }
+        }
+      )
     }
-    exchangeBtn() {
-      if (this.myPhone.length !== 11 && !(/^1[3|4|5|7|8]\d{9}$/.test(this.myPhone))) {
-        this.$alert('What？您的手机号？')
-      } else {
-        let that = this
-        this.isLoading = true
-        this.$post({
+  }
+  exchangeBtn() {
+    if (
+      this.myPhone.length !== 11 &&
+      !/^1[3|4|5|7|8]\d{9}$/.test(this.myPhone)
+    ) {
+      this.$alert('What？您的手机号？')
+    } else {
+      let that = this
+      this.isLoading = true
+      this.$post(
+        {
           url: service.products + that.id + '/exchange',
           headers: {
             'X-JINKU-WECHAT-FORM-ID': that.formId
@@ -111,8 +126,9 @@
           data: {
             mobile: that.myPhone
           }
-        }, {
-          success: ({statusCode, data}) => {
+        },
+        {
+          success: ({ statusCode, data }) => {
             if (statusCode === 200) {
               this.isLoading = false
               this.exchangeList.stock_number = data.stock_number
@@ -121,128 +137,149 @@
               this.isLoading = false
             }
           }
-        })
-      }
+        }
+      )
     }
   }
+}
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
-  @import "../assets/stylesheets/layout.scss";
-  .commodityDetails {
-    overflow: hidden;
-    .banner {
-      width: 750rpx;
-      height: 400rpx;
-      display: block;
+@import '../assets/stylesheets/layout.scss';
+.commodityDetails {
+  position: relative;
+  overflow: hidden;
+  .banner {
+    width: 750rpx;
+    height: 400rpx;
+    display: block;
+  }
+  .get {
+    position: absolute;
+    left: 0;
+    top: 64rpx;
+    width: 162rpx;
+    height: 60rpx;
+    border-radius: 0 30rpx 30rpx 0;
+    background-image: linear-gradient(
+      to bottom,
+      #3c82e2 0%,
+      #4868da 30%,
+      #5b41ce 95%,
+      #5d3dcd 100%
+    );
+    font-size: 24rpx;
+    color: #ffffff;
+    line-height: 60rpx;
+    text-align: center;
+  }
+  .describe {
+    background: #fff;
+    padding: 32rpx;
+    position: relative;
+    text {
+      font-size: 40rpx;
+      color: #333333;
+      line-height: 42rpx;
+      width: 680rpx;
+      height: 40rpx;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      text-align: left;
     }
-    .describe {
-      background: #fff;
-      padding: 32rpx;
-      position: relative;
-      text {
-        font-size: 40rpx;
-        color: #333333;
-        line-height: 42rpx;
-        width: 680rpx;
-        height: 40rpx;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 1;
-        -webkit-box-orient: vertical;
-        text-align: left;
-      }
-      .price {
-        margin-top: 10rpx;
-        label {
-          font-size: 26rpx;
-          display: inline-block;
-          color: #999999;
-          &:nth-of-type(1) {
-            color: #FA5C37;
-            margin-right: 16rpx;
-          }
+    .price {
+      margin-top: 10rpx;
+      label {
+        font-size: 26rpx;
+        display: inline-block;
+        color: #999999;
+        &:nth-of-type(1) {
+          color: #fa5c37;
+          margin-right: 16rpx;
         }
       }
-      .stockNumber {
-        font-size: 26rpx;
-        color: #666666;
-        position: absolute;
-        top: 95rpx;
-        right: 32rpx;
-      }
     }
-    .explain {
-      background: #fff;
-      padding: 30rpx 28rpx 32rpx 28rpx;
-      margin-top: 32rpx;
-      label {
-        font-size: 28rpx;
-        color: #666666;
-      }
-      text {
-        margin-top: 16rpx;
-        font-size: 30rpx;
-        color: #333333;
-        line-height: 50rpx;
-        width: 686rpx;
-        display: block;
-      }
-    }
-    .getPhone {
-      height: 100rpx;
-      background: #fff;
-      margin: 32rpx 0 158rpx;
-      padding: 0 32rpx;
-      position: relative;
-      label {
-        display: inline-block;
-        font-size: 28rpx;
-        color: #333333;
-        line-height: 100rpx;
-      }
-      input {
-        display: inline-block;
-        font-size: 28rpx;
-        vertical-align: middle;
-      }
-      .phonePlaceholder {
-        font-size: 28rpx;
-        color: #B2B2B2;
-      }
-      button {
-        position: absolute;
-        right: 32rpx;
-        top: 28rpx;
-        width: 190rpx;
-        height: 50rpx;
-        border: 1rpx solid #3799FA;
-        color: #3799FA;
-        font-size: 24rpx;
-        line-height: 49rpx;
-        background: #fff;
-        border-radius: 50rpx;
-        display: inline-block;
-      }
-    }
-    .exchangeBtn {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #fff;
-      height: 132rpx;
-      overflow: hidden;
-      button {
-        margin-top: 20rpx;
-        width: 686rpx;
-        height: 92rpx;
-        font-size: 36rpx;
-        font-weight: 300;
-        color: #fff;
-        background: #FA5C37;
-        border-radius: 50rpx;
-      }
+    .stockNumber {
+      font-size: 26rpx;
+      color: #666666;
+      position: absolute;
+      top: 95rpx;
+      right: 32rpx;
     }
   }
+  .explain {
+    background: #fff;
+    padding: 30rpx 28rpx 32rpx 28rpx;
+    margin-top: 32rpx;
+    label {
+      font-size: 28rpx;
+      color: #666666;
+    }
+    text {
+      margin-top: 16rpx;
+      font-size: 30rpx;
+      color: #333333;
+      line-height: 50rpx;
+      width: 686rpx;
+      display: block;
+    }
+  }
+  .getPhone {
+    height: 100rpx;
+    background: #fff;
+    margin: 32rpx 0 158rpx;
+    padding: 0 32rpx;
+    position: relative;
+    label {
+      display: inline-block;
+      font-size: 28rpx;
+      color: #333333;
+      line-height: 100rpx;
+    }
+    input {
+      display: inline-block;
+      font-size: 28rpx;
+      vertical-align: middle;
+    }
+    .phonePlaceholder {
+      font-size: 28rpx;
+      color: #b2b2b2;
+    }
+    button {
+      position: absolute;
+      right: 32rpx;
+      top: 28rpx;
+      width: 190rpx;
+      height: 50rpx;
+      border: 1rpx solid #3799fa;
+      color: #3799fa;
+      font-size: 24rpx;
+      line-height: 49rpx;
+      background: #fff;
+      border-radius: 50rpx;
+      display: inline-block;
+    }
+  }
+  .exchangeBtn {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    height: 132rpx;
+    overflow: hidden;
+    button {
+      margin-top: 20rpx;
+      width: 686rpx;
+      height: 92rpx;
+      font-size: 36rpx;
+      font-weight: 300;
+      color: #fff;
+      background: #fa5c37;
+      border-radius: 50rpx;
+    }
+  }
+}
 </style>
