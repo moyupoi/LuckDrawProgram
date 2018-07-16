@@ -5,6 +5,9 @@
   <view class="canvasBox">
     <canvas class="canvas" canvas-id="canvas" style="width: 750px;height: 1368px;"></canvas>
   </view>
+  <navigator hover-class="none" url="/pages/home" class="moreDraw" open-type="reLaunch">
+    <image src="../assets/images/luckDraw/more.png"></image>
+  </navigator>
   <view class="shareWicket" wx:if="{{isShareWicket}}">
     <view class="forward" @tap="closeShareSwitch">
       <view class="diagram">
@@ -331,6 +334,16 @@
     z-index: 99999;
     .canvas {
       background: #fff;
+    }
+  }
+  .moreDraw {
+    position: fixed;
+    top: 1000rpx;
+    right: 0;
+    z-index: 10;
+    image {
+      width: 152rpx;
+      height: 156rpx;
     }
   }
   .shareWicket {

@@ -323,6 +323,7 @@
       border-bottom-left-radius: 0;
       border-top-right-radius: 50rpx;
       border-bottom-right-radius: 50rpx;
+      border-left: 0;
       text-align: center;
     }
     .prizes {

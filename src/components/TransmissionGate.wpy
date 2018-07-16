@@ -47,8 +47,8 @@ export default class TransmissionGate extends wepy.component {
   bottom: 104rpx;
   right: 0;
   image {
-    width: 132rpx;
-    height: 132rpx;
+    width: 154rpx;
+    height: 156rpx;
     display: block;
   }
 }
