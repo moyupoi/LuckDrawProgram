@@ -182,20 +182,6 @@
         default:
       }
     }
-    moreOpen() {
-      wepy.navigateTo({
-        url: '/pages/FLBRecord'
-      })
-      // let animationData = ''
-      // if (this.isMore) {
-      //   animationData = wepy.createAnimation({}).translateX(0).step({ duration: 500 })
-      //   this.isMore = false
-      // } else {
-      //   animationData = wepy.createAnimation({}).translateX(-70).step({ duration: 500 })
-      //   this.isMore = true
-      // }
-      // this.animationData = animationData
-    }
     luckDraw(id) {
       let that = this
       that.isLoading = true
