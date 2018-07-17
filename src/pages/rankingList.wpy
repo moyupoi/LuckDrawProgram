@@ -230,6 +230,7 @@
       }
     }
     .generalList, .friends {
+      overflow: hidden;
       .participantList {
         background: #FFF;
         margin-bottom: 132rpx;
