@@ -7,6 +7,7 @@
       <text class="number">{{welfareList.today_coin}}</text>
       <text class="lab">FLC</text>
     </view>
+    <view class="moreBtn" @tap="moreOpen">{{welfareList.total_coin}}福利分</view>
     <view class="foam">
       <block wx:for="{{welfareList.user_coin_pools}}" wx:key="index" wx:if="{{item.isShow}}">
         <view class="foamItem {{bubbleIndex === index ? 'bubbleIndex' : ''}}" style="top: {{position[index].top}};left: {{position[index].left}};" animation="{{foamBtnAnimationData}}">
@@ -191,6 +192,7 @@
           }, {
             success: ({statusCode, data}) => {
               if (statusCode === 200) {
+                that.welfareList.total_coin = data.total_coin
                 that.welfareList.today_coin = data.today_coin
                 setTimeout(function() {
                   that.welfareList.user_coin_pools[index].isShow = false
@@ -246,6 +248,25 @@
     }
     to {
       transform: rotate(-30deg);
+    }
+  }
+  @keyframes bounceIn{
+    0% {
+      transform:translate3d(0,-5px,0)
+    }
+    10% {
+      transform:translate3d(0,0px,0)
+    }
+    13% {transform:translate3d(0,-3px,0)
+    }
+    18% {
+      transform:translate3d(0,0px,0)
+    }
+    90%{
+      transform:translate3d(0,0px,0)
+    }
+    to {
+      transform:translate3d(0,-5px,0)
     }
   }
   @keyframes myfirst {
@@ -308,6 +329,26 @@
         display: inline-block;
       }
     }
+    .moreBtn {
+      width: 168rpx;
+      height: 60rpx;
+      display: block;
+      position: absolute;
+      z-index: 999;
+      top: 34rpx;
+      left: 0;
+      font-size: 22rpx;
+      line-height: 60rpx;
+      background: rgba(0, 0, 0, .3);
+      color: #fff;
+      border: 2rpx solid #fff;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      border-top-right-radius: 50rpx;
+      border-bottom-right-radius: 50rpx;
+      border-left: 0;
+      text-align: center;
+    }
     .foam {
       width: 100%;
       height: 100%;
@@ -319,11 +360,10 @@
         z-index: 2;
         top: 0;
         left: 0;
-        // transition: opacity .5s ease-in-out;
-        // animation: myfirst 2s;
-        // animation-iteration-count: infinite;
-        // transform: translate(10px, 10px);
-        // transition:width 2s ease 0s;
+        animation-duration: 2s;
+        animation-fill-mode: both;
+        animation-iteration-count: infinite;
+        animation-name: bounceIn;
         .foamImg {
           width: 132rpx;
           height: 118rpx;
@@ -351,6 +391,7 @@
           button: 0;
         }
         text {
+          display: block;
           font-size: 20rpx;
           color: #FFF;
           position: absolute;

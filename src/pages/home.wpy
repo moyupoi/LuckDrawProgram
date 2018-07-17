@@ -14,7 +14,6 @@
     <view class="remindSpot" wx:if="{{userInfo.pending_coin_count > 0}}"></view>
   </view>
   <view class="homeSurround">
-    <view class="moreBtn" wx:if="{{switchTabName === '2'}}" @tap="moreOpen">{{welfareList.total_coin}}福利分</view>
     <PrizesListModule :switchTabName.sync="switchTabName" :prizesList.sync="prizesList" @communicationEmit.user="refreshFun" :isLoading.sync="isLoading" wx:if="{{switchTabName === '0'}}"></PrizesListModule>
     <PreviewListModule :switchTabName.sync="switchTabName" :prizesQueuingList.sync="prizesQueuingList" @communicationEmit.user="refreshFun" wx:if="{{switchTabName === '1'}}"></PreviewListModule>
     <WelfareModule :switchTabName.sync="switchTabName" :welfareList.sync="welfareList" :handPoint.sync="handPoint" wx:if="{{switchTabName === '2'}}"></WelfareModule>
@@ -309,26 +308,6 @@
     //   right: 1rpx;
     // }
     margin-top: 110rpx;
-    .moreBtn {
-      width: 168rpx;
-      height: 60rpx;
-      display: block;
-      position: absolute;
-      z-index: 999;
-      top: 34rpx;
-      left: 0;
-      font-size: 22rpx;
-      line-height: 60rpx;
-      background: rgba(0, 0, 0, .3);
-      color: #fff;
-      border: 2rpx solid #fff;
-      border-top-left-radius: 0;
-      border-bottom-left-radius: 0;
-      border-top-right-radius: 50rpx;
-      border-bottom-right-radius: 50rpx;
-      border-left: 0;
-      text-align: center;
-    }
     .prizes {
       position: relative;
       z-index: 1;
