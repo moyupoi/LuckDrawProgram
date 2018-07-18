@@ -1,15 +1,16 @@
 <template>
   <view>
     <view class="floatingFoam">
+      <image class="welfareBannerBack" src="../assets/images/WelfareModule/welfareBannerBack.png"></image>
       <image src="../assets/images/WelfareModule/floatingFoam.png" class="floatingFoamImg"></image>
       <view class="floatingFoamView" @tap="toFLBRecord">
+        <label>今日获得</label>
         <text class="number">{{welfareList.today_coin}}</text>
         <text class="lab">FLC</text>
-        <label>今日获得</label>
       </view>
       <view class="foam">
         <block wx:for="{{welfareList.user_coin_pools}}" wx:key="index" wx:if="{{item.isShow}}">
-          <view class="foamItem {{bubbleIndex === index ? 'bubbleIndex' : ''}}" style="top: {{position[index].top}};left: {{position[index].left}};">
+          <view class="foamItem {{bubbleIndex === index ? 'bubbleIndex' : ''}}" style="top: {{position[index].top}};left: {{position[index].left}};" animation="{{foamBtnAnimationData}}">
             <image src="../assets/images/WelfareModule/foam.png"></image>
             <button @tap="foamBtn({{item.id}},{{item.coin}},{{index}})"></button>
             <text>{{item.category_name}}+{{item.coin}}</text>
@@ -41,6 +42,10 @@
       // navigationBarTitleText: '搞点福利'
     }
     props = {
+      foamBtnAnimationData: {
+        type: String,
+        default: ''
+      },
       welfareList: {
         type: Array,
         default: []
@@ -53,15 +58,15 @@
         type: Array,
         default: [{
           top: '1rpx',
-          left: '190rpx'
+          left: '160rpx'
         }, {
           top: '128rpx',
-          left: '166rpx'
+          left: '156rpx'
         }, {
           top: '270rpx',
-          left: '196rpx'
+          left: '146rpx'
         }, {
-          top: '0rpx',
+          top: '-10rpx',
           left: '314rpx'
         }, {
           top: '0rpx',
@@ -167,7 +172,8 @@
       foamItemTextAnimation: '',
       bubbleIndex: 100
     }
-    components = {}
+    components = {
+    }
     methods = {
       foamBtn(id, coin, index) {
         let that = this
@@ -196,10 +202,18 @@
         this.$goto('exchangeDetails?id=' + id)
       },
       toFLBRecord() {
-        this.$goto('FLBRecord')
+        this.$goto('getMoreFLC?userFlc=' + this.welfareList.today_coin)
       }
     }
     onLoad() {
+      // var foamBtnAnimationData = wepy.createAnimation({
+      //   duration: 1000,
+      //   delay: 3000,
+      //   timingFunction: 'ease-in-out'
+      // })
+      // foamBtnAnimationData.translateX(375).step({ duration: 2000 })
+      // this.foamBtnAnimationData = foamBtnAnimationData
+      // console.log(123)
     }
   }
 </script>
@@ -213,43 +227,65 @@
       transform: translate3d(0, 0, 0);
     }
   }
+  @keyframes myfirst
+  {
+    0%   { top: 0px; }
+    20%  { top: -2px; }
+    30%  { top: -4px; }
+    40%  { top: -3px; }
+    50%  { top: -1px; }
+    60%  { top: 0px; }
+    70%  { top: 2px; }
+    80%  { top: 4px; }
+    90%  { top: 3px; }
+    100% { top: 0px; }
+  }
   .floatingFoam {
     width: 100%;
-    height: 400rpx;
+    height: 450rpx;
     background: #fff;
     position: relative;
+    .welfareBannerBack {
+      width: 100%;
+      height: 450rpx;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 2;
+    }
     .floatingFoamImg {
-      width: 288rpx;
-      height: 288rpx;
+      width: 240rpx;
+      height: 240rpx;
       display: block;
       position: absolute;
-      top: 70rpx;
-      left: 234rpx;
+      top: 100rpx;
+      left: 271rpx;
+      z-index: 2;
     }
     .floatingFoamView {
-      width: 288rpx;
-      height: 288rpx;
+      width: 240rpx;
+      height: 240rpx;
       display: block;
       position: absolute;
       z-index: 2;
-      top: 70rpx;
-      left: 237rpx;
+      top: 100rpx;
+      left: 271rpx;
       color: #fff;
       text-align: center;
+      label {
+        margin-top: 50rpx;
+        display: block;
+        font-size: 24rpx;
+      }
       .number {
         font-size: 48rpx;
         display: inline-block;
         margin-right: 18rpx;
-        margin-top: 80rpx;
       }
       .lab {
         font-size: 36rpx;
         display: inline-block;
-      }
-      label {
-        margin-top: 8rpx;
-        display: block;
-        font-size: 24rpx;
       }
     }
     .foam {
@@ -263,10 +299,14 @@
         z-index: 2;
         top: 0;
         left: 0;
-        transition: opacity .5s ease-in-out;
+        // transition: opacity .5s ease-in-out;
+        // animation: myfirst 2s;
+        // animation-iteration-count: infinite;
+        // transform: translate(10px, 10px);
+        // transition:width 2s ease 0s;
         image {
-          width: 80rpx;
-          height: 78rpx;
+          width: 132rpx;
+          height: 118rpx;
           display: block;
           margin: 0 auto;
         }
@@ -282,7 +322,8 @@
         }
         text {
           font-size: 20rpx;
-          color: #4560FF;
+          color: #FFF;
+          position: absolute;
         }
       }
       .bubbleIndex {
@@ -340,14 +381,14 @@
         position: absolute;
         width: 120rpx;
         height: 50rpx;
-        background: #fff;
-        border: 2rpx solid #3799FA;
-        color: #3799FA;
+        color: #fff;
         font-size: 24rpx;
         line-height: 49rpx;
         border-radius: 25rpx;
         top: 142rpx;
         right: 32rpx;
+        background: -webkit-gradient(linear, 0 0, 0 bottom, from(rgba(255, 122, 85, 1)), to(rgba(255, 83, 57, 1)));
+        box-shadow: 0 5px 11px rgba(250, 92, 55, .3);
       }
     }
   }

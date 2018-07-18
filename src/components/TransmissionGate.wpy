@@ -32,7 +32,10 @@ export default class TransmissionGate extends wepy.component {
   methods = {
     transmission (url) {
       // 返回首页第一个标签 tabSwitch=0
-      this.$goto(url + '?tabSwitch=0')
+      wepy.redirectTo({
+        url: url + '?tabSwitch=0'
+      })
+      // this.$goto(url + '?tabSwitch=0')
     }
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <view class="prizes">
     <form bindsubmit="formSubmit" report-submit="true">
-      <block wx:for="{{prizesList}}" wx:key="index">
+      <block wx:for="{{prizesList.prizes}}" wx:key="index">
         <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}" class="prizesItem">
           <view class="banner">
             <image src="{{item.banner_url}}"></image>
@@ -19,6 +19,19 @@
         </navigator>
       </block>
     </form>
+    <navigator hover-class="none" url="/pages/home" class="historicalRecords">历史记录</navigator>
+    <image src="../assets/images/home/chargesBanner.png" class="chargesBanner"></image>
+    <view class="charges">
+      <view class="chargesItem" wx:for="{{prizesList.products}}" wx:key="index" @tap="exchangeBtn({{item.id}})">
+        <image src="{{item.banner_url}}"></image>
+        <view>
+          <text>{{item.name}}</text>
+          <label class="number">{{item.coin}}</label>
+          <label class="symbol">FLC</label>
+        </view>
+        <button>兑换</button>
+      </view>
+    </view>
   </view>
 </template>
 <script>
@@ -171,6 +184,81 @@
             width: 140rpx;
             border-color: #666666;
           }
+        }
+      }
+    }
+    .historicalRecords {
+      width: 120rpx;
+      color: #4A90E2;
+      font-size: 28rpx;
+      display: block;
+      text-align: center;
+      margin: 34rpx auto 0 auto;
+      border-bottom: 1rpx solid #4A90E2;
+    }
+    .chargesBanner {
+      width: 282rpx;
+      height: 52rpx;
+      display: block;
+      margin: 52rpx auto 32rpx auto;
+      overflow: hidden;
+    }
+    .charges {
+      .chargesItem {
+        width: 686rpxs;
+        padding: 32rpx;
+        background: #fff;
+        border-radius: 20rpx;
+        display: block;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 32rpx;
+        box-shadow: rgba(0, 0, 0, 0.1) 0 2rpx 8rpx 0;
+        image {
+          width: 208rpx;
+          height: 156rpx;
+          display: block;
+          float: left;
+        }
+        view {
+          float: right;
+          text {
+            font-size: 26rpx;
+            color: #333333;
+            line-height: 36rpx;
+            width: 382rpx;
+            height: 72rpx;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+          }
+          label {
+            display: inline-block;
+            font-size: 30rpx;
+            margin-top: 52rpx;
+          }
+          .number {
+            color: #FF471C;
+          }
+          .symbol {
+            color: #999999;
+            margin-left: 8rpx;
+          }
+        }
+        button {
+          position: absolute;
+          width: 120rpx;
+          height: 50rpx;
+          color: #fff;
+          font-size: 24rpx;
+          line-height: 49rpx;
+          border-radius: 25rpx;
+          top: 142rpx;
+          right: 32rpx;
+          background: -webkit-gradient(linear, 0 0, 0 bottom, from(rgba(255, 122, 85, 1)), to(rgba(255, 83, 57, 1)));
+          box-shadow: 0 5px 11px rgba(250, 92, 55, .3);
         }
       }
     }

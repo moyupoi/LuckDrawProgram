@@ -1,9 +1,9 @@
 <template>
-  <view class="tabBarCustom" style="height: {{barHeight}}rpx">
-    <image src="{{barBackBtn}}" @tap="back" wx:if="{{isBackBtn}}"></image>
-    <text style="margin-top: {{barTitleHeight}}rpx">{{titleText}}</text>
+  <view class="tabBarCustom" style="height: {{barHeight}}px">
+    <image style="top: {{barTitleImgHeight}}px" src="{{barBackBtn}}" @tap="back" wx:if="{{isBackBtn}}"></image>
+    <text style="margin-top: {{barTitleHeight}}px">{{titleText}}</text>
   </view>
-  <view class="seat" style="height: {{barHeight}}rpx"></view>
+  <view class="seat" style="height: {{barHeight}}px"></view>
 </template>
 <script>
 import wepy from 'wepy'
@@ -12,6 +12,10 @@ export default class TitleBar extends wepy.component {
   mixins = [base]
   props = {
     barHeight: {
+      type: [String, Number],
+      default: 0
+    },
+    barTitleImgHeight: {
       type: [String, Number],
       default: 0
     },
@@ -49,12 +53,11 @@ export default class TitleBar extends wepy.component {
       if (this.isShareBtn) {
         this.barBackBtn = '../assets/images/tabbars/home.png'
       }
-      // let sys = wepy.getSystemInfoSync()
-      // let calculationHeight = sys.screenHeight - sys.windowHeight + sys.batteryLevel
-      // this.barHeight = calculationHeight
-      // this.barTitleHeight = sys.screenHeight - sys.windowHeight
-      this.barHeight = 180
-      this.barTitleHeight = 100
+      let sys = wepy.getSystemInfoSync()
+      this.barTitleImgHeight = sys.statusBarHeight + 3
+      this.barTitleHeight = sys.statusBarHeight + 8
+      this.barHeight = sys.statusBarHeight + 32 + 16
+      // this.barTitleHeight = 100
     }
   }
   methods = {
@@ -84,7 +87,6 @@ export default class TitleBar extends wepy.component {
     height: 61rpx;
     display: block;
     position: absolute;
-    top: 81rpx;
     left: 18rpx;
     z-index: 3;
   }

@@ -1,0 +1,193 @@
+<template>
+  <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
+  <view class="todayCoin">
+    <label>{{userFlc}}</label>
+    <text>今日获得</text>
+  </view>
+  <view class="moreCoin">
+    <view class="coinTitle">获得更多福利分</view>
+    <view class="coinItems">
+      <view @tap="gotoDraw">
+        <label>参加抽奖</label>
+        <text>去抽奖</text>
+      </view>
+      <view @tap="gotoSet">
+        <label>设置抽奖提醒</label>
+        <text>去设置</text>
+      </view>
+      <view>
+        <label>认证手机号</label>
+        <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true">
+          <button open-type="getPhoneNumber" bindgetphonenumber="getphonenumber">{{phoneNumberAuthentication?'已认证':'立即认证'}}</button>
+        </form>
+      </view>
+      <view @tap="gotostrategy">
+        <label>赚分攻略</label>
+        <text>点击查看</text>
+      </view>
+      <view>
+        <label>每天打开「搞点福利」小程序</label>
+      </view>
+      <view>
+        <label>连续7天／15天／30天打开有更多奖励</label>
+      </view>
+      <view>
+        <label>邀请好友抽奖</label>
+      </view>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import { service } from '../config.js'
+import http from '../mixins/http'
+import base from '../mixins/base'
+import LoadingZ from '../components/LoadingZ'
+import TitleBar from '../components/TitleBar'
+export default class FLBRecord extends wepy.page {
+  mixins = [http, base]
+  config = {
+    // navigationBarTitleText: '中奖纪录'
+  }
+  data = {
+    titleText: '福利分',
+    isShow: true,
+    isBackBtn: true,
+    phoneNumberAuthentication: false,
+    userFlc: '1'
+  }
+  components = {
+    LoadingZ,
+    TitleBar
+  }
+  methods = {
+    gotoDraw() {
+      this.$goto('home?tabSwitch=0')
+    },
+    gotoSet() {
+      this.$goto('home?tabSwitch=1')
+    },
+    gotostrategy() {
+      this.$goto('strategy?tabSwitch=1')
+    },
+    formSubmit(event) {
+      let formId = event.detail.formId
+
+      if (
+        formId !== 'the formId is a mock one' &&
+        !this.isUndefined(formId) &&
+        formId !== '' &&
+        formId !== null
+      ) {
+        this.$updataFormId(formId)
+      }
+    },
+    getphonenumber(event) {
+      let that = this
+
+      if (event.detail.errMsg === 'getPhoneNumber:ok') {
+        this.$post(
+          {
+            url: service.updateMobile,
+            headers: {
+              'X-JINKU-WECHAT-FORM-ID': that.formId
+            },
+            data: {
+              encryptedData: event.detail.encryptedData,
+              iv: event.detail.iv
+            }
+          },
+          {
+            success: ({ statusCode, data }) => {
+              if (statusCode === 200) {
+                that.phoneNumberAuthentication = true
+              }
+            }
+          }
+        )
+      }
+    }
+  }
+  onLoad(e) {
+    console.log(e)
+    this.userFlc = e.userFlc
+    // this.FLBRecordInit()
+  }
+  onShow() {}
+
+  onReachBottom() {
+    if (this.nextPage) {
+      wepy.showToast({
+        title: '正在加载更多'
+      })
+      // this.FLBRecordInit()
+    }
+  }
+}
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+@import '../assets/stylesheets/layout.scss';
+.todayCoin {
+  height: 148rpx;
+  width: 100%;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 32rpx;
+  background: url('data:image/png;base64,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')
+    no-repeat;
+  background-size: 750rpx 148rpx;
+  label {
+    color: #fb5a35;
+    font-size: 40rpx;
+    // font-weight: bold;
+    line-height: 50rpx;
+  }
+  text {
+    color: #888888;
+    font-size: 28rpx;
+  }
+}
+.moreCoin {
+  padding: 0 32rpx;
+  background-color: white;
+  .coinTitle {
+    height: 83rpx;
+    line-height: 83rpx;
+    color: #333;
+    font-size: 32rpx;
+  }
+  .coinItems {
+    width: 100%;
+    view {
+      height: 92rpx;
+      line-height: 92rpx;
+      border-bottom: 1rpx solid #ebebeb;
+      label {
+        color: #999;
+        font-size: 28rpx;
+      }
+      text {
+        float: right;
+        color: #fb5a35;
+        font-size: 26rpx;
+      }
+      form button {
+        float: right;
+        width: 200rpx;
+        height: 92rpx;
+        line-height: 92rpx;
+        color: #fb5a35;
+        font-size: 26rpx;
+        background: none;
+        text-align: right;
+        padding: 0;
+        font-size: 26rpx;
+        // background-color: white;
+      }
+    }
+  }
+}
+</style>

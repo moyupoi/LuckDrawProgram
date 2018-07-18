@@ -5,6 +5,7 @@
 - Vue
 - Babel
 - Webpack
+- Nodejs v7.9.0
 - [WePY](https://tencent.github.io/wepy/)
 
 ## 常用操作
@@ -29,7 +30,7 @@ $ wepy build --watch
 
 ```
 ├── dist                   小程序运行代码目录（该目录由WePY的build指令自动编译生成，请不要直接修改该目录下的文件）
-├── node_modules           
+├── node_modules
 ├── src                    代码编写的目录（该目录为使用WePY后的开发目录）
 |   ├── components         WePY组件目录（组件不属于完整页面，仅供完整页面或其他组件引用）
 |   |   ├── com_a.wpy      可复用的WePY组件a
@@ -41,6 +42,30 @@ $ wepy build --watch
 └── package.json           项目的package配置
 ```
 
+ - 组件：
+
+```
+├── LoadingX               抽奖加载条
+├── LoadingZ               窗口加载条
+├── Barrage                弹幕测试(未启用)
+├── PrizesListModule       抽奖列表页
+├── PreviewListModule      抽奖预告页
+├── WelfareModule          福利分领取页&兑换商品页
+├── Sidebar                侧边栏小功能条(未启用)
+├── TitleBar               自定义头部
+├── TransmissionGate       切换标签(首页&个人中心)
+```
+
+ - 工具方法：
+
+```
+├── base                   综合工具类
+├── http                   请求接口类
+├── painter                绘制类
+├── ShareMessage           分享类
+```
+
+ - 页面
 
 ```
 ├── home                   首页 奖品列表页
@@ -55,9 +80,9 @@ $ wepy build --watch
 ├── exchangeRecord         兑换商品记录
 ├── rankingList            排行榜
 ├── strategy               赚币攻略
+|—— getMoreFLC             福利分页面 获得更多福利分
 ```
 
 具体代码参照已实现的WePY
-
 
 ## 常见问题（收集中）

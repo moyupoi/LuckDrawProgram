@@ -1,0 +1,50 @@
+<template>
+
+</template>
+<script>
+import wepy from 'wepy'
+// import { service } from '../config.js'
+import http from '../mixins/http'
+import base from '../mixins/base'
+import painter from '../mixins/painter'
+export default class Painter extends wepy.component {
+  mixins = [http, base, painter]
+  props = {
+    canvasImg: {
+      type: String,
+      default: true
+    },
+    painterStyle: {
+      type: String,
+      default: '0'
+    },
+    customStyle: {
+      type: String,
+      default: ''
+    }
+  }
+  components = {}
+  methods = {}
+  onLoad() {
+    let that = this
+    wepy.getSystemInfo({
+      success: (res) => {
+        console.log(res)
+        that.painterStyle = `width:${750}px;height:${1248}px;`
+      }
+    })
+  }
+}
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+.canvasBox {
+  // width: 750rpx;
+  // position: fixed;
+  // top: 999999rpx;
+  left: 0;
+  z-index: 99999;
+  .canvas {
+    background: #fff;
+  }
+}
+</style>
