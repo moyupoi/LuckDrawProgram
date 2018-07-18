@@ -53,6 +53,12 @@
 					"name": "changedetails",
 					"pathName": "pages/exchangeDetails",
 					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "turn",
+					"pathName": "pages/text",
+					"query": ""
 				}
 			]
 		}

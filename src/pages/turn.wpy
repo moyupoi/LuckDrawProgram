@@ -1,0 +1,358 @@
+<template>
+  <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
+  <view class="container">
+    <view class="plateWrapBox">
+      <view class="plateBorder" animation="{{ aniData }}">
+        <!-- 转盘以及文字 -->
+        <!-- 360 / lottery.length * ( index )  小灯泡的平均显示 -->
+        <!-- 270/Math.tan() -->
+        <!-- 440 / lottery.length * 2  平均-->
+        <view class="plateWrap">
+          <view class="plateBox" wx:for="{{ lottery }}" wx:key="index" style="top:-50rpx;transform-origin: 50% 270rpx;border-top: 270rpx solid {{ turnBgColor[index] }};transform:translate(-50%,0) rotate({{turnDeg[index]}}deg);border-left: {{ width[index]}}rpx solid transparent;border-right: {{ width[index]}}rpx solid transparent;">
+            <text class="textBox {{index==0||index==10?'textSmall':'textBig'}}" style="font-size:{{index==0||index==10?'16':'24'}}rpx">{{ item }}</text>
+          </view>
+        </view>
+        <!-- 边框的小灯泡 -->
+        <view class="plateWrap plateLight">
+          <view class="plateBox" wx:for="{{ lottery }}" wx:key="index" style="top:-60rpx; transform-origin: 50% 310rpx;border-top: 310rpx solid transparent;transform:translate(-50%,0) rotate({{turnDeg[index] }}deg);border-left: {{ 500 / lottery.length * 2 }}rpx solid transparent;border-right: {{ 500 / lottery.length * 2 }}rpx solid transparent;">
+            <view class="bulb" style="background-color: {{(index%2==0)?colorCircleFirst:colorCircleSecond}};"></view>
+          </view>
+        </view>
+      </view>
+      <view class="plateBtnWrap" bindtap="startRollTap">
+        <view class="plateBtnBox">
+          <view class="plateInnerBtn" animation="{{ aniData }}">
+            <text>奖</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- <view class="lotteryPlateShadow"></view> -->
+      <view class="awardSend">{{endcontent}}</view>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+// import { service } from '../config.js'
+// import http from '../mixins/http'
+// import base from '../mixins/base'
+// import ShareMessage from '../mixins/ShareMessage'
+// import LoadingZ from '../components/LoadingZ'
+import TitleBar from '../components/TitleBar'
+export default class Home extends wepy.page {
+  // mixins = [http, base, ShareMessage]
+  config = {
+    // navigationBarTitleText: '搞点福利'
+  }
+  data = {
+    endcontent: '你有一次抽奖机会',
+    isBackBtn: false,
+    titleText: '抽奖',
+    canRoll: true, // 控制 防止用户点击两次
+    lotteryArrLen: 0,
+    num: 1, // 用户第二次点击时接着上次角度继续转
+    // width[i]=(turnDeg[i]-turnDeg[i-1])/2  tan旋转的角度
+    turnwidth: [6, 30, 27, 29, 28, 30, 27, 30, 28, 29, 10, 30, 27, 29], // 每个区域占的角度
+    turnDeg: [
+      22,
+      40,
+      68.5,
+      96.5,
+      125,
+      154,
+      182.5,
+      211,
+      240,
+      268.5,
+      288,
+      308,
+      336.5,
+      364.5
+    ], // 每个区域的中心位置
+    turnBgColor: [
+      'red',
+      'lightblue',
+      'orange',
+      'green',
+      'purple',
+      'lightblue',
+      'orange',
+      'lightpink',
+      'purple',
+      'orange',
+      'pink',
+      'lightblue',
+      'orange',
+      'yellow'
+    ],
+    lottery: [
+      '特等奖',
+      '幸运奖',
+      '三等奖',
+      '幸运奖',
+      '二等奖',
+      '幸运奖',
+      '三等奖',
+      '幸运奖',
+      '二等奖',
+      '幸运奖',
+      '一等奖',
+      '幸运奖',
+      '三等奖',
+      '幸运奖'
+    ],
+    aniData: {},
+    colorCircleFirst: '#FE4D32',
+    colorCircleSecond: '#FFDF2F',
+    width: []
+  }
+  components = {
+    // LoadingZ,
+    TitleBar
+  }
+  methods = {
+    startRollTap() {
+      // 每次点击重新获取动画组件 否则动画为transtion
+      this.animationData()
+      let turnarr = [
+        19,
+        25,
+        55,
+        82,
+        111,
+        139,
+        169,
+        196,
+        226,
+        254,
+        283,
+        293,
+        323,
+        350
+      ]
+      let aniData = this.aniData
+
+      if (this.canRoll) {
+        this.canRoll = false
+        let rightNum = Math.random() * 360 - 10 // 生成随机数
+
+        console.log(rightNum)
+        // 根据随机数获取在数组中的索引
+        let index = this.getIndex(turnarr, Math.trunc(rightNum))
+        console.log(index)
+        // 设置转动的圈数 parseInt(rightNum)
+        aniData.rotate(3600 * this.num - rightNum).step()
+        this.aniData = aniData.export()
+        this.num++
+        setTimeout(() => {
+          this.canRoll = true
+          this.lottery[index] === '幸运奖'
+            ? (this.endcontent = `可惜了，您只中了${this.lottery[index]}`)
+            : (this.endcontent = `恭喜你中了${this.lottery[index]}`)
+        }, 8000)
+      }
+    }
+  }
+  animationData() {
+    let aniData = wepy.createAnimation({
+      // 创建动画对象
+      duration: 8000,
+      timingFunction: 'ease-in-out'
+    })
+    // 将动画对象赋值给this的aniData属
+    this.aniData = aniData
+  }
+  onLoad(options) {
+    this.initWidth()
+    this.animationData()
+    let that = this
+    setInterval(function() {
+      if (that.colorCircleFirst === '#FFDF2F') {
+        that.colorCircleFirst = '#FE4D32'
+        that.colorCircleSecond = '#FFDF2F'
+        that.$apply()
+      } else {
+        that.colorCircleFirst = '#FFDF2F'
+        that.colorCircleSecond = '#FE4D32'
+        that.$apply()
+      }
+    }, 300)
+  }
+  // 获取随机数在数组中的区间
+  getIndex(arrs, num) {
+    for (let i in arrs) {
+      if (arrs[i] > num) return Number(i) === 0 ? arrs.length - 1 : i - 1
+    }
+  }
+  // 根据角度初始化区域
+  initWidth() {
+    let turnwidth = this.turnwidth
+    this.width = turnwidth.map(v =>
+      Math.ceil(Math.tan(v / 2 * Math.PI / 180) * 270)
+    )
+  }
+  onShow() {}
+}
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+@import '../assets/stylesheets/layout.scss';
+.container {
+  z-index: 1;
+  padding-top: 220rpx;
+  padding-bottom: 20rpx;
+  box-sizing: border-box;
+  height: 100%;
+  .plateWrapBox {
+    position: relative;
+    z-index: 999;
+    width: 500rpx;
+    height: 500rpx;
+    border-radius: 50%;
+    margin: 0 auto 60rpx;
+    .plateBorder {
+      position: relative;
+      z-index: 9;
+      width: 500rpx;
+      height: 500rpx;
+      background-color: #ffbe04;
+      border-radius: 50%;
+      .plateWrap {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9;
+        width: 440rpx;
+        height: 440rpx;
+        border: 1rpx solid #e88605;
+        border-radius: 50%;
+        overflow: hidden;
+        margin: auto;
+
+        .plateBox {
+          position: absolute;
+          z-index: 1;
+          left: 50%;
+          width: 0;
+          height: 0;
+          font-size: 24rpx;
+          .textBox {
+            color: #ffffff;
+            position: absolute;
+            text-align: center;
+            display: inline-block;
+            width: 15rpx;
+
+            word-break: break-all;
+            top: -200rpx;
+            // font-size: 28rpx;
+          }
+          .textBig {
+            transform: translate(-100%, 0);
+          }
+          .textSmall {
+            margin-left: 50%;
+            left: -7.5rpx;
+          }
+          .bulb {
+            position: absolute;
+            width: 16rpx;
+            height: 16rpx;
+            left: 50%;
+            top: -242rpx;
+            transform: translate(-50%, 0);
+            border-radius: 50%;
+            filter: blur(0.5rpx);
+          }
+        }
+      }
+      .plateLight {
+        z-index: 1;
+        width: 500rpx;
+        height: 500rpx;
+        border: none;
+      }
+    }
+
+    .plateBtnWrap {
+      position: absolute;
+      z-index: 10;
+      left: 50%;
+      top: 50%;
+      margin-left: -55rpx;
+      margin-top: -55rpx;
+      // transform: translate(-50%, -50%);
+      width: 110rpx;
+      height: 110rpx;
+      border-radius: 50%;
+
+      .plateBtnBox {
+        position: relative;
+        z-index: 11;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-color: #e62d2d;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .plateInnerBtn {
+          position: relative;
+          z-index: 999;
+          width: 90rpx;
+          height: 90rpx;
+          border-radius: 50%;
+          background-image: linear-gradient(0deg, #e6e94d, #f1a706);
+          font-size: 28rpx;
+          color: #db2518;
+          text-align: center;
+          line-height: 90rpx;
+        }
+      }
+    }
+    .plateBtnWrap::before {
+      content: '';
+      position: absolute;
+      z-index: 9;
+      left: calc(50% - 10rpx);
+      top: -40rpx;
+      transform: translate(-50%, 0);
+      width: 0;
+      height: 0;
+      border-bottom: 80rpx solid #e7211b;
+      border-left: 20rpx solid transparent;
+    }
+
+    .plateBtnWrap::after {
+      content: '';
+      position: absolute;
+      z-index: 9;
+      left: calc(50% + 10rpx);
+      top: -40rpx;
+      transform: translate(-50%, 0);
+      width: 0;
+      height: 0;
+      border-bottom: 80rpx solid #ca1518;
+      border-right: 20rpx solid transparent;
+    }
+
+    .lotteryPlateShadow {
+      position: absolute;
+      z-index: 1;
+      width: 100%;
+      height: 50rpx;
+      border-radius: 50%;
+      background-color: #e4d388;
+      filter: blur(4rpx);
+      bottom: -35rpx;
+    }
+    .awardSend {
+      width: 100%;
+      text-align: center;
+      position: absolute;
+      z-index: 1;
+    }
+  }
+}
+</style>

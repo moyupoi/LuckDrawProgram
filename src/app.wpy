@@ -6,6 +6,7 @@ import { service } from './config.js'
 export default class extends wepy.app {
   config = {
     pages: [
+      'pages/turn',
       'pages/home',
       'pages/historyDraw',
       'pages/getMoreFLC',
