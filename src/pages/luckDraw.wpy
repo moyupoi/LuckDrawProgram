@@ -638,11 +638,11 @@
         color: #333333;
         display: block;
         text-align: center;
-        margin: 64rpx 0;
+        margin: 64rpx 0 54rpx;
       }
       .describeAwardImg {
-        width: 448rpx;
-        height: 120rpx;
+        width: 548rpx;
+        height: 140rpx;
         display: block;
         margin: 0 auto;
         margin-bottom: 32rpx;

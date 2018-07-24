@@ -6,12 +6,17 @@ export default class httpMixin extends wepy.mixin {
   mixins = [base]
   data = {
     accessToken: '',
-    shareUserId: ''
+    shareUserId: '',
+    sourceCode: '',
+    isLogin: true
   }
   onLoad(options) {
+    let that = this
     if (!this.isUndefined(options) && !this.isUndefined(options.shareUserId)) {
       this.shareUserId = options.shareUserId
     }
+    this.sourceCode = wepy.getStorageSync('sourceCode') || ''
+    this.accessToken = wepy.getStorageSync(service.isFormal ? 'accessToken' : 'accessTokenInfo') || false
   }
   /* =================== [$get 发起GET请求] =================== */
   $get(
@@ -19,18 +24,16 @@ export default class httpMixin extends wepy.mixin {
     {success = () => {}, fail = () => {}, complete = () => {} }
   ) {
     const methods = 'GET'
-    this.accessToken = wepy.getStorageSync(service.isFormal ? 'accessToken' : 'accessTokenInfo') || false
     if (this.accessToken) {
       headers = Object.assign({
         'Authorization': this.accessToken,
-        'X-JINKU-WECHAT-SHARE-USER-ID': this.shareUserId
+        'X-JINKU-WECHAT-SHARE-USER-ID': this.shareUserId,
+        'X-JINKU-WECHAT-SOURCE-CODE': this.sourceCode
       }, headers)
       this.$ajax(
         {url, headers, methods, data},
         {success, fail, complete }
       )
-    } else {
-      this.$loginToken()
     }
   }
 
@@ -40,18 +43,16 @@ export default class httpMixin extends wepy.mixin {
     {success = () => {}, fail = () => {}, complete = () => {} }
   ) {
     const methods = 'POST'
-    this.accessToken = wepy.getStorageSync(service.isFormal ? 'accessToken' : 'accessTokenInfo') || false
     if (this.accessToken) {
       headers = Object.assign({
         'Authorization': this.accessToken,
-        'X-JINKU-WECHAT-SHARE-USER-ID': this.shareUserId
+        'X-JINKU-WECHAT-SHARE-USER-ID': this.shareUserId,
+        'X-JINKU-WECHAT-SOURCE-CODE': this.sourceCode
       }, headers)
       this.$ajax(
         {url, headers, methods, data},
         {success, fail, complete }
       )
-    } else {
-      this.$loginToken()
     }
   }
 
@@ -77,45 +78,6 @@ export default class httpMixin extends wepy.mixin {
       {url, headers, methods, data},
       {success, fail, complete }
     )
-  }
-
-  $loginToken() {
-    const that = this
-    wepy.login({
-      success: res => {
-        if (res.code) {
-          wepy.request({
-            url: service.login,
-            method: 'POST',
-            data: {
-              code: res.code
-            },
-            success: function (res) {
-              if (service.isFormal) {
-                wepy.setStorage({
-                  key: 'accessToken',
-                  data: res.data.access_token
-                })
-                wepy.setStorage({
-                  key: 'userId',
-                  data: res.data.id
-                })
-              } else {
-                wepy.setStorage({
-                  key: 'accessTokenInfo',
-                  data: res.data.access_token
-                })
-                wepy.setStorage({
-                  key: 'userIdInfo',
-                  data: res.data.id
-                })
-              }
-              wepy.reLaunch({url: this.globalData.pathUrl.slice(6)})
-            }
-          })
-        }
-      }
-    })
   }
 
   $updataFormId(formId) {
@@ -167,7 +129,9 @@ export default class httpMixin extends wepy.mixin {
             this.$apply()
           })
         } else if (statusCode == 401) {
-          that.$loginToken()
+          if (that.isLogin) {
+            that.$loginToken()
+          }
         } else if (statusCode == 422) {
           that.$alert('提示', data.message)
           return setTimeout(() => {
@@ -201,5 +165,48 @@ export default class httpMixin extends wepy.mixin {
         })()
       }
     }))
+  }
+
+  $loginToken() {
+    this.isLogin = false
+    wepy.login({
+      success: res => {
+        if (res.code) {
+          wepy.request({
+            url: service.login,
+            method: 'POST',
+            data: {
+              code: res.code
+            },
+            header: {
+              'X-JINKU-WECHAT-SOURCE-CODE': this.sourceCode
+            },
+            success: function (res) {
+              if (service.isFormal) {
+                wepy.setStorage({
+                  key: 'accessToken',
+                  data: res.data.access_token
+                })
+                wepy.setStorage({
+                  key: 'userId',
+                  data: res.data.id
+                })
+              } else {
+                wepy.setStorage({
+                  key: 'accessTokenInfo',
+                  data: res.data.access_token
+                })
+                wepy.setStorage({
+                  key: 'userIdInfo',
+                  data: res.data.id
+                })
+              }
+              this.isLogin = true
+              wepy.reLaunch({url: this.globalData.pathUrl.slice(6)})
+            }
+          })
+        }
+      }
+    })
   }
 }
