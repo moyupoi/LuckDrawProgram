@@ -6,7 +6,6 @@ import { service } from './config.js'
 export default class extends wepy.app {
   config = {
     pages: [
-      'pages/turn',
       'pages/home',
       'pages/historyDraw',
       'pages/getMoreFLC',
@@ -22,7 +21,8 @@ export default class extends wepy.app {
       'pages/record',
       'pages/probability',
       'pages/FLBRecord',
-      'pages/strategy'
+      'pages/strategy',
+      'pages/turn'
     ],
     window: {
       backgroundTextStyle: 'light',

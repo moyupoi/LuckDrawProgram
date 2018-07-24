@@ -158,8 +158,8 @@ export default class FLBRecord extends wepy.page {
   label {
     color: #fb5a35;
     font-size: 40rpx;
-    // font-weight: bold;
     line-height: 50rpx;
+    margin-bottom: 6rpx;
   }
   text {
     color: #888888;
@@ -170,16 +170,16 @@ export default class FLBRecord extends wepy.page {
   padding: 0 32rpx;
   background-color: white;
   .coinTitle {
-    height: 83rpx;
-    line-height: 83rpx;
+    height: 86rpx;
+    line-height: 86rpx;
     color: #333;
     font-size: 32rpx;
   }
   .coinItems {
     width: 100%;
     view {
-      height: 92rpx;
-      line-height: 92rpx;
+      height: 91rpx;
+      line-height: 91rpx;
       border-bottom: 1rpx solid #ebebeb;
       label {
         color: #999;

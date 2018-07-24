@@ -50,7 +50,6 @@ export default class Home extends wepy.page {
     isBackBtn: false,
     titleText: '抽奖',
     canRoll: true, // 控制 防止用户点击两次
-    lotteryArrLen: 0,
     num: 1, // 用户第二次点击时接着上次角度继续转
     // width[i]=(turnDeg[i]-turnDeg[i-1])/2  tan旋转的角度
     turnwidth: [6, 30, 27, 29, 28, 30, 27, 30, 28, 29, 10, 30, 27, 29], // 每个区域占的角度
