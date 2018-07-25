@@ -22,7 +22,6 @@
         </view>
       </block>
     </form>
-    <navigator hover-class="none" url="/pages/historyDraw" class="historicalRecords">历史记录</navigator>
     <image src="../assets/images/home/chargesBanner.png" class="chargesBanner"></image>
     <view class="charges">
       <view class="chargesItem" wx:for="{{prizesList.products}}" wx:key="index" @tap="exchangeBtn({{item.id}})">
@@ -34,6 +33,10 @@
         </view>
         <button>兑换</button>
       </view>
+    </view>
+    <view class="entrance">
+      <navigator hover-class="none" url="/pages/sponsor" class="sponsor">成为赞助商</navigator>
+      <navigator hover-class="none" url="/pages/historyDraw" class="historicalRecords">历史记录</navigator>
     </view>
   </view>
 </template>
@@ -205,15 +208,6 @@
         }
       }
     }
-    .historicalRecords {
-      width: 120rpx;
-      color: #4A90E2;
-      font-size: 28rpx;
-      display: block;
-      text-align: center;
-      margin: 34rpx auto 0 auto;
-      border-bottom: 1rpx solid #4A90E2;
-    }
     .chargesBanner {
       width: 280rpx;
       height: 52rpx;
@@ -278,6 +272,36 @@
           background: -webkit-gradient(linear, 0 0, 0 bottom, from(rgba(255, 122, 85, 1)), to(rgba(255, 83, 57, 1)));
           box-shadow: 0 5px 11px rgba(250, 92, 55, .3);
         }
+      }
+    }
+    .entrance {
+      text-align: center;
+      .sponsor {
+        width: 145rpx;
+        color: #4A90E2;
+        font-size: 28rpx;
+        display: block;
+        text-align: center;
+        border-bottom: 1rpx solid #4A90E2;
+        display: inline-block;
+        margin-right: 150rpx;
+        position: relative;
+        &:before {
+          content: '|';
+          position: absolute;
+          top: 2rpx;
+          left: 210rpx;
+          color: #b2b2b2;
+        }
+      }
+      .historicalRecords {
+        width: 120rpx;
+        color: #4A90E2;
+        font-size: 28rpx;
+        display: block;
+        text-align: center;
+        border-bottom: 1rpx solid #4A90E2;
+        display: inline-block;
       }
     }
   }

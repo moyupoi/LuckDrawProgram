@@ -22,7 +22,9 @@ export default class extends wepy.app {
       'pages/probability',
       'pages/FLBRecord',
       'pages/strategy',
-      'pages/turn'
+      'pages/turn',
+      'pages/feedBack',
+      'pages/sponsor'
     ],
     window: {
       backgroundTextStyle: 'light',

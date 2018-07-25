@@ -82,6 +82,8 @@ $ wepy build --watch
 ├── strategy               赚币攻略
 |—— getMoreFLC             福利分页面 获得更多福利分
 |—— historyDraw            历史抽奖
+|—— sponsor                成为赞助商
+|—— feedBack               意见反馈
 ```
 
 具体代码参照已实现的WePY
