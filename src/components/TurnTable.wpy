@@ -29,7 +29,7 @@ export default class TransmissionGate extends wepy.component {
   }
   methods = {
     turn () {
-      wepy.redirectTo({
+      wepy.navigateTo({
         url: 'turn'
       })
     }
