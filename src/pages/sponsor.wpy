@@ -49,6 +49,13 @@
               title: data.message,
               icon: 'none'
             })
+            if (statusCode === 200) {
+              setTimeout(function() {
+                wepy.navigateBack({
+                  delta: 1
+                })
+              }, 1500)
+            }
           }
         })
       }

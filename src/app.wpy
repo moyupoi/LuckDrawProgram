@@ -123,7 +123,7 @@ export default class extends wepy.app {
               code: res.code
             },
             header: {
-              'X-JINKU-WECHAT-SOURCE-CODE': ''
+              'X-JINKU-WECHAT-SOURCE-CODE': sourceCode
             },
             success: function (res) {
               if (service.isFormal) {

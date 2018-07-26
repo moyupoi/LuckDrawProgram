@@ -322,8 +322,8 @@
       height: 240rpx;
       display: block;
       position: absolute;
-      top: 100rpx;
-      left: 271rpx;
+      top: 107rpx;
+      left: 264rpx;
       z-index: 2;
     }
     .floatingFoamView {
@@ -332,8 +332,8 @@
       display: block;
       position: absolute;
       z-index: 2;
-      top: 100rpx;
-      left: 271rpx;
+      top: 107rpx;
+      left: 264rpx;
       color: #fff;
       text-align: center;
       label {
