@@ -1,5 +1,5 @@
 <template>
-  <view class="turnTableStyle" @tap.stop="turn">
+  <view class="turnTableStyle" wx:if="{{switchTabName === '0'}}" @tap.stop="turn">
   </view>
   <!-- <view class="seat" style="height: {{barHeight}}rpx"></view> -->
 </template>
@@ -9,7 +9,10 @@ import base from '../mixins/base'
 export default class TransmissionGate extends wepy.component {
   mixins = [base]
   props = {
-
+    switchTabName: {
+      type: [String],
+      default: '0'
+    }
   }
   computed = {
     init() {

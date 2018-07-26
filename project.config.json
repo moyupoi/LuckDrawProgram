@@ -64,7 +64,8 @@
 				{
 					"id": -1,
 					"name": "turn",
-					"pathName": "pages/turn"
+					"pathName": "pages/turn",
+					"query": ""
 				}
 			]
 		}

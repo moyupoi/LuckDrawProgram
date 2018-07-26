@@ -3,7 +3,7 @@
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <TransmissionGate :transmissionType.sync="transmissionType"></TransmissionGate>
   <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText" :switchTabName.sync="switchTabName"></TitleBar>
-  <TurnTable></TurnTable>
+  <TurnTable :switchTabName.sync="switchTabName"></TurnTable>
   <view class="turn"></view>
   <view class="switchTab">
     <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true">
