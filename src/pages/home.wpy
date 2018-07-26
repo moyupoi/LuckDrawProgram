@@ -18,7 +18,7 @@
   <view class="homeSurround">
     <PrizesListModule :switchTabName.sync="switchTabName" :prizesList.sync="prizesList" @communicationEmit.user="refreshFun" :isLoading.sync="isLoading" wx:if="{{switchTabName === '0'}}"></PrizesListModule>
     <PreviewListModule :switchTabName.sync="switchTabName" :prizesQueuingList.sync="prizesQueuingList" @communicationEmit.user="refreshFun" wx:if="{{switchTabName === '1'}}"></PreviewListModule>
-    <WelfareModule :switchTabName.sync="switchTabName" :welfareList.sync="welfareList" :handPoint.sync="handPoint" wx:if="{{switchTabName === '2'}}"></WelfareModule>
+    <WelfareModule :switchTabName.sync="switchTabName" :welfareList.sync="welfareList" :handPoint.sync="handPoint" :userInfo.sync="userInfo" wx:if="{{switchTabName === '2'}}"></WelfareModule>
   </view>
 </template>
 <script>
@@ -221,6 +221,7 @@
     overflow: hidden;
     z-index: 20;
     .switchTabBtn {
+      width: 140rpx;
       background: none;
       color: #666666;
       font-size: 28rpx;
@@ -229,7 +230,7 @@
       text-align: center;
       padding: 0;
       &:nth-of-type(2) {
-        margin: 0 132rpx;
+        margin: 0 50rpx;
       }
     }
     .active {
@@ -247,7 +248,7 @@
         width: 28rpx;
         height: 8rpx;
         top: 80rpx;
-        left: 16rpx;
+        left: 58rpx;
       }
     }
     .new {

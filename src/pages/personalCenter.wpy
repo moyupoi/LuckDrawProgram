@@ -74,6 +74,11 @@
         <image src="../assets/images/personalCenter/icon06.png"></image>
         <text>收货地址</text>
       </view>
+      <navigator hover-class="none" url="/pages/feedBack">
+        <button formType="submit"></button>
+        <image src="../assets/images/personalCenter/icon07.png"></image>
+        <text>意见反馈</text>
+      </navigator>
     </form>
   </view>
 </template>
