@@ -3,6 +3,8 @@
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <TransmissionGate :transmissionType.sync="transmissionType"></TransmissionGate>
   <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText" :switchTabName.sync="switchTabName"></TitleBar>
+  <TurnTable></TurnTable>
+  <view class="turn"></view>
   <view class="switchTab">
     <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true">
       <button class="switchTabBtn {{switchTabName === '0' ? 'active' : '' }}" open-type="reLaunch" formType="submit" @tap="switchTabBtn('0')">抽奖</button>
@@ -32,6 +34,8 @@
   import PreviewListModule from '../components/PreviewListModule'
   import WelfareModule from '../components/WelfareModule'
   import TransmissionGate from '../components/TransmissionGate'
+  import TurnTable from '../components/TurnTable'
+
   export default class Home extends wepy.page {
     mixins = [http, base, ShareMessage]
     config = {
@@ -63,7 +67,8 @@
       PrizesListModule,
       PreviewListModule,
       WelfareModule,
-      TransmissionGate
+      TransmissionGate,
+      TurnTable
     }
     methods = {
       // 父函数给传递子组件
