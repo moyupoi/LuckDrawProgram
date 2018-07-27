@@ -383,17 +383,8 @@ export default class Home extends wepy.page {
       transform: rotate(0deg);
     }
     100% {
-      transform: rotate(1000deg);
+      transform: rotate(1080deg);
     }
   }
-}
-.X {
-  width: 100%;
-  height: 500rpx;
-  position: absolute;
-  background-color: #bd1fdc;
-  border-bottom: 0;
-  left: 0;
-  z-index: -1;
 }
 </style>
