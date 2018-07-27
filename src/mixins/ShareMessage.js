@@ -26,7 +26,7 @@ export default class ShareMessage extends wepy.mixin {
       let userId = this.$getUserId()
       let resData = res.source.data
       let shareData = {}
-      let shareImageUrl = !this.isUndefined(resData.shareBannerUrl) ? resData.shareBannerUrl + '-share' : 'https://oss-lottery.xinyongjinku.com/strategy/share.png'
+      let shareImageUrl = !this.isUndefined(resData.shareBannerUrl) ? resData.shareBannerUrl + '-share' : 'https://oss-lottery.xinyongjinku.com/strategy/share.jpg'
       let shareTitle = !this.isUndefined(resData.shareName) ? resData.shareName : '搞点福利'
       // shareTitle += '-自古城市套路深，还是福利得人心'
       let shareUrl = !this.isUndefined(resData.shareUrl) ? resData.shareUrl : getCurrentPages()[0].route

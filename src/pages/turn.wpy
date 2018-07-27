@@ -2,7 +2,7 @@
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
   <view class="container">
-    <image src="../assets/images/turn/turn.png" class="bgImg"></image>
+    <image src="../assets/images/turn/turn.jpg" class="bgImg"></image>
     <view class="lucky"></view>
     <view class="plateWrapBox">
       <view class="plateBorder" animation="{{ aniData }}">

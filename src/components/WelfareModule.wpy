@@ -1,7 +1,7 @@
 <template>
   <view>
     <view class="floatingFoam">
-      <image class="welfareBannerBack" src="../assets/images/WelfareModule/welfareBannerBack.png"></image>
+      <image class="welfareBannerBack" src="../assets/images/WelfareModule/welfareBannerBack.jpg"></image>
       <image src="../assets/images/WelfareModule/floatingFoam.png" class="floatingFoamImg"></image>
       <view class="floatingFoamView" @tap="toFLBRecord">
         <label>今日获得</label>
