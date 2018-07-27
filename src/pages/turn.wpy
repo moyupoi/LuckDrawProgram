@@ -9,7 +9,7 @@
         <view class="plateWrap">
           <view class="plateBox" wx:for="{{ lottery }}" wx:key="index" style="top:-50rpx;transform-origin: 50% 284rpx;border-top: 284rpx solid #{{ index % 2==0?'8B2FD5':'F3B041' }};transform:translate(-50%,0) rotate({{ 360 / lottery.length * ( index )}}deg);border-left: {{ 492 / lottery.length * 2 }}rpx solid transparent;border-right: {{ 492 / lottery.length * 2 }}rpx solid transparent;">
             <view class="{{ index % 2==0?'pgra':'ygra' }}"></view>
-            <text class="textBox" style="width: {{ 840/lottery.length }}rpx; left:{{840/lottery.length/2}}rpx">{{ item.title }}</text>
+            <text class="textBox" style="width: {{ 840 / lottery.length }}rpx; left:{{ 840 / lottery.length / 2 }}rpx">{{ item.title }}</text>
           </view>
         </view>
       </view>
@@ -336,7 +336,7 @@ export default class Home extends wepy.page {
         no-repeat;
       background-size: 392rpx 88rpx;
     }
-    .btnShadow{
+    .btnShadow {
       position: absolute;
       z-index: 0;
       width: 346rpx;
