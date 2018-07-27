@@ -9,7 +9,7 @@
         <view class="plateWrap">
           <view class="plateBox" wx:for="{{ lottery }}" wx:key="index" style="top:-50rpx;transform-origin: 50% 284rpx;border-top: 284rpx solid #{{ index % 2==0?'8B2FD5':'F3B041' }};transform:translate(-50%,0) rotate({{ 360 / lottery.length * ( index )}}deg);border-left: {{ 492 / lottery.length * 2 }}rpx solid transparent;border-right: {{ 492 / lottery.length * 2 }}rpx solid transparent;">
             <view class="{{ index % 2==0?'pgra':'ygra' }}"></view>
-            <text class="textBox">{{ item.title }}</text>
+            <text class="textBox" style="width: {{ 840/lottery.length }}rpx; left:{{840/lottery.length/2}}rpx">{{ item.title }}</text>
           </view>
         </view>
       </view>
@@ -142,7 +142,6 @@ export default class Home extends wepy.page {
           this.dailyLeftTimes = data.daily_left_times
           this.dailyLimitTimes = data.daily_limit_times
           this.isShow = false
-          // console.log(data)
         }
       }
     )
@@ -245,9 +244,8 @@ export default class Home extends wepy.page {
             color: #ffffff;
             position: absolute;
             text-align: center;
-            width: 70rpx;
             transform: translate(-100%, 0);
-            white-space: nowrap;
+            // white-space: nowrap;
             top: -200rpx;
             font-size: 33.6rpx;
           }
