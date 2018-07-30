@@ -37,7 +37,7 @@ import base from '../mixins/base'
 import ShareMessage from '../mixins/ShareMessage'
 import LoadingZ from '../components/LoadingZ'
 import TitleBar from '../components/TitleBar'
-export default class Home extends wepy.page {
+export default class Turn extends wepy.page {
   mixins = [http, base, ShareMessage]
   config = {}
   data = {
