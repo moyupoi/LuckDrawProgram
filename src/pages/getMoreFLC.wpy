@@ -45,11 +45,9 @@ import http from '../mixins/http'
 import base from '../mixins/base'
 import LoadingZ from '../components/LoadingZ'
 import TitleBar from '../components/TitleBar'
-export default class FLBRecord extends wepy.page {
+export default class GetMoreFLC extends wepy.page {
   mixins = [http, base]
-  config = {
-    // navigationBarTitleText: '中奖纪录'
-  }
+  config = {}
   data = {
     titleText: '福利分',
     isShow: true,
