@@ -26,7 +26,7 @@
         <label>{{userInfo.continue_online_days}}</label>
         <text>连续签到</text>
       </view>
-      <view>
+      <view @tap="toChangeDetails">
         <label>{{userInfo.left_chance}}</label>
         <text>抽奖机会</text>
       </view>
@@ -163,7 +163,10 @@
       }
     }
     toFLBRecord() {
-      this.$goto('FLBRecord')
+      this.$goto('FLBRecord?id=0')
+    }
+    toChangeDetails(){
+      this.$goto('FLBRecord?id=2')
     }
   }
 </script>
