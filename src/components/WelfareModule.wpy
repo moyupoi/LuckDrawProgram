@@ -229,7 +229,7 @@
       },
       moreOpen() {
         wepy.navigateTo({
-          url: '/pages/FLBRecord'
+          url: '/pages/FLBRecord?id=0'
         })
         // let animationData = ''
         // if (this.isMore) {
