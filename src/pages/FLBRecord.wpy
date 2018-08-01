@@ -2,13 +2,13 @@
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
   <view class="goldCoin">
-    <view class="total" wx:if="{{ fromMack == 0 }}">
+    <view class="total" wx:if="{{ fromMack != 1 }}">
       <view>
-        <label>{{leftCoin}}</label>
-        <text>福利分余额</text>
+        <label>{{fromMack == 0 ? leftCoin : leftChance}}</label>
+        <text>{{fromMack == 0 ? '福利分余额' : '剩余抽奖次数'}}</text>
       </view>
       <view>
-        <label>{{totalCoin}}</label>
+        <label>{{fromMack == 0 ? totalCoin : totalChance}}</label>
         <text>累计获得</text>
       </view>
     </view>
@@ -46,6 +46,8 @@
       FLBList: [],
       leftCoin: '',
       totalCoin: '',
+      leftChance: '',
+      totalChance: '',
       page: 1,
       nextPage: true,
       tempDate: [],
@@ -89,6 +91,8 @@
               } else {
                 that.leftCoin = Number(id) === 0 ? data.left_coin : ''
                 that.totalCoin = Number(id) === 0 ? data.total_coin : ''
+                that.leftChance = Number(id) === 2 ? data.left_chance : ''
+                that.totalChance = Number(id) === 2 ? data.total_chance : ''
                 let database = this.dataRecomposition(datakey[id])
                 that.FLBList = database
                 that.nextPage = true
