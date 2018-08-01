@@ -7,6 +7,17 @@ module.exports = {
   env: {
     browser: true
   },
+  globals: {
+    globalData: true,
+    props: true,
+    config: true,
+    mixins: true,
+    data: true,
+    components: true,
+    methods: true,
+    props: true,
+    computed: true
+  },
   // https://github.com/feross/standard/blob/master/RULES.md#javascript-standard-style
   extends: 'standard',
   // required to lint *.wpy files

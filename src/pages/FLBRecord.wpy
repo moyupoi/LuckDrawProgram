@@ -2,13 +2,13 @@
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
   <view class="goldCoin">
-    <view class="total">
+    <view class="total" wx:if="{{ fromMack != 1 }}">
       <view>
-        <label>{{leftCoin}}</label>
-        <text>福利分余额</text>
+        <label>{{fromMack == 0 ? leftCoin : leftChance}}</label>
+        <text>{{fromMack == 0 ? '福利分余额' : '剩余抽奖次数'}}</text>
       </view>
       <view>
-        <label>{{totalCoin}}</label>
+        <label>{{fromMack == 0 ? totalCoin : totalChance}}</label>
         <text>累计获得</text>
       </view>
     </view>
@@ -46,38 +46,61 @@
       FLBList: [],
       leftCoin: '',
       totalCoin: '',
+      leftChance: '',
+      totalChance: '',
       page: 1,
       nextPage: true,
-      tempDate: []
+      tempDate: [],
+      fromMack: 0 // 0:福利分 1：抽奖记录 2：抽奖机会
     }
     components = {
       LoadingZ,
       TitleBar
     }
     methods = {}
-    onLoad() {
-      this.FLBRecordInit()
+    onLoad(e) {
+      this.fromMack = e.id
+      this.TitleInit(this.fromMack)
+      this.FLBRecordInit(this.fromMack)
     }
     onShow() {}
-    FLBRecordInit() {
+    FLBRecordInit(id) {
+      let server = [
+        service.userCoinsBills,
+        service.wheelDrawRecords,
+        service.userChanceBills
+      ]
       let that = this
       if (that.nextPage) {
         that.nextPage = false
-        this.$get({url: service.userCoinsBills, data: { page: that.page, per_page: '50' }}, {
-          success: ({statusCode, data}) => {
-            that.isShow = false
-            if (data.user_coin_bills.length <= 0) {
-              that.nextPage = false
-            } else {
-              that.leftCoin = data.left_coin
-              that.totalCoin = data.total_coin
-              let database = this.dataRecomposition(data.user_coin_bills)
-              that.FLBList = database
-              that.nextPage = true
-              that.page += 1
+        this.$get(
+          {
+            url: server[id],
+            data: { page: that.page, per_page: '50' }
+          },
+          {
+            success: ({ statusCode, data }) => {
+              that.isShow = false
+              let datakey = [
+                data.user_coin_bills,
+                data.wheel_draw_records,
+                data.user_chance_bills
+              ]
+              if (datakey[id].length <= 0) {
+                that.nextPage = false
+              } else {
+                that.leftCoin = Number(id) === 0 ? data.left_coin : ''
+                that.totalCoin = Number(id) === 0 ? data.total_coin : ''
+                that.leftChance = Number(id) === 2 ? data.left_chance : ''
+                that.totalChance = Number(id) === 2 ? data.total_chance : ''
+                let database = this.dataRecomposition(datakey[id])
+                that.FLBList = database
+                that.nextPage = true
+                that.page += 1
+              }
             }
           }
-        })
+        )
       }
     }
     dataRecomposition(data) {
@@ -112,8 +135,12 @@
         wepy.showToast({
           title: '正在加载更多'
         })
-        this.FLBRecordInit()
+        this.FLBRecordInit(this.fromMack)
       }
+    }
+    TitleInit(id) {
+      let title = ['我的福利分', '转盘抽奖记录', '我的抽奖机会']
+      this.titleText = title[id]
     }
   }
 </script>
@@ -161,7 +188,7 @@
           font-size: 24rpx;
           color: #666666;
           line-height: 64rpx;
-          padding-left:  64rpx;
+          padding-left: 64rpx;
         }
         .each {
           background: #fff;

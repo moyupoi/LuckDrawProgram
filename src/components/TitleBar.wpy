@@ -78,7 +78,7 @@ export default class TitleBar extends wepy.component {
 <style lang="scss" rel="stylesheet/scss" scoped>
 .tabBarCustom {
   width: 100%;
-  z-index: 999;
+  z-index: 10;
   background: #FFF;
   overflow: hidden;
   position: fixed;
