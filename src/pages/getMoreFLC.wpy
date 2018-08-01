@@ -1,4 +1,5 @@
 <template>
+  <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
   <view class="todayCoin">
     <label>{{userFlc}}</label>
@@ -44,11 +45,9 @@ import http from '../mixins/http'
 import base from '../mixins/base'
 import LoadingZ from '../components/LoadingZ'
 import TitleBar from '../components/TitleBar'
-export default class FLBRecord extends wepy.page {
+export default class GetMoreFLC extends wepy.page {
   mixins = [http, base]
-  config = {
-    // navigationBarTitleText: '中奖纪录'
-  }
+  config = {}
   data = {
     titleText: '福利分',
     isShow: true,
@@ -68,7 +67,7 @@ export default class FLBRecord extends wepy.page {
       this.$goto('home?tabSwitch=1')
     },
     gotostrategy() {
-      this.$goto('strategy?tabSwitch=1')
+      this.$goto('strategy?')
     },
     formSubmit(event) {
       let formId = event.detail.formId
@@ -108,12 +107,27 @@ export default class FLBRecord extends wepy.page {
       }
     }
   }
+  initGetPhone() {
+    let that = this
+    this.$get(
+      { url: service.prizesMine },
+      {
+        success: ({ statusCode, data }) => {
+          this.phoneNumberAuthentication =
+            data.mobile !== 'null' ? 'true' : 'false'
+          that.isShow = false
+        }
+      }
+    )
+  }
   onLoad(e) {
     console.log(e)
     this.userFlc = e.userFlc
     // this.FLBRecordInit()
   }
-  onShow() {}
+  onShow() {
+    this.initGetPhone()
+  }
 
   onReachBottom() {
     if (this.nextPage) {
@@ -142,8 +156,8 @@ export default class FLBRecord extends wepy.page {
   label {
     color: #fb5a35;
     font-size: 40rpx;
-    // font-weight: bold;
     line-height: 50rpx;
+    margin-bottom: 6rpx;
   }
   text {
     color: #888888;
@@ -154,16 +168,16 @@ export default class FLBRecord extends wepy.page {
   padding: 0 32rpx;
   background-color: white;
   .coinTitle {
-    height: 83rpx;
-    line-height: 83rpx;
+    height: 86rpx;
+    line-height: 86rpx;
     color: #333;
     font-size: 32rpx;
   }
   .coinItems {
     width: 100%;
     view {
-      height: 92rpx;
-      line-height: 92rpx;
+      height: 91rpx;
+      line-height: 91rpx;
       border-bottom: 1rpx solid #ebebeb;
       label {
         color: #999;

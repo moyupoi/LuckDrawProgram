@@ -7,6 +7,7 @@ export default class extends wepy.app {
   config = {
     pages: [
       'pages/home',
+      'pages/historyDraw',
       'pages/getMoreFLC',
       'pages/rankingList',
       'pages/personalCenter',
@@ -20,7 +21,10 @@ export default class extends wepy.app {
       'pages/record',
       'pages/probability',
       'pages/FLBRecord',
-      'pages/strategy'
+      'pages/strategy',
+      'pages/turn',
+      'pages/feedBack',
+      'pages/sponsor'
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -53,7 +57,9 @@ export default class extends wepy.app {
   }
 
   globalData = {
-    pathUrl: null
+    pathUrl: null,
+    isLogin: true,
+    accessToken: ''
   }
 
   constructor () {
@@ -62,48 +68,51 @@ export default class extends wepy.app {
   }
 
   onLaunch(options) {
+    let that = this
     let pathUrl = this.urlToString(options.path, options.query)
+    let sourceCode = options.query.source_code || ''
     this.globalData.pathUrl = pathUrl
-    wepy.checkSession({
-      success: function() {},
-      fail: function() {
-        wepy.login({
-          success: res => {
-            if (res.code) {
-              wepy.request({
-                url: service.login,
-                method: 'POST',
-                data: {
-                  code: res.code
-                },
-                success: function (res) {
-                  if (service.isFormal) {
-                    wepy.setStorage({
-                      key: 'accessToken',
-                      data: res.data.access_token
-                    })
-                    wepy.setStorage({
-                      key: 'userId',
-                      data: res.data.id
-                    })
-                  } else {
-                    wepy.setStorage({
-                      key: 'accessTokenInfo',
-                      data: res.data.access_token
-                    })
-                    wepy.setStorage({
-                      key: 'userIdInfo',
-                      data: res.data.id
-                    })
-                  }
-                  wepy.reLaunch({url: pathUrl})
-                }
-              })
-            }
+    if (sourceCode) {
+      wepy.setStorage({
+        key: 'sourceCode',
+        data: options.query.source_code
+      })
+    }
+    this.globalData.accessToken = wepy.getStorageSync(service.isFormal ? 'accessToken' : 'accessTokenInfo') || false
+    if (this.globalData.isLogin) {
+      this.globalData.isLogin = false
+      wepy.checkSession({
+        success: function() {
+          if (!this.globalData.accessToken) {
+            that.loginToken(sourceCode)
           }
-        })
-      }
+        },
+        fail: function() {
+          that.loginToken(sourceCode)
+        }
+      })
+    }
+    // 小程序更新版本
+    const updateManager = wepy.getUpdateManager()
+    updateManager.onCheckForUpdate(function (res) {
+      // 请求完新版本信息的回调
+      // console.log(res.hasUpdate)
     })
+    updateManager.onUpdateReady(function () {
+      wepy.showModal({
+        title: '更新提示',
+        content: '新版本已经准备好，是否重启应用？',
+        success: function (res) {
+          if (res.confirm) {
+            // 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
+            updateManager.applyUpdate()
+          }
+        }
+      })
+    })
+    // updateManager.onUpdateFailed(function () {
+    //   // 新的版本下载失败
+    // })
   }
 
   onShow () {
@@ -122,6 +131,48 @@ export default class extends wepy.app {
 
   urlToString(path, query) {
     return path + '?id=' + query.id + '&share=true&shareUserId=' + query.shareUserId
+  }
+
+  loginToken(sourceCode) {
+    wepy.login({
+      success: res => {
+        if (res.code) {
+          wepy.request({
+            url: service.login,
+            method: 'POST',
+            data: {
+              code: res.code
+            },
+            header: {
+              'X-JINKU-WECHAT-SOURCE-CODE': sourceCode
+            },
+            success: function (res) {
+              if (service.isFormal) {
+                wepy.setStorage({
+                  key: 'accessToken',
+                  data: res.data.access_token
+                })
+                wepy.setStorage({
+                  key: 'userId',
+                  data: res.data.id
+                })
+              } else {
+                wepy.setStorage({
+                  key: 'accessTokenInfo',
+                  data: res.data.access_token
+                })
+                wepy.setStorage({
+                  key: 'userIdInfo',
+                  data: res.data.id
+                })
+              }
+              let url = this.globalData.pathUrl.slice(6, this.globalData.pathUrl.length)
+              wepy.reLaunch({url: url})
+            }
+          })
+        }
+      }
+    })
   }
 }
 </script>

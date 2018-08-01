@@ -1,0 +1,106 @@
+<template>
+  <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
+  <view class="sponsor">
+    <view class="inputWrap">
+      <textarea placeholder="请填写您的称呼，联系方式，公司" maxlength="500" placeholder-style="color: #B2B2B2;" bindinput="bindinput" value="{{sponsorText}}"></textarea>
+    </view>
+    <view class="describe">
+      <label>*</label>
+      <label>首页抽奖，对企业开放，支持品牌宣传合作，如有合作意向请在下方填写您的信息，我们会尽快联系您。</label>
+    </view>
+    <button @tap="sponsorBtn">提交</button>
+    <text class="writing">感谢支持和信赖，我们将在2个工作日内与您联系</text>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import base from '../mixins/base'
+  import http from '../mixins/http'
+  import { service } from '../config.js'
+  import TitleBar from '../components/TitleBar'
+  export default class Sponsor extends wepy.page {
+    mixins = [http, base]
+    config = {}
+    data = {
+      titleText: '成为赞助商',
+      isBackBtn: true,
+      sponsorText: ''
+    }
+    components = {
+      TitleBar
+    }
+    methods = {}
+    onLoad() {}
+    onShow() {}
+    bindinput(event) {
+      this.sponsorText = event.detail.value
+    }
+    sponsorBtn() {
+      let that = this
+      if (that.sponsorText.length > 0) {
+        this.$post({
+          url: service.sponsors,
+          data: {
+            memo: that.sponsorText
+          }
+        }, {
+          success: ({statusCode, data}) => {
+            wepy.showToast({
+              title: data.message,
+              icon: 'none'
+            })
+            if (statusCode === 200) {
+              setTimeout(function() {
+                wepy.navigateBack({
+                  delta: 1
+                })
+              }, 1500)
+            }
+          }
+        })
+      }
+    }
+  }
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  @import "../assets/stylesheets/layout.scss";
+  .sponsor {
+    .inputWrap {
+      background: #fff;
+      padding: 32rpx;
+      border-top: 1rpx solid #E7E7E9;
+      textarea {
+        width: 100%;
+        font-size: 28rpx;
+        color: #666666;
+        background: #fff;
+      }
+    }
+    .describe {
+      padding: 32rpx;
+      label {
+        font-size: 26rpx;
+        color: #666666;
+        &:nth-of-type(1) {
+          color: #FF471C;
+          margin-top: 32rpx;
+        }
+      }
+    }
+    button {
+      width: 552rpx;
+      height: 92rpx;
+      background: #FA5C37;
+      color: #fff;
+      border-radius: 50rpx;
+      margin-top: 306rpx;
+    }
+    .writing {
+      font-size: 24rpx;
+      color: #808080;
+      display: block;
+      margin-top: 32rpx;
+      text-align: center;
+    }
+  }
+</style>

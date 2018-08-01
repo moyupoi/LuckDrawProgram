@@ -3,14 +3,17 @@
   <LoadingX :isLoading.sync="isLoading"></LoadingX>
   <TitleBar :isBackBtn.sync="isBackBtn" :isShareBtn.sync="isShareBtn" :titleText.sync="titleText"></TitleBar>
   <view class="canvasBox">
-    <canvas class="canvas" canvas-id="canvas" style="width: 750px;height: 1248px;"></canvas>
+    <canvas class="canvas" canvas-id="canvas" style="width: 750px;height: 1368px;"></canvas>
   </view>
+  <navigator hover-class="none" url="/pages/home" class="moreDraw" open-type="reLaunch">
+    <image src="../assets/images/luckDraw/more.png"></image>
+  </navigator>
   <view class="shareWicket" wx:if="{{isShareWicket}}">
     <view class="forward" @tap="closeShareSwitch">
       <view class="diagram">
-        <image src="{{titaList.banner_url}}" class="banner"></image>
+        <image src="{{prizesDetails.banner_url}}" class="banner"></image>
         <view class="detailed">
-          <text class="title">{{titaList.name}}</text>
+          <text class="title">{{prizesDetails.name}}</text>
           <view class="person">
             <label>已有</label>
             <label>{{prizeDrawsCount}}</label>
@@ -21,6 +24,12 @@
           <text class="participate">长按识别小程序，参加抽奖</text>
           <text class="projectName">搞点福利</text>
           <view class="hr"></view>
+          <view class="userInfo">
+            <image src="{{prizesDetails.user_avatar_url}}"></image>
+            <view>
+              我是<label>{{prizesDetails.user_nick_name}}</label>，邀你一起免费抽奖
+            </view>
+          </view>
         </view>
       </view>
       <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub">
@@ -30,11 +39,11 @@
     </view>
   </view>
   <view class="luckDrawSurround">
-    <image src="{{titaList.banner_url}}" class="banner"></image>
+    <image src="{{prizesDetails.banner_url}}" class="banner"></image>
     <view class="describe">
-      <text class="name">{{titaList.name}}</text>
-      <text class="number">{{titaList.number}}件</text>
-      <label class="reachNumber">满 {{titaList.reach_number}}人次参与，立即开奖</label>
+      <text class="name">{{prizesDetails.name}}</text>
+      <text class="number">{{prizesDetails.number}}件</text>
+      <label class="reachNumber">满 {{prizesDetails.reach_number}}人次参与，立即开奖</label>
       <view class="awardProgress">
         <text class="percentageTitle">开奖进度:</text>
         <view class="progress">
@@ -43,13 +52,13 @@
       </view>
       <view class="participate" wx:if="{{prizeDrawsCount > 0}}">
         <text>已有{{prizeDrawsCount}}人参加，</text>
-        <navigator hover-class="none" url="/pages/portraitList?id={{titaList.id}}&type=luckDraw">
+        <navigator hover-class="none" url="/pages/portraitList?id={{prizesDetails.id}}&type=luckDraw">
           查看全部>
         </navigator>
       </view>
       <view class="participatePeople" wx:if="{{prizeDrawsCount > 0}}">
         <image src="{{item}}" wx:for="{{prizeDrawUserAvatars}}" wx:key="index" wx:if="{{index <= 6}}"></image>
-        <label wx:if="{{titaList.get_prize_percent !== 0}}">{{titaList.get_prize_percent}}%</label>
+        <label wx:if="{{prizesDetails.get_prize_percent !== 0}}">{{prizesDetails.get_prize_percent}}%</label>
         <view class="ellipsis" wx:if="{{prizeDrawsCount >= 6}}"></view>
       </view>
       <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub" wx:if="{{aasmState !== 'finishing' && aasmState !== 'finished' && !isReachPrizeLimit}}">
@@ -58,7 +67,7 @@
         <button class="shareIncrease" formType="submit" wx:if="{{isHasdraw}}" @tap="shareSwitch">分享增加抽奖机会</button>
       </form>
       <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub" wx:if="{{aasmState !== 'finishing' && aasmState !== 'finished' && isReachPrizeLimit}}">
-        <button class="surplus active" @getuserinfo="drawBtn" open-type="getUserInfo" formType="submit">{{titaList.prize_limit_message}}</button>
+        <button class="surplus active" @getuserinfo="drawBtn" open-type="getUserInfo" formType="submit">{{prizesDetails.prize_limit_message}}</button>
         <button class="shareIncrease" formType="submit" wx:if="{{isHasdraw}}" @tap="shareSwitch">分享增加抽奖机会</button>
       </form>
       <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub" wx:if="{{aasmState === 'finishing' || aasmState === 'finished'}}">
@@ -76,13 +85,13 @@
         <text class="awardRed">提高中奖概率（参加抽奖次数/开奖所需人次）</text>
       </view>
       <view class="number">
-        <text>已邀请{{titaList.shared_count}}人参加抽奖，抽奖机会 </text>
-        <text class="awardRed" wx:if="{{titaList.shared_count > 0}}"> + {{titaList.shared_count}}</text>
+        <text>已邀请{{prizesDetails.shared_count}}人参加抽奖，抽奖机会 </text>
+        <text class="awardRed" wx:if="{{prizesDetails.shared_count > 0}}"> + {{prizesDetails.shared_count}}</text>
       </view>
       <view class="participatePeople">
-        <image src="{{item}}" wx:for="{{titaList.shared_user_avatars}}" wx:key="index" wx:if="{{index < 3}}"></image>
+        <image src="{{item}}" wx:for="{{prizesDetails.shared_user_avatars}}" wx:key="index" wx:if="{{index < 3}}"></image>
       </view>
-      <navigator hover-class="none" url="/pages/portraitList?id={{titaList.id}}&type=probability" wx:if="{{titaList.shared_count > 0}}">
+      <navigator hover-class="none" url="/pages/portraitList?id={{prizesDetails.id}}&type=probability" wx:if="{{prizesDetails.shared_count > 0}}">
         查看全部>
       </navigator>
       <form bindsubmit="formSubmit" report-submit="true" class="formSub">
@@ -93,9 +102,9 @@
     <view class="sponsor">
       <text>赞助商</text>
       <image src="../assets/images/luckDraw/officialLogo.png"></image>
-      <label>{{titaList.sponsor}}</label>
+      <label>{{prizesDetails.sponsor}}</label>
     </view>
-    <image src="{{titaList.detail_url}}" class="commodityDisplay" mode="widthFix"></image>
+    <image src="{{prizesDetails.detail_url}}" class="commodityDisplay" mode="widthFix"></image>
   </view>
 </template>
 <script>
@@ -118,7 +127,7 @@
       isBackBtn: true,
       isShare: true,
       isShareBtn: false,
-      titaList: {},
+      prizesDetails: {},
       percentage: 0,
       reachNumber: 0,
       isHasdraw: true,
@@ -138,8 +147,7 @@
       isReachPrizeLimit: false,
       isLoading: false,
       isShareWicket: false,
-      codeImg: '',
-      canvasImg: ''
+      codeImg: ''
     }
     components = {
       LoadingZ,
@@ -192,7 +200,7 @@
       let that = this
       this.$get({url: service.prizes + this.commodityId}, {
         success: ({statusCode, data}) => {
-          that.titaList = data
+          that.prizesDetails = data
           that.reachNumber = data.reach_number
           that.percentage = data.prize_draws_count > 0 ? parseInt(data.prize_draws_count / data.reach_number * 100) : 0
           that.isHasdraw = data.is_has_draw
@@ -209,8 +217,8 @@
           that.shareBannerUrl = data.banner_url
           that.shareName = data.name
           // that.isHasdraw = false
-          this.createCanvas()
           that.codeImg = service.wxacodeunlimit + '?scene=share_prize:' + this.commodityId + ':' + this.$getUserId() + '&page=' + this.shareUrl
+          this.createCanvas()
         }
       })
     }
@@ -255,7 +263,7 @@
       if (that.isCanDraw) {
         that.isLoading = true
         this.$post({
-          url: service.prizes + this.titaList.id + '/draw',
+          url: service.prizes + this.prizesDetails.id + '/draw',
           headers: {
             'X-JINKU-WECHAT-FORM-ID': that.formId
           }
@@ -293,6 +301,11 @@
       this.isShareWicket = false
     }
     shareFriends() {
+      wepy.showToast({
+        title: '生成中...',
+        icon: 'loading',
+        duration: 1000
+      })
       if (this.canvasImg !== '') {
         wepy.getImageInfo({
           src: this.canvasImg,
@@ -323,6 +336,16 @@
       background: #fff;
     }
   }
+  .moreDraw {
+    position: fixed;
+    top: 1000rpx;
+    right: 0;
+    z-index: 10;
+    image {
+      width: 152rpx;
+      height: 156rpx;
+    }
+  }
   .shareWicket {
     position: fixed;
     top: 0;
@@ -336,7 +359,7 @@
       .diagram {
         width: 532rpx;
         display: block;
-        margin: 228rpx auto 50rpx auto;
+        margin: 190rpx auto 20rpx auto;
         overflow: hidden;
         border-radius: 20rpx;
         .banner {
@@ -400,8 +423,36 @@
             border: 0;
             background: #ccc;
             position: absolute;
-            bottom: 37rpx;
+            bottom: 140rpx;
             z-index: 0;
+          }
+          .userInfo {
+            margin-top: 10rpx;
+            overflow: hidden;
+            image {
+              width: 90rpx;
+              height: 90rpx;
+              display: block;
+              float: left;
+              border-radius: 50rpx;
+            }
+            view {
+              width: 340rpx;
+              height: 80rpx;
+              display: block;
+              float: left;
+              vertical-align: top;
+              font-size: 28rpx;
+              color: #0B0A0A;
+              margin: 15rpx 0 0 20rpx;
+              overflow: hidden;
+            }
+            label {
+              font-size: 28rpx;
+              display: inline-block;
+              vertical-align: top;
+              color: #FA5C37;
+            }
           }
         }
       }
@@ -415,7 +466,7 @@
         font-size: 32rpx;
         line-height: 80rpx;
         &:nth-of-type(2) {
-          margin-top: 32rpx;
+          margin-top: 20rpx;
           background: #fff;
           color: #FA5C37;
           border: 1rpx solid #FA5C37;
@@ -587,11 +638,11 @@
         color: #333333;
         display: block;
         text-align: center;
-        margin: 64rpx 0;
+        margin: 64rpx 0 54rpx;
       }
       .describeAwardImg {
-        width: 448rpx;
-        height: 120rpx;
+        width: 548rpx;
+        height: 140rpx;
         display: block;
         margin: 0 auto;
         margin-bottom: 32rpx;

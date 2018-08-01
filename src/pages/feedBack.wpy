@@ -1,0 +1,83 @@
+<template>
+  <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
+  <view class="feedBack">
+    <view class="inputWrap">
+      <textarea placeholder="感谢您的支持，留下您的宝贵意见，这对我们非常重要" maxlength="500" placeholder-style="color: #B2B2B2;" bindinput="bindinput" value="{{feedBackText}}"></textarea>
+    </view>
+    <button @tap="feedBackBtn">提交</button>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import base from '../mixins/base'
+  import http from '../mixins/http'
+  import { service } from '../config.js'
+  import TitleBar from '../components/TitleBar'
+  export default class FeedBack extends wepy.page {
+    mixins = [http, base]
+    config = {}
+    data = {
+      titleText: '意见反馈',
+      isBackBtn: true,
+      feedBackText: ''
+    }
+    components = {
+      TitleBar
+    }
+    methods = {}
+    onLoad() {}
+    onShow() {}
+    bindinput(event) {
+      this.feedBackText = event.detail.value
+    }
+    feedBackBtn() {
+      let that = this
+      if (that.feedBackText.length > 0) {
+        this.$post({
+          url: service.suggestions,
+          data: {
+            memo: that.feedBackText
+          }
+        }, {
+          success: ({statusCode, data}) => {
+            wepy.showToast({
+              title: data.message,
+              icon: 'none'
+            })
+            if (statusCode === 200) {
+              setTimeout(function() {
+                wepy.navigateBack({
+                  delta: 1
+                })
+              }, 1500)
+            }
+          }
+        })
+      }
+    }
+  }
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  @import "../assets/stylesheets/layout.scss";
+  .feedBack {
+    .inputWrap {
+      background: #fff;
+      padding: 32rpx;
+      border-top: 1rpx solid #E7E7E9;
+      textarea {
+        width: 100%;
+        font-size: 28rpx;
+        color: #666666;
+        background: #fff;
+      }
+    }
+    button {
+      width: 552rpx;
+      height: 92rpx;
+      background: #FA5C37;
+      color: #fff;
+      border-radius: 50rpx;
+      margin-top: 506rpx;
+    }
+  }
+</style>

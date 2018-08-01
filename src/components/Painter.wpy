@@ -30,7 +30,7 @@ export default class Painter extends wepy.component {
     wepy.getSystemInfo({
       success: (res) => {
         console.log(res)
-        that.painterStyle = `width:${750}px;height:${1248}px;`
+        that.painterStyle = `width:${750}px;height:${1368}px;`
       }
     })
   }
