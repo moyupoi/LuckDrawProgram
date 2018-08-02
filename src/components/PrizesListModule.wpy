@@ -10,11 +10,17 @@
           <view class="describe">
             <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}">
               <text class="name">{{item.brand}} · {{item.name}}</text>
-              <view>
+              <view class="title">
                 <text class="isJoin" wx:if="{{item.is_has_draw}}">已参加</text>
                 <text class="isJoin2" wx:if="{{item.is_has_draw}}">|</text>
                 <label>满 {{item.reach_number}} 人参与开奖</label>
                 <text class="number"> | {{item.number}}件</text>
+                <view class="priceView" wx:if="{{item.amount}}">
+                  <view>
+                    <text>￥{{item.amount}}</text>
+                  </view>
+                  <text class="preferential">￥0</text>
+                </view>
               </view>
             </navigator>
             <button formType="submit" class="luckDrawBtn" @tap="luckDraw({{item.is_has_draw}}, {{item.id}})">{{item.is_has_draw ? '继续抽奖' : '免费抽奖' }}</button>
@@ -158,7 +164,7 @@
           line-height: 42rpx;
           padding: 0 15rpx;
         }
-        view {
+        .title {
           .isJoin {
             font-size: 24rpx;
             line-height: 32rpx;
@@ -204,6 +210,35 @@
             color: #666666;
             width: 140rpx;
             border-color: #666666;
+          }
+          .priceView {
+            margin-top: 10rpx;
+            view {
+              position: relative;
+              display: inline-block;
+              text {
+                font-size: 32rpx;
+                color: #FB5A35;
+              }
+              &:before {
+                content: '';
+                position: absolute;
+                top: 24rpx;
+                left: 3rpx;
+                display: block;
+                width: 100%;
+                height: 8rpx;
+                border-radius: 20rpx;
+                background: rgba(251, 90, 53, .5);
+                z-index: 10;
+              }
+            }
+            .preferential {
+              margin-left: 10rpx;
+              display: inline-block;
+              font-size: 28rpx;
+              color: #666666;
+            }
           }
         }
       }
