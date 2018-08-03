@@ -2,7 +2,7 @@
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
   <view class="container">
-    <image src="../assets/images/turn/turn.jpg" class="bgImg"></image>
+    <image src="../assets/images/turn/turn.jpg" class="bgImg"  @tap="multipleTap"></image>
     <view class="lucky"></view>
     <view class="plateWrapBox">
       <view class="plateBorder" animation="{{ aniData }}">
@@ -58,13 +58,23 @@ export default class Turn extends wepy.page {
     aniData: {},
     // aniDataDian: {},
     dailyLeftTimes: 0,
-    dailyLimitTimes: 0
+    dailyLimitTimes: 0,
+    cantouch: true
   }
   components = {
     LoadingZ,
     TitleBar
   }
   methods = {
+    multipleTap() {
+      if (this.cantouch) {
+        this.cantouch = false
+        setTimeout(() => {
+          this.cantouch = true
+          this.$apply()
+        }, 2000)
+      }
+    },
     formSubmit(event) {
       let formId = event.detail.formId
       if (
