@@ -7,131 +7,166 @@
   <view class="turn"></view>
   <view class="switchTab">
     <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true">
-      <button class="switchTabBtn {{switchTabName === '0' ? 'active' : '' }}" open-type="reLaunch" formType="submit" @tap="switchTabBtn('0')">抽奖</button>
-      <button class="switchTabBtn {{switchTabName === '1' ? 'active' : '' }}" open-type="reLaunch" formType="submit" @tap="switchTabBtn('1')">预告</button>
-      <button class="switchTabBtn {{switchTabName === '2' ? 'active' : '' }}" open-type="reLaunch" formType="submit" @tap="switchTabBtn('2')">福利</button>
+      <scroll-view>
+        <button class="switchTabBtn {{switchTabName === '0' ? 'active' : '' }}" open-type="reLaunch" data-current='0' formType="submit" @tap="switchTabBtn('0')">抽奖</button>
+        <button class="switchTabBtn {{switchTabName === '1' ? 'active' : '' }}" open-type="reLaunch" data-current='1' formType="submit" @tap="switchTabBtn('1')">预告</button>
+        <button class="switchTabBtn {{switchTabName === '2' ? 'active' : '' }}" open-type="reLaunch" data-current='2' formType="submit" @tap="switchTabBtn('2')">福利</button>
+      </scroll-view>
+
     </form>
     <view class="new">new</view>
     <view class="hot">hot</view>
     <view class="remindSpot" wx:if="{{userInfo.pending_coin_count > 0}}"></view>
   </view>
   <view class="homeSurround">
-    <PrizesListModule :switchTabName.sync="switchTabName" :prizesList.sync="prizesList" @communicationEmit.user="refreshFun" :isLoading.sync="isLoading" wx:if="{{switchTabName === '0'}}"></PrizesListModule>
-    <PreviewListModule :switchTabName.sync="switchTabName" :prizesQueuingList.sync="prizesQueuingList" @communicationEmit.user="refreshFun" wx:if="{{switchTabName === '1'}}"></PreviewListModule>
-    <WelfareModule :switchTabName.sync="switchTabName" :welfareList.sync="welfareList" :handPoint.sync="handPoint" :userInfo.sync="userInfo" wx:if="{{switchTabName === '2'}}"></WelfareModule>
+    <swiper style="width:100%;height:1724px" current="{{switchTabName}}" bindchange="switchTab">
+      <swiper-item>
+        <PrizesListModule :switchTabName.sync="switchTabName" :prizesList.sync="prizesList" @communicationEmit.user="refreshFun" :isLoading.sync="isLoading" wx:if="{{switchTabName === '0'}}"></PrizesListModule>
+      </swiper-item>
+      <swiper-item>
+        <PreviewListModule :switchTabName.sync="switchTabName" :prizesQueuingList.sync="prizesQueuingList" @communicationEmit.user="refreshFun" wx:if="{{switchTabName === '1'}}"></PreviewListModule>
+      </swiper-item>
+      <swiper-item>
+        <WelfareModule :switchTabName.sync="switchTabName" :welfareList.sync="welfareList" :handPoint.sync="handPoint" :userInfo.sync="userInfo" wx:if="{{switchTabName === '2'}}"></WelfareModule>
+      </swiper-item>
+    </swiper>
   </view>
 </template>
 <script>
-  import wepy from 'wepy'
-  import { service } from '../config.js'
-  import http from '../mixins/http'
-  import base from '../mixins/base'
-  import ShareMessage from '../mixins/ShareMessage'
-  import LoadingZ from '../components/LoadingZ'
-  import LoadingX from '../components/LoadingX'
-  import TitleBar from '../components/TitleBar'
-  import PrizesListModule from '../components/PrizesListModule'
-  import PreviewListModule from '../components/PreviewListModule'
-  import WelfareModule from '../components/WelfareModule'
-  import TransmissionGate from '../components/TransmissionGate'
-  import TurnTable from '../components/TurnTable'
+import wepy from 'wepy'
+import { service } from '../config.js'
+import http from '../mixins/http'
+import base from '../mixins/base'
+import ShareMessage from '../mixins/ShareMessage'
+import LoadingZ from '../components/LoadingZ'
+import LoadingX from '../components/LoadingX'
+import TitleBar from '../components/TitleBar'
+import PrizesListModule from '../components/PrizesListModule'
+import PreviewListModule from '../components/PreviewListModule'
+import WelfareModule from '../components/WelfareModule'
+import TransmissionGate from '../components/TransmissionGate'
+import TurnTable from '../components/TurnTable'
 
-  export default class Home extends wepy.page {
-    mixins = [http, base, ShareMessage]
-    config = {
-      // navigationBarTitleText: '搞点福利'
-    }
-    data = {
-      titleText: '搞点福利',
-      prizesList: [],
-      prizesQueuingList: [],
-      welfareList: [],
-      bannerUrl: '',
-      isShow: true,
-      barHeight: 0,
-      formId: null,
-      switchTabName: '0',
-      transmissionType: 'personalCenter',
-      isBackBtn: false,
-      animationData: '',
-      isMore: false,
-      foamBtnAnimationData: '',
-      userInfo: {},
-      isLoading: false,
-      handPoint: ''
-    }
-    components = {
-      LoadingZ,
-      LoadingX,
-      TitleBar,
-      PrizesListModule,
-      PreviewListModule,
-      WelfareModule,
-      TransmissionGate,
-      TurnTable
-    }
-    methods = {
-      // 父函数给传递子组件
-      refreshFun(event, id) {
-        switch (event) {
-          case 'indexForPreview':
-            this.indexForPreview()
-            break
-          case 'luckDraw':
-            this.luckDraw(id)
-            break
-          default:
-        }
-      }
-    }
-    onLoad(options) {
-      if (options.tabSwitch) {
-        // 返回首页第一个标签
-        this.switchTabName = options.tabSwitch
-      }
-    }
-    onShow() {
-      switch (this.switchTabName) {
-        case '0':
-          this.indexForDraw()
-          break
-        case '1':
+export default class Home extends wepy.page {
+  mixins = [http, base, ShareMessage]
+  config = {
+    // navigationBarTitleText: '搞点福利'
+  }
+  data = {
+    titleText: '搞点福利',
+    prizesList: [],
+    prizesQueuingList: [],
+    welfareList: [],
+    bannerUrl: '',
+    isShow: true,
+    barHeight: 0,
+    formId: null,
+    switchTabName: '0',
+    transmissionType: 'personalCenter',
+    isBackBtn: false,
+    animationData: '',
+    isMore: false,
+    foamBtnAnimationData: '',
+    userInfo: {},
+    isLoading: false,
+    handPoint: ''
+  }
+  components = {
+    LoadingZ,
+    LoadingX,
+    TitleBar,
+    PrizesListModule,
+    PreviewListModule,
+    WelfareModule,
+    TransmissionGate,
+    TurnTable
+  }
+  methods = {
+    // 父函数给传递子组件
+    refreshFun(event, id) {
+      switch (event) {
+        case 'indexForPreview':
           this.indexForPreview()
           break
-        case '2':
-          this.welfareInit()
+        case 'luckDraw':
+          this.luckDraw(id)
           break
         default:
       }
-      let that = this
-      this.$get({url: service.prizesMine}, {
-        success: ({statusCode, data}) => {
+    },
+    switchTab(e) {
+      let current = e.detail.current.toString()
+      if (this.switchTabName === current) return false
+      else {
+        this.switchTabName = current
+      }
+    }
+  }
+  onLoad(options) {
+    this.prizesInit()
+    if (options.tabSwitch) {
+      // 返回首页第一个标签
+      this.switchTabName = options.tabSwitch
+    }
+  }
+  onShow() {
+    // switch (this.switchTabName) {
+    //   case '0':
+    //     this.indexForDraw()
+    //     break
+    //   case '1':
+    //     this.indexForPreview()
+    //     break
+    //   case '2':
+    //     this.welfareInit()
+    //     break
+    //   default:
+    // }
+    let that = this
+    this.$get(
+      { url: service.prizesMine },
+      {
+        success: ({ statusCode, data }) => {
           that.userInfo = data
         }
-      })
-    }
-    indexForDraw() {
-      let that = this
-      this.$get({url: service.indexForDraw}, {
-        success: ({statusCode, data}) => {
-          that.prizesList = data
-          that.isShow = false
-        }
-      })
-    }
-    indexForPreview() {
-      let that = this
-      this.$get({url: service.indexForPreview}, {
-        success: ({statusCode, data}) => {
-          that.prizesQueuingList = data['prizes']
-          that.isShow = false
-        }
-      })
-    }
-    welfareInit() {
-      let that = this
-      this.$get({url: service.userCoins}, {
-        success: ({statusCode, data}) => {
+      }
+    )
+  }
+  // indexForDraw() {
+  //   let that = this
+  //   this.$get(
+  //     { url: service.indexForDraw },
+  //     {
+  //       success: ({ statusCode, data }) => {
+  //         that.prizesList = data
+  //         that.isShow = false
+  //       }
+  //     }
+  //   )
+  // }
+  // indexForPreview() {
+  //   let that = this
+  //   this.$get(
+  //     { url: service.indexForPreview },
+  //     {
+  //       success: ({ statusCode, data }) => {
+  //         that.prizesQueuingList = data['prizes']
+  //         that.isShow = false
+  //       }
+  //     }
+  //   )
+  // }
+  prizesInit() {
+    console.log('prizesInit')
+
+    let that = this
+    this.$get(
+      { url: service.prizes },
+      {
+        success: ({ statusCode, data }) => {
+          console.log(data)
+          that.prizesList = data.prizes
+          that.prizesQueuingList = data.prizes_queuing
           that.welfareList = data
           if (that.welfareList.user_coin_pools.length > 0) {
             that.welfareList.user_coin_pools.map((item, i) => {
@@ -140,63 +175,105 @@
             that.handPoint = that.welfareList.user_coin_pools[0].id
           }
           that.isShow = false
-          let animationData = wepy.createAnimation({}).translateX(-70).step({ delay: 5000, duration: 2000 })
+          let animationData = wepy
+            .createAnimation({})
+            .translateX(-70)
+            .step({ delay: 5000, duration: 2000 })
           this.animationData = animationData
         }
-      })
-    }
-    remind(event) {
-      let formId = event.detail.formId
-      if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
-        formId = event.detail.formId
-      } else {
-        formId = null
       }
-      let id = event.target.dataset.wpyremindA
-      this.$post({
+    )
+  }
+  // welfareInit() {
+  //   let that = this
+  //   this.$get(
+  //     { url: service.userCoins },
+  //     {
+  //       success: ({ statusCode, data }) => {
+  //         that.welfareList = data
+  //         if (that.welfareList.user_coin_pools.length > 0) {
+  //           that.welfareList.user_coin_pools.map((item, i) => {
+  //             that.welfareList.user_coin_pools[i].isShow = true
+  //           })
+  //           that.handPoint = that.welfareList.user_coin_pools[0].id
+  //         }
+  //         that.isShow = false
+  //         let animationData = wepy
+  //           .createAnimation({})
+  //           .translateX(-70)
+  //           .step({ delay: 5000, duration: 2000 })
+  //         this.animationData = animationData
+  //       }
+  //     }
+  //   )
+  // }
+  remind(event) {
+    let formId = event.detail.formId
+    if (
+      formId !== 'the formId is a mock one' &&
+      !this.isUndefined(formId) &&
+      formId !== '' &&
+      formId !== null
+    ) {
+      formId = event.detail.formId
+    } else {
+      formId = null
+    }
+    let id = event.target.dataset.wpyremindA
+    this.$post(
+      {
         url: service.prizes + id + '/remind',
         headers: {
           'X-JINKU-WECHAT-FORM-ID': formId
         }
-      }, {
-        success: ({statusCode, data}) => {
+      },
+      {
+        success: ({ statusCode, data }) => {
           this.$alert('设置提醒', data.message)
           this.indexForPreview()
         }
-      })
-    }
-    formSubmit (event) {
-      let formId = event.detail.formId
-      if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
-        this.$updataFormId(this.formId)
       }
+    )
+  }
+  formSubmit(event) {
+    let formId = event.detail.formId
+    if (
+      formId !== 'the formId is a mock one' &&
+      !this.isUndefined(formId) &&
+      formId !== '' &&
+      formId !== null
+    ) {
+      this.$updataFormId(this.formId)
     }
-    switchTabBtn(event) {
-      this.switchTabName = event.target.dataset.wpyswitchtabbtnA
-      // this.isShow = true
-      switch (event.target.dataset.wpyswitchtabbtnA) {
-        case '0':
-          this.indexForDraw()
-          break
-        case '1':
-          this.indexForPreview()
-          break
-        case '2':
-          this.welfareInit()
-          break
-        default:
-      }
-    }
-    luckDraw(id) {
-      let that = this
-      that.isLoading = true
-      this.$post({
+  }
+  switchTabBtn(event) {
+    this.switchTabName = event.target.dataset.wpyswitchtabbtnA
+    // this.isShow = true
+    // switch (event.target.dataset.wpyswitchtabbtnA) {
+    //   case '0':
+    //     this.indexForDraw()
+    //     break
+    //   case '1':
+    //     this.indexForPreview()
+    //     break
+    //   case '2':
+    //     this.welfareInit()
+    //     break
+    //   default:
+    // }
+  }
+  luckDraw(id) {
+    let that = this
+    that.isLoading = true
+    this.$post(
+      {
         url: service.prizes + id + '/draw',
         headers: {
           'X-JINKU-WECHAT-FORM-ID': that.formId
         }
-      }, {
-        success: ({statusCode, data}) => {
+      },
+      {
+        success: ({ statusCode, data }) => {
           that.isLoading = false
           if (statusCode === 200) {
             wepy.showToast({
@@ -206,186 +283,190 @@
             this.indexForDraw()
           }
         }
-      })
-    }
+      }
+    )
   }
+}
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
-  @import "../assets/stylesheets/layout.scss";
-  .switchTab {
-    position: fixed;
-    background: #FFF;
-    width: 100%;
-    height: 108rpx;
+@import '../assets/stylesheets/layout.scss';
+.switchTab {
+  position: fixed;
+  background: #fff;
+  width: 100%;
+  height: 108rpx;
+  text-align: center;
+  overflow: hidden;
+  z-index: 20;
+  .switchTabBtn {
+    width: 140rpx;
+    background: none;
+    color: #666666;
+    font-size: 28rpx;
+    line-height: 108rpx;
+    display: inline-block;
     text-align: center;
-    overflow: hidden;
-    z-index: 20;
-    .switchTabBtn {
-      width: 140rpx;
-      background: none;
-      color: #666666;
-      font-size: 28rpx;
-      line-height: 108rpx;
-      display: inline-block;
-      text-align: center;
-      padding: 0;
-      &:nth-of-type(2) {
-        margin: 0 50rpx;
-      }
-    }
-    .active {
-      font-size: 32rpx;
-      color: #FF471C;
-      position: relative;
-      &:before {
-        content: '';
-        position: absolute;
-        z-index: 9;
-        display: block;
-        background: #FFA38D;
-        background-size: 28rpx 8rpx;
-        border-radius: 20rpx;
-        width: 28rpx;
-        height: 8rpx;
-        top: 80rpx;
-        left: 58rpx;
-      }
-    }
-    .new {
-      position: absolute;
-      top: 17rpx;
-      left: 222rpx;
-      width: 66rpx;
-      height: 33rpx;
-      background: linear-gradient(to bottom, #00B7EB , #0093F2);
-      border-top-left-radius: 50rpx;
-      border-top-right-radius: 50rpx;
-      border-bottom-right-radius: 50rpx;
-      font-size: 20rpx;
-      color: #fff;
-    }
-    .hot {
-      position: absolute;
-      top: 17rpx;
-      left: 407rpx;
-      width: 66rpx;
-      height: 33rpx;
-      background: linear-gradient(to bottom, #FF7854 , #FF4E36);
-      border-top-left-radius: 50rpx;
-      border-top-right-radius: 50rpx;
-      border-bottom-right-radius: 50rpx;
-      font-size: 20rpx;
-      color: #fff;
-    }
-    .remindSpot {
-      position: absolute;
-      top: 23rpx;
-      left: 596rpx;
-      width: 20rpx;
-      height: 20rpx;
-      background: #FF471C;
-      border-radius: 50rpx;
+    padding: 0;
+    &:nth-of-type(2) {
+      margin: 0 50rpx;
     }
   }
-  .homeSurround {
-    overflow: hidden;
+  .active {
+    font-size: 32rpx;
+    color: #ff471c;
     position: relative;
-    // .logoRight {
-    //   position: absolute;
-    //   z-index: 3;
-    //   width: 124rpx;
-    //   height: 144rpx;
-    //   display: block;
-    //   top: 196rpx;
-    //   right: 1rpx;
-    // }
-    margin-top: 110rpx;
-    .prizes {
+    &:before {
+      content: '';
+      position: absolute;
+      z-index: 9;
+      display: block;
+      background: #ffa38d;
+      background-size: 28rpx 8rpx;
+      border-radius: 20rpx;
+      width: 28rpx;
+      height: 8rpx;
+      top: 80rpx;
+      left: 58rpx;
+    }
+  }
+  .new {
+    position: absolute;
+    top: 17rpx;
+    left: 222rpx;
+    width: 66rpx;
+    height: 33rpx;
+    background: linear-gradient(to bottom, #00b7eb, #0093f2);
+    border-top-left-radius: 50rpx;
+    border-top-right-radius: 50rpx;
+    border-bottom-right-radius: 50rpx;
+    font-size: 20rpx;
+    color: #fff;
+  }
+  .hot {
+    position: absolute;
+    top: 17rpx;
+    left: 407rpx;
+    width: 66rpx;
+    height: 33rpx;
+    background: linear-gradient(to bottom, #ff7854, #ff4e36);
+    border-top-left-radius: 50rpx;
+    border-top-right-radius: 50rpx;
+    border-bottom-right-radius: 50rpx;
+    font-size: 20rpx;
+    color: #fff;
+  }
+  .remindSpot {
+    position: absolute;
+    top: 23rpx;
+    left: 596rpx;
+    width: 20rpx;
+    height: 20rpx;
+    background: #ff471c;
+    border-radius: 50rpx;
+  }
+}
+.homeSurround {
+  width: 100%;
+  height: auto;
+  // overflow: hidden;
+  position: relative;
+  // .logoRight {
+  //   position: absolute;
+  //   z-index: 3;
+  //   width: 124rpx;
+  //   height: 144rpx;
+  //   display: block;
+  //   top: 196rpx;
+  //   right: 1rpx;
+  // }
+  margin-top: 110rpx;
+  .prizes {
+    position: relative;
+    z-index: 1;
+    padding: 36rpx;
+    // margin-top: 100rpx;
+    overflow: hidden;
+    .prizesItem {
+      margin-bottom: 32rpx;
+      width: 686rpx;
+      box-shadow: rgba(60, 62, 66, 0.1) 0 2rpx 8rpx 0;
+      border-radius: 20rpx;
       position: relative;
-      z-index: 1;
-      padding: 36rpx;
-      // margin-top: 100rpx;
-      overflow: hidden;
-      .prizesItem {
-        margin-bottom: 32rpx;
+      .banner {
+        border-bottom: 1rpx solid #f1f2f4;
+        image {
+          border-top-left-radius: 20rpx;
+          border-top-right-radius: 20rpx;
+          width: 100%;
+          height: 386rpx;
+          display: block;
+        }
+      }
+      .prizesItemFormSubmit {
         width: 686rpx;
-        box-shadow: rgba(60, 62, 66, 0.1) 0 2rpx 8rpx 0;
-        border-radius: 20rpx;
-        position: relative;
-        .banner {
-          border-bottom: 1rpx solid #F1F2F4;
-          image {
-            border-top-left-radius: 20rpx;
-            border-top-right-radius: 20rpx;
-            width: 100%;
-            height: 386rpx;
-            display: block;
-          }
+        height: 534rpx;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0);
+      }
+      .describe {
+        border-bottom-left-radius: 20rpx;
+        border-bottom-right-radius: 20rpx;
+        background: #fff;
+        padding: 32rpx;
+        .name,
+        .number {
+          font-size: 32rpx;
+          color: #333333;
+          line-height: 36rpx;
+          display: inline-block;
+          margin-bottom: 16rpx;
+          text-align: justify;
         }
-        .prizesItemFormSubmit {
-          width: 686rpx;
-          height: 534rpx;
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(255, 255, 255, 0);
+        .number {
+          margin-left: 16rpx;
+          color: #666666;
         }
-        .describe {
-          border-bottom-left-radius: 20rpx;
-          border-bottom-right-radius: 20rpx;
-          background: #fff;
-          padding: 32rpx;
-          .name, .number {
-            font-size: 32rpx;
-            color: #333333;
-            line-height: 36rpx;
+        view {
+          .isJoin {
+            font-size: 24rpx;
+            line-height: 32rpx;
             display: inline-block;
-            margin-bottom: 16rpx;
-            text-align: justify;
+            color: #fb5a35;
+            margin-right: 10rpx;
+            position: relative;
           }
-          .number {
-            margin-left: 16rpx;
+          label {
+            font-size: 24rpx;
             color: #666666;
+            line-height: 32rpx;
+            display: inline-block;
           }
-          view {
-            .isJoin {
-              font-size: 24rpx;
-              line-height: 32rpx;
-              display: inline-block;
-              color: #FB5A35;
-              margin-right: 10rpx;
-              position: relative;
-            }
-            label {
-              font-size: 24rpx;
-              color: #666666;
-              line-height: 32rpx;
-              display: inline-block;
-            }
-            button {
-              width: 120rpx;
-              height: 50rpx;
-              font-size: 24rpx;
-              line-height: 49rpx;
-              position: absolute;
-              z-index: 10;
-              bottom: 35rpx;
-              right: 34rpx;
-              border-radius: 50rpx;
-              color: #3799FA;
-              border: 1rpx solid #3799FA;
-              background: #fff;
-            }
-            .already {
-              color: #666666;
-              width: 140rpx;
-              border-color: #666666;
-            }
+          button {
+            width: 120rpx;
+            height: 50rpx;
+            font-size: 24rpx;
+            line-height: 49rpx;
+            position: absolute;
+            z-index: 10;
+            bottom: 35rpx;
+            right: 34rpx;
+            border-radius: 50rpx;
+            color: #3799fa;
+            border: 1rpx solid #3799fa;
+            background: #fff;
+          }
+          .already {
+            color: #666666;
+            width: 140rpx;
+            border-color: #666666;
           }
         }
       }
     }
   }
+}
 </style>
