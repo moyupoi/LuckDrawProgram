@@ -15,10 +15,10 @@
     </form>
     <view class="new">new</view>
     <view class="hot">hot</view>
-    <view class="remindSpot" wx:if="{{userInfo.pending_coin_count > 0}}"></view>
+    <view class="remindSpot" wx:if="{{welfareList.user_coin_pools.length > 0}}"></view>
   </view>
   <view class="homeSurround">
-    <swiper style="height: {{clientHeight?clientHeight+'px':'auto'}}" current="{{switchTabName}}" bindchange="switchTab">
+    <swiper style="height: {{clientHeight?clientHeight+'px':'auto'}}" current="{{switchTabName}}" bindchange="switchTab" duration='300'>
       <swiper-item>
         <scroll-view scroll-y="{{true}}" style="height: {{clientHeight?clientHeight+'px':'auto'}}">
           <PrizesListModule :switchTabName.sync="switchTabName" :prizesList.sync="prizesList" @communicationEmit.user="refreshFun" :isLoading.sync="isLoading" wx:if="{{switchTabName === '0'}}"></PrizesListModule>
@@ -125,19 +125,8 @@ export default class Home extends wepy.page {
     })
   }
   onShow() {
-    // switch (this.switchTabName) {
-    //   case '0':
-    //     this.indexForDraw()
-    //     break
-    //   case '1':
-    //     this.indexForPreview()
-    //     break
-    //   case '2':
-    //     this.welfareInit()
-    //     break
-    //   default:
-    // }
     let that = this
+    this.prizesInit()
     this.$get(
       { url: service.prizesMine },
       {
@@ -213,19 +202,6 @@ export default class Home extends wepy.page {
   }
   switchTabBtn(event) {
     this.switchTabName = event.target.dataset.wpyswitchtabbtnA
-    // this.isShow = true
-    // switch (event.target.dataset.wpyswitchtabbtnA) {
-    //   case '0':
-    //     this.indexForDraw()
-    //     break
-    //   case '1':
-    //     this.indexForPreview()
-    //     break
-    //   case '2':
-    //     this.welfareInit()
-    //     break
-    //   default:
-    // }
   }
   luckDraw(id) {
     let that = this
@@ -333,7 +309,7 @@ export default class Home extends wepy.page {
 .homeSurround {
   width: 100%;
   height: auto;
-  // overflow: hidden;
+  overflow: hidden;
   position: relative;
   // .logoRight {
   //   position: absolute;
