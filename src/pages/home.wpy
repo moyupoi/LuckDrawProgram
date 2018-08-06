@@ -4,7 +4,6 @@
   <TransmissionGate :transmissionType.sync="transmissionType"></TransmissionGate>
   <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText" :switchTabName.sync="switchTabName"></TitleBar>
   <TurnTable :switchTabName.sync="switchTabName"></TurnTable>
-  <view class="turn"></view>
   <view class="switchTab">
     <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true">
       <scroll-view>
@@ -107,9 +106,6 @@ export default class Home extends wepy.page {
       else {
         this.switchTabName = current
       }
-    },
-    scrollbot() {
-      console.log('daf')
     }
   }
   onLoad(options) {
@@ -121,7 +117,10 @@ export default class Home extends wepy.page {
     }
     wepy.getSystemInfo({
       success: function(res) {
-        that.clientHeight = res.windowHeight
+        let barHeight = res.statusBarHeight + 32 + 16
+        that.clientHeight = res.windowHeight - barHeight - 54
+        console.log('barheight' + barHeight)
+        console.log(res.windowHeight)
       }
     })
   }
@@ -148,39 +147,12 @@ export default class Home extends wepy.page {
       }
     )
   }
-  // indexForDraw() {
-  //   let that = this
-  //   this.$get(
-  //     { url: service.indexForDraw },
-  //     {
-  //       success: ({ statusCode, data }) => {
-  //         that.prizesList = data
-  //         that.isShow = false
-  //       }
-  //     }
-  //   )
-  // }
-  // indexForPreview() {
-  //   let that = this
-  //   this.$get(
-  //     { url: service.indexForPreview },
-  //     {
-  //       success: ({ statusCode, data }) => {
-  //         that.prizesQueuingList = data['prizes']
-  //         that.isShow = false
-  //       }
-  //     }
-  //   )
-  // }
   prizesInit() {
-    console.log('prizesInit')
-
     let that = this
     this.$get(
       { url: service.prizes },
       {
         success: ({ statusCode, data }) => {
-          console.log(data)
           that.prizesList = data
           that.prizesQueuingList = data.prizes_queuing
           that.welfareList = data
@@ -200,29 +172,6 @@ export default class Home extends wepy.page {
       }
     )
   }
-  // welfareInit() {
-  //   let that = this
-  //   this.$get(
-  //     { url: service.userCoins },
-  //     {
-  //       success: ({ statusCode, data }) => {
-  //         that.welfareList = data
-  //         if (that.welfareList.user_coin_pools.length > 0) {
-  //           that.welfareList.user_coin_pools.map((item, i) => {
-  //             that.welfareList.user_coin_pools[i].isShow = true
-  //           })
-  //           that.handPoint = that.welfareList.user_coin_pools[0].id
-  //         }
-  //         that.isShow = false
-  //         let animationData = wepy
-  //           .createAnimation({})
-  //           .translateX(-70)
-  //           .step({ delay: 5000, duration: 2000 })
-  //         this.animationData = animationData
-  //       }
-  //     }
-  //   )
-  // }
   remind(event) {
     let formId = event.detail.formId
     if (
