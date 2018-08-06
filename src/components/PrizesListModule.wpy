@@ -1,7 +1,7 @@
 <template>
   <view class="prizes">
     <form bindsubmit="formSubmit" report-submit="true">
-      <block wx:for="{{prizesList}}" wx:key="index">
+      <block wx:for="{{prizesList.prizes}}" wx:key="index">
         <view class="prizesItem">
           <navigator hover-class="none" url="/pages/luckDraw?id={{item.id}}" class="banner">
             <image src="{{item.banner_url}}"></image>

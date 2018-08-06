@@ -19,15 +19,21 @@
     <view class="remindSpot" wx:if="{{userInfo.pending_coin_count > 0}}"></view>
   </view>
   <view class="homeSurround">
-    <swiper style="width:100%;height:1724px" current="{{switchTabName}}" bindchange="switchTab">
+    <swiper style="height: {{clientHeight?clientHeight+'px':'auto'}}" current="{{switchTabName}}" bindchange="switchTab">
       <swiper-item>
-        <PrizesListModule :switchTabName.sync="switchTabName" :prizesList.sync="prizesList" @communicationEmit.user="refreshFun" :isLoading.sync="isLoading" wx:if="{{switchTabName === '0'}}"></PrizesListModule>
+        <scroll-view scroll-y="{{true}}" style="height: {{clientHeight?clientHeight+'px':'auto'}}">
+          <PrizesListModule :switchTabName.sync="switchTabName" :prizesList.sync="prizesList" @communicationEmit.user="refreshFun" :isLoading.sync="isLoading" wx:if="{{switchTabName === '0'}}"></PrizesListModule>
+        </scroll-view>
       </swiper-item>
       <swiper-item>
-        <PreviewListModule :switchTabName.sync="switchTabName" :prizesQueuingList.sync="prizesQueuingList" @communicationEmit.user="refreshFun" wx:if="{{switchTabName === '1'}}"></PreviewListModule>
+        <scroll-view scroll-y="{{true}}" style="height: {{clientHeight?clientHeight+'px':'auto'}}">
+          <PreviewListModule :switchTabName.sync="switchTabName" :prizesQueuingList.sync="prizesQueuingList" @communicationEmit.user="refreshFun" wx:if="{{switchTabName === '1'}}"></PreviewListModule>
+        </scroll-view>
       </swiper-item>
       <swiper-item>
-        <WelfareModule :switchTabName.sync="switchTabName" :welfareList.sync="welfareList" :handPoint.sync="handPoint" :userInfo.sync="userInfo" wx:if="{{switchTabName === '2'}}"></WelfareModule>
+        <scroll-view scroll-y="{{true}}" style="height: {{clientHeight?clientHeight+'px':'auto'}}">
+          <WelfareModule :switchTabName.sync="switchTabName" :welfareList.sync="welfareList" :handPoint.sync="handPoint" :userInfo.sync="userInfo" wx:if="{{switchTabName === '2'}}"></WelfareModule>
+        </scroll-view>
       </swiper-item>
     </swiper>
   </view>
@@ -69,7 +75,8 @@ export default class Home extends wepy.page {
     foamBtnAnimationData: '',
     userInfo: {},
     isLoading: false,
-    handPoint: ''
+    handPoint: '',
+    clientHeight: 0
   }
   components = {
     LoadingZ,
@@ -100,14 +107,23 @@ export default class Home extends wepy.page {
       else {
         this.switchTabName = current
       }
+    },
+    scrollbot() {
+      console.log('daf')
     }
   }
   onLoad(options) {
+    let that = this
     this.prizesInit()
     if (options.tabSwitch) {
       // 返回首页第一个标签
       this.switchTabName = options.tabSwitch
     }
+    wepy.getSystemInfo({
+      success: function(res) {
+        that.clientHeight = res.windowHeight
+      }
+    })
   }
   onShow() {
     // switch (this.switchTabName) {
@@ -165,7 +181,7 @@ export default class Home extends wepy.page {
       {
         success: ({ statusCode, data }) => {
           console.log(data)
-          that.prizesList = data.prizes
+          that.prizesList = data
           that.prizesQueuingList = data.prizes_queuing
           that.welfareList = data
           if (that.welfareList.user_coin_pools.length > 0) {
