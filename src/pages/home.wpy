@@ -72,7 +72,6 @@ export default class Home extends wepy.page {
     animationData: '',
     isMore: false,
     foamBtnAnimationData: '',
-    userInfo: {},
     poolSize: 0,
     isLoading: false,
     handPoint: '',
@@ -213,7 +212,7 @@ export default class Home extends wepy.page {
               title: '参加成功',
               icon: 'success'
             })
-            this.indexForDraw()
+            this.prizesInit()
           }
         }
       }

@@ -56,13 +56,8 @@
         type: Array,
         default: []
       },
-      userInfo: {
-        type: Object,
-        default: {},
-        twoWay: true
-      },
       poolSize: {
-        type: Object,
+        type: Number,
         default: {},
         twoWay: true
       },
