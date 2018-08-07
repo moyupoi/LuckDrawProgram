@@ -61,6 +61,11 @@
         default: {},
         twoWay: true
       },
+      poolSize: {
+        type: Object,
+        default: {},
+        twoWay: true
+      },
       isBubble: {
         type: Boolean,
         default: true
@@ -201,7 +206,7 @@
               if (statusCode === 200) {
                 that.welfareList.total_coin = data.total_coin
                 that.welfareList.today_coin = data.today_coin
-                that.userInfo.pending_coin_count -= 1
+                that.poolSize -= 1
                 setTimeout(function() {
                   that.welfareList.user_coin_pools[index].isShow = false
                   if (id === that.handPoint) {

@@ -15,7 +15,7 @@
     </form>
     <view class="new">new</view>
     <view class="hot">hot</view>
-    <view class="remindSpot" wx:if="{{welfareList.user_coin_pools.length > 0}}"></view>
+    <view class="remindSpot" wx:if="{{poolSize > 0}}"></view>
   </view>
   <view class="homeSurround">
     <swiper style="height: {{clientHeight?clientHeight+'px':'auto'}}" current="{{switchTabName}}" bindchange="switchTab" duration='300'>
@@ -31,7 +31,7 @@
       </swiper-item>
       <swiper-item>
         <scroll-view scroll-y="{{true}}" style="height: {{clientHeight?clientHeight+'px':'auto'}}">
-          <WelfareModule :switchTabName.sync="switchTabName" :welfareList.sync="welfareList" :handPoint.sync="handPoint" :userInfo.sync="userInfo" wx:if="{{switchTabName === '2'}}"></WelfareModule>
+          <WelfareModule :switchTabName.sync="switchTabName" :welfareList.sync="welfareList" :handPoint.sync="handPoint" :poolSize.sync="poolSize" wx:if="{{switchTabName === '2'}}"></WelfareModule>
         </scroll-view>
       </swiper-item>
     </swiper>
@@ -73,6 +73,7 @@ export default class Home extends wepy.page {
     isMore: false,
     foamBtnAnimationData: '',
     userInfo: {},
+    poolSize: 0,
     isLoading: false,
     handPoint: '',
     clientHeight: 0
@@ -92,7 +93,7 @@ export default class Home extends wepy.page {
     refreshFun(event, id) {
       switch (event) {
         case 'indexForPreview':
-          this.indexForPreview()
+          this.prizesInit()
           break
         case 'luckDraw':
           this.luckDraw(id)
@@ -115,26 +116,16 @@ export default class Home extends wepy.page {
       // 返回首页第一个标签
       this.switchTabName = options.tabSwitch
     }
+    // 获取屏幕可用高度
     wepy.getSystemInfo({
       success: function(res) {
         let barHeight = res.statusBarHeight + 32 + 16
         that.clientHeight = res.windowHeight - barHeight - 54
-        console.log('barheight' + barHeight)
-        console.log(res.windowHeight)
       }
     })
   }
   onShow() {
-    let that = this
     this.prizesInit()
-    this.$get(
-      { url: service.prizesMine },
-      {
-        success: ({ statusCode, data }) => {
-          that.userInfo = data
-        }
-      }
-    )
   }
   prizesInit() {
     let that = this
@@ -145,6 +136,7 @@ export default class Home extends wepy.page {
           that.prizesList = data
           that.prizesQueuingList = data.prizes_queuing
           that.welfareList = data
+          that.poolSize = data.user_coin_pools.length
           if (that.welfareList.user_coin_pools.length > 0) {
             that.welfareList.user_coin_pools.map((item, i) => {
               that.welfareList.user_coin_pools[i].isShow = true
@@ -184,7 +176,7 @@ export default class Home extends wepy.page {
       {
         success: ({ statusCode, data }) => {
           this.$alert('设置提醒', data.message)
-          this.indexForPreview()
+          this.prizesInit()
         }
       }
     )
