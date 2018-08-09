@@ -11,8 +11,7 @@
       <view class="moreBtn" @tap="moreOpen">{{welfareList.total_coin}}福利分</view>
       <view class="foam">
         <block wx:for="{{welfareList.user_coin_pools}}" wx:key="index" wx:if="{{item.isShow}}">
-          <text>{{bubbleIndex === index ? 'bubbletrue' : 'false'}}"</text>
-          <view class="foamItem {{bubbleIndex === index ? 'bubbleIndex' : ''}}" style="top: {{position[index].top}};left: {{position[index].left}};" animation="{{foamBtnAnimationData}}">
+          <view class="foamItem {{isBubbleShow ? 'bubbleIndexs' : ''}}" style="top: {{position[index].top}};left: {{position[index].left}};" animation="{{foamBtnAnimationData}}">
             <image src="../assets/images/WelfareModule/foam.png" class="foamImg"></image>
             <image src="../assets/images/WelfareModule/hand.png" class="handImg" wx:if="{{item.id === handPoint}}"></image>
             <button @tap="foamBtn({{item.id}},{{item.coin}},{{index}})"></button>
@@ -71,6 +70,10 @@ export default class WelfareModule extends wepy.component {
     isBubble: {
       type: Boolean,
       default: true
+    },
+    isBubbleShow: {
+      type: Boolean,
+      default: false
     },
     position: {
       type: Array,
@@ -224,8 +227,7 @@ export default class WelfareModule extends wepy.component {
   }
   data = {
     switchTabName: '0',
-    foamItemTextAnimation: '',
-    bubbleIndex: 100
+    foamItemTextAnimation: ''
   }
   components = {}
   methods = {
@@ -233,7 +235,7 @@ export default class WelfareModule extends wepy.component {
       let that = this
       if (this.isBubble) {
         this.isBubble = false
-        this.bubbleIndex = index
+        this.isBubbleShow = false
         this.$post(
           {
             url: service.userCoins + id + '/draw',
@@ -289,8 +291,6 @@ export default class WelfareModule extends wepy.component {
     }
   }
   onLoad() {
-    console.log(this.bubbleIndex)
-
     // var foamBtnAnimationData = wepy.createAnimation({
     //   duration: 1000,
     //   delay: 3000,
@@ -488,7 +488,7 @@ export default class WelfareModule extends wepy.component {
         position: absolute;
       }
     }
-    .bubbleIndex {
+    .bubbleIndexs {
       opacity: 0;
       filter: alpha(opacity=0);
     }
