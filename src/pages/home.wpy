@@ -1,6 +1,6 @@
 <template>
-  <LoadingX :isLoading.sync="isLoading"></LoadingX>
-  <LoadingZ :isShow.sync="isShow"></LoadingZ>
+  <!-- <LoadingX :isLoading.sync="isLoading"></LoadingX> -->
+  <!-- <LoadingZ :isShow.sync="isShow"></LoadingZ> -->
   <TransmissionGate :transmissionType.sync="transmissionType"></TransmissionGate>
   <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText" :switchTabName.sync="switchTabName"></TitleBar>
   <TurnTable :switchTabName.sync="switchTabName"></TurnTable>
@@ -139,6 +139,9 @@ export default class Home extends wepy.page {
           if (that.welfareList.user_coin_pools.length > 0) {
             that.welfareList.user_coin_pools.map((item, i) => {
               that.welfareList.user_coin_pools[i].isShow = true
+              console.log(item)
+              console.log(i)
+              console.log(that.welfareList.user_coin_pools[i].isShow)
             })
             that.handPoint = that.welfareList.user_coin_pools[0].id
           }
