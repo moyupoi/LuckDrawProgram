@@ -2,7 +2,7 @@
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
   <view class="container">
-    <image src="../assets/images/turn/turn.jpg" class="bgImg"></image>
+    <image src="../assets/images/turn/turn.jpg" class="bgImg" @tap="multipleTap"></image>
     <view class="lucky"></view>
     <view class="plateWrapBox">
       <view class="plateBorder" animation="{{ aniData }}">
@@ -13,20 +13,18 @@
           </view>
         </view>
       </view>
-
       <view class="plateBtnWrap">
         <view class="plateInnerBtn" bindtap="startRollTap">
           <text>抽奖</text>
         </view>
       </view>
-
       <view class="lotteryPlateShadow"></view>
-      <view class="btn" bindtap="startRollTap">试试手气（{{ dailyLeftTimes > 5 ? 5 : dailyLeftTimes }}/{{ dailyLimitTimes }}）</view>
+      <view class="btn" bindtap="startRollTap">试试手气 ({{ dailyLeftTimes == 0 ? expendCoin + '福利分' : dailyLeftTimes > 5 ? 5 + '/' + dailyLimitTimes : dailyLeftTimes + '/' + dailyLimitTimes }})</view>
       <view class="btnShadow"></view>
-      <view class="awardSend">每天5次转盘抽奖机会</view>
     </view>
     <view class="lightBg" animation="{{ aniData }}">
     </view>
+    <view class="awardSend">每天{{ dailyLimitTimes }}次免费抽奖机会,超出{{ dailyLimitTimes }}次,每次抽奖消耗{{ expendCoin }}福利分</view>
     <view>
       <navigator hover-class="none" url="/pages/FLBRecord?id=1" class="lotteryRecord">转盘抽奖记录</navigator>
     </view>
@@ -58,13 +56,25 @@ export default class Turn extends wepy.page {
     aniData: {},
     // aniDataDian: {},
     dailyLeftTimes: 0,
-    dailyLimitTimes: 0
+    dailyLimitTimes: 0,
+    expendCoin: 0,
+    leftCoin: 0,
+    cantouch: true
   }
   components = {
     LoadingZ,
     TitleBar
   }
   methods = {
+    multipleTap() {
+      if (this.cantouch) {
+        this.cantouch = false
+        setTimeout(() => {
+          this.cantouch = true
+          this.$apply()
+        }, 2000)
+      }
+    },
     formSubmit(event) {
       let formId = event.detail.formId
       if (
@@ -77,12 +87,16 @@ export default class Turn extends wepy.page {
       }
     },
     startRollTap() {
+      let v = this.dailyLeftTimes === 0 ? 'coin' : ''
       let that = this
       if (this.canRoll) {
         this.canRoll = false
         this.$post(
           {
             url: service.wheelSectorsDraw,
+            data: {
+              expend: v
+            },
             headers: {
               'X-JINKU-WECHAT-FORM-ID': that.formId
             }
@@ -90,9 +104,8 @@ export default class Turn extends wepy.page {
           {
             success: ({ statusCode, data }) => {
               if (statusCode === 200) {
-                this.dailyLeftTimes = data.daily_left_times
                 let lotteryId = this.lottery.map(v => v.id).indexOf(data.id)
-                this.wheelRotate(lotteryId)
+                this.wheelRotate(lotteryId, v, data)
               }
             }
           }
@@ -100,7 +113,7 @@ export default class Turn extends wepy.page {
       }
     }
   }
-  wheelRotate(lotteryId) {
+  wheelRotate(lotteryId, v, data) {
     let animation = wepy.createAnimation({
       // 创建动画对象
       duration: 6000,
@@ -118,6 +131,7 @@ export default class Turn extends wepy.page {
     // 延时显示抽奖结果
     setTimeout(() => {
       this.canRoll = true
+      this.dailyLeftTimes = data.daily_left_times < 0 ? 0 : data.daily_left_times
       let endcontent = ''
       this.lottery[lotteryId].category !== 'none'
         ? (endcontent = `恭喜您获得：${this.lottery[lotteryId].title}`)
@@ -126,6 +140,10 @@ export default class Turn extends wepy.page {
         title: endcontent,
         icon: 'none'
       })
+      // 每日免费机会用完之后的引导
+      // if (this.dailyLeftTimes === 983 && v !== 'coin') {
+      //   console.log('抽奖次数已用完')
+      // }
       this.$apply()
     }, 6000)
   }
@@ -135,8 +153,10 @@ export default class Turn extends wepy.page {
       {
         success: ({ statusCode, data }) => {
           this.lottery = data.wheel_sectors
-          this.dailyLeftTimes = data.daily_left_times
+          this.dailyLeftTimes = data.daily_left_times < 0 ? 0 : data.daily_left_times
           this.dailyLimitTimes = data.daily_limit_times
+          this.expendCoin = data.expend_coin
+          this.leftCoin = data.left_coin
           this.isShow = false
         }
       }
@@ -305,7 +325,7 @@ export default class Turn extends wepy.page {
       height: 88rpx;
       font-size: 32rpx;
       color: #d0021b;
-      letter-spacing: 6rpx;
+      letter-spacing: 4rpx;
       line-height: 88rpx;
       text-align: center;
       text-indent: 28rpx;
@@ -326,16 +346,16 @@ export default class Turn extends wepy.page {
         no-repeat;
       background-size: 346rpx 88rpx;
     }
-    .awardSend {
-      z-index: 2;
-      text-align: center;
-      position: absolute;
-      top: 764rpx;
-      left: 50%;
-      margin-left: -113rpx;
-      font-size: 24rpx;
-      color: #ffffff;
-    }
+  }
+  .awardSend {
+    width: 100%;
+    z-index: 2;
+    text-align: center;
+    position: absolute;
+    top: 1080rpx;
+    // margin-left: -113rpx;
+    font-size: 24rpx;
+    color: #ffffff;
   }
   .lightBg {
     position: absolute;

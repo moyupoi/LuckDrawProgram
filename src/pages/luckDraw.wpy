@@ -27,7 +27,8 @@
           <view class="userInfo">
             <image src="{{prizesDetails.user_avatar_url}}"></image>
             <view>
-              我是<label>{{prizesDetails.user_nick_name}}</label>，邀你一起免费抽奖
+              我是
+              <label>{{prizesDetails.user_nick_name}}</label>，邀你一起免费抽奖
             </view>
           </view>
         </view>
@@ -155,10 +156,17 @@
       TitleBar
     }
     methods = {}
-    onLoad (options) {
-      // 通过二维码进入
-      if (!this.isUndefined(options.scene)) {
+    onLoad(options) {
+      let isScene = wepy.getStorageSync('scene') || false
+      if (isScene) {
+        this.wechatRestoreScene(isScene)
+      } else if (!this.isUndefined(options.scene)) {
+        // 通过二维码进入
         let scene = decodeURIComponent(options.scene)
+        wepy.setStorage({
+          key: 'scene',
+          data: scene
+        })
         this.wechatRestoreScene(scene)
       } else {
         // 分享或者直接进入
@@ -175,114 +183,144 @@
     }
     onShow() {}
     wechatRestoreScene(scene) {
-      this.$get({
-        url: service.wechatRestoreScene + '?scene=' + scene
-      }, {
-        success: ({statusCode, data}) => {
-          if (statusCode === 200) {
-            this.commodityId = data.prize_id
-            this.shareUserId = data.share_user_id
-            this.isShareBtn = true
-            switch (data.category) {
-              case 'share_prize':
-                this.shareUrl = 'pages/luckDraw'
-                break
-              default:
-                this.shareUrl = 'pages/home'
-                break
+      this.$get(
+        {
+          url: service.wechatRestoreScene + '?scene=' + scene
+        },
+        {
+          success: ({ statusCode, data }) => {
+            if (statusCode === 200) {
+              wepy.removeStorage({
+                key: 'scene'
+              })
+              this.commodityId = data.prize_id
+              this.shareUserId = data.share_user_id
+              this.isShareBtn = true
+              switch (data.category) {
+                case 'share_prize':
+                  this.shareUrl = 'pages/luckDraw'
+                  break
+                default:
+                  this.shareUrl = 'pages/home'
+                  break
+              }
+              this.luckDrawInit()
             }
-            this.luckDrawInit()
           }
         }
-      })
+      )
     }
     luckDrawInit() {
       let that = this
-      this.$get({url: service.prizes + this.commodityId}, {
-        success: ({statusCode, data}) => {
-          that.prizesDetails = data
-          that.reachNumber = data.reach_number
-          that.percentage = data.prize_draws_count > 0 ? parseInt(data.prize_draws_count / data.reach_number * 100) : 0
-          that.isHasdraw = data.is_has_draw
-          that.isCanDraw = data.is_can_draw
-          that.hasUploadUserinfo = data.has_upload_userinfo
-          that.prizeDrawUserAvatars = data.prize_draw_user_avatars
-          that.prizeDrawsCount = data.prize_draws_count
-          that.aasmState = data.aasm_state
-          that.isShow = false
-          that.commodityId = data.id
-          that.leftChance = data.left_chance
-          that.isReachPrizeLimit = data.is_reach_prize_limit
-          that.isLoading = false
-          that.shareBannerUrl = data.banner_url
-          that.shareName = data.name
-          // that.isHasdraw = false
-          that.codeImg = service.wxacodeunlimit + '?scene=share_prize:' + this.commodityId + ':' + this.$getUserId() + '&page=' + this.shareUrl
-          this.createCanvas()
+      this.$get(
+        { url: service.prizes + this.commodityId },
+        {
+          success: ({ statusCode, data }) => {
+            that.prizesDetails = data
+            that.reachNumber = data.reach_number
+            that.percentage =
+              data.prize_draws_count > 0
+                ? parseInt(data.prize_draws_count / data.reach_number * 100)
+                : 0
+            that.isHasdraw = data.is_has_draw
+            that.isCanDraw = data.is_can_draw
+            that.hasUploadUserinfo = data.has_upload_userinfo
+            that.prizeDrawUserAvatars = data.prize_draw_user_avatars
+            that.prizeDrawsCount = data.prize_draws_count
+            that.aasmState = data.aasm_state
+            that.isShow = false
+            that.commodityId = data.id
+            that.leftChance = data.left_chance
+            that.isReachPrizeLimit = data.is_reach_prize_limit
+            that.isLoading = false
+            that.shareBannerUrl = data.banner_url
+            that.shareName = data.name
+            // that.isHasdraw = false
+            that.codeImg =
+              service.wxacodeunlimit +
+              '?scene=share_prize:' +
+              this.commodityId +
+              ':' +
+              this.$getUserId() +
+              '&page=' +
+              this.shareUrl
+            this.createCanvas()
+          }
         }
-      })
+      )
     }
-    formSubmit (event) {
+    formSubmit(event) {
       let formId = event.detail.formId
-      if (formId !== 'the formId is a mock one' && !this.isUndefined(formId) && formId !== '' && formId !== null) {
+      if (
+        formId !== 'the formId is a mock one' &&
+        !this.isUndefined(formId) &&
+        formId !== '' &&
+        formId !== null
+      ) {
         this.formId = formId
         this.$updataFormId(this.formId)
       }
     }
-    drawBtn (event) {
+    drawBtn(event) {
       let that = this
       // 判断用户点击确认 并且 后台没有记录过用户信息字段为false
       if (event.detail.errMsg === 'getUserInfo:ok' && !this.hasUploadUserinfo) {
         let encryptedData = event.detail.encryptedData
         let iv = event.detail.iv
-        this.$post({
-          url: service.uploadWechatUserinfo,
-          headers: {
-            'X-JINKU-WECHAT-FORM-ID': that.formId
+        this.$post(
+          {
+            url: service.uploadWechatUserinfo,
+            headers: {
+              'X-JINKU-WECHAT-FORM-ID': that.formId
+            },
+            data: {
+              encryptedData: encryptedData,
+              iv: iv
+            }
           },
-          data: {
-            encryptedData: encryptedData,
-            iv: iv
-          }
-        }, {
-          success: ({statusCode, data}) => {
-            if (statusCode === 200) {
-              // 可以抽奖
-              // if (that.isCanDraw) {
-              //   that.prizesDraw()
-              // }
-              // console.log(statusCode, message)
+          {
+            success: ({ statusCode, data }) => {
+              if (statusCode === 200) {
+                // 可以抽奖
+                // if (that.isCanDraw) {
+                //   that.prizesDraw()
+                // }
+                // console.log(statusCode, message)
+              }
             }
           }
-        })
+        )
       }
       that.prizesDraw()
     }
-    prizesDraw () {
+    prizesDraw() {
       let that = this
       if (that.isCanDraw) {
         that.isLoading = true
-        this.$post({
-          url: service.prizes + this.prizesDetails.id + '/draw',
-          headers: {
-            'X-JINKU-WECHAT-FORM-ID': that.formId
-          }
-        }, {
-          success: ({statusCode, data}) => {
-            if (statusCode === 200) {
-              // that.percentage = parseInt((that.prizeDrawsCount + 1) / that.reachNumber * 100)
-              // that.prizeDrawUserAvatars = that.prizeDrawUserAvatars.length <= 0 ? [data.avatar_url] : [data.avatar_url, ...that.prizeDrawUserAvatars]
-              // that.prizeDrawsCount += 1
-              wepy.showToast({
-                title: '参加成功',
-                icon: 'success'
-              })
-              that.luckDrawInit()
-            } else {
-              that.isLoading = false
+        this.$post(
+          {
+            url: service.prizes + this.prizesDetails.id + '/draw',
+            headers: {
+              'X-JINKU-WECHAT-FORM-ID': that.formId
+            }
+          },
+          {
+            success: ({ statusCode, data }) => {
+              if (statusCode === 200) {
+                // that.percentage = parseInt((that.prizeDrawsCount + 1) / that.reachNumber * 100)
+                // that.prizeDrawUserAvatars = that.prizeDrawUserAvatars.length <= 0 ? [data.avatar_url] : [data.avatar_url, ...that.prizeDrawUserAvatars]
+                // that.prizeDrawsCount += 1
+                wepy.showToast({
+                  title: '参加成功',
+                  icon: 'success'
+                })
+                that.luckDrawInit()
+              } else {
+                that.isLoading = false
+              }
             }
           }
-        })
+        )
       }
     }
     shareSwitch() {
@@ -326,452 +364,454 @@
   }
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
-  @import "../assets/stylesheets/layout.scss";
-  .canvasBox {
-    position: fixed;
-    top: 999999rpx;
-    left: 0;
-    z-index: 99999;
-    .canvas {
-      background: #fff;
-    }
+@import '../assets/stylesheets/layout.scss';
+.canvasBox {
+  position: fixed;
+  top: 999999rpx;
+  left: 0;
+  z-index: 99999;
+  .canvas {
+    background: #fff;
   }
-  .moreDraw {
-    position: fixed;
-    top: 1000rpx;
-    right: 0;
-    z-index: 10;
-    image {
-      width: 152rpx;
-      height: 156rpx;
-    }
+}
+.moreDraw {
+  position: fixed;
+  top: 1000rpx;
+  right: 0;
+  z-index: 10;
+  image {
+    width: 152rpx;
+    height: 156rpx;
   }
-  .shareWicket {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, .5);
-    z-index: 12;
-    overflow: hidden;
-    .forward {
-      .diagram {
-        width: 532rpx;
-        display: block;
-        margin: 190rpx auto 20rpx auto;
-        overflow: hidden;
-        border-radius: 20rpx;
-        .banner {
-          width: 532rpx;
-          height: 296rpx;
-          display: block;
-        }
-        .detailed {
-          background: #fff;
-          padding: 32rpx;
-          position: relative;
-          .title {
-            font-size: 32rpx;
-            display: block;
-            color: #333333;
-            height: 40rpx;
-            overflow: hidden;
-          }
-          .person {
-            label {
-              font-size: 24rpx;
-              color: #0B0A0A;
-              display: inline-block;
-              &:nth-of-type(2) {
-                color: #FF4C21;
-              }
-            }
-          }
-          .progressBar {
-            width: 468rpx;
-            height: 21rpx;
-            display: block;
-            margin-top: 16rpx;
-          }
-          .code {
-            width: 200rpx;
-            height: 200rpx;
-            display: block;
-            margin: 32rpx auto 24rpx auto;
-            border-radius: 50rpx;
-          }
-          .participate {
-            font-size: 24rpx;
-            display: block;
-            text-align: center;
-          }
-          .projectName {
-            width: 140rpx;
-            height: 20rpx;
-            font-size: 20rpx;
-            display: block;
-            text-align: center;
-            background: #fff;
-            margin: 28rpx auto 0 auto;
-            position: relative;
-            z-index: 2;
-          }
-          .hr {
-            width: 468rpx;
-            height: 2rpx;
-            border: 0;
-            background: #ccc;
-            position: absolute;
-            bottom: 140rpx;
-            z-index: 0;
-          }
-          .userInfo {
-            margin-top: 10rpx;
-            overflow: hidden;
-            image {
-              width: 90rpx;
-              height: 90rpx;
-              display: block;
-              float: left;
-              border-radius: 50rpx;
-            }
-            view {
-              width: 340rpx;
-              height: 80rpx;
-              display: block;
-              float: left;
-              vertical-align: top;
-              font-size: 28rpx;
-              color: #0B0A0A;
-              margin: 15rpx 0 0 20rpx;
-              overflow: hidden;
-            }
-            label {
-              font-size: 28rpx;
-              display: inline-block;
-              vertical-align: top;
-              color: #FA5C37;
-            }
-          }
-        }
-      }
-      button {
-        width: 532rpx;
-        height: 80rpx;
-        border-radius: 50rpx;
-        background: #FA5C37;
-        color: #fff;
-        display: block;
-        font-size: 32rpx;
-        line-height: 80rpx;
-        &:nth-of-type(2) {
-          margin-top: 20rpx;
-          background: #fff;
-          color: #FA5C37;
-          border: 1rpx solid #FA5C37;
-        }
-      }
-    }
-  }
-  .luckDrawSurround {
-    .banner {
+}
+.shareWicket {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 12;
+  overflow: hidden;
+  .forward {
+    .diagram {
+      width: 532rpx;
       display: block;
-      width: 100%;
+      margin: 190rpx auto 20rpx auto;
       overflow: hidden;
-    }
-    .describe {
-      background: #fff;
-      padding: 32rpx 32rpx 48rpx 32rpx;
-      overflow: hidden;
-      .name {
-        font-size: 40rpx;
-        line-height: 44rpx;
-        font-weight: 600;
-        color: #333333;
-        float: left;
-      }
-      .number {
-        font-size: 28rpx;
-        line-height: 32rpx;
-        color: #999999;
-        float: right;
-      }
-      .reachNumber {
-        clear: both;
-        font-size: 24rpx;
-        line-height: 32rpx;
-        color: #666666;
+      border-radius: 20rpx;
+      .banner {
+        width: 532rpx;
+        height: 296rpx;
         display: block;
-        margin: 56rpx 0 60rpx;
       }
-      .awardProgress {
-        overflow: hidden;
-        .percentageTitle {
-          font-size: 24rpx;
-          line-height: 32rpx;
-          color: #FA5C37;
+      .detailed {
+        background: #fff;
+        padding: 32rpx;
+        position: relative;
+        .title {
+          font-size: 32rpx;
           display: block;
-          float: left;
+          color: #333333;
+          height: 40rpx;
+          overflow: hidden;
         }
-        .progress {
-          display: block;
-          float: right;
-          width: 560rpx;
-          background: #F2F3F5;
-          height: 24rpx;
-          border-radius: 20rpx;
-          margin: 6rpx 4rpx 0 15rpx;
-          view {
-            border-radius: 20rpx;
-            margin: 4rpx 0 0 4rpx;
-            height: 16rpx;
-            background: linear-gradient(to right, #FB6741 , #FD9367);
-            border-radius: 20rpx;
+        .person {
+          label {
+            font-size: 24rpx;
+            color: #0b0a0a;
+            display: inline-block;
+            &:nth-of-type(2) {
+              color: #ff4c21;
+            }
           }
         }
-      }
-      .participate {
-        text-align: center;
-        margin: 44rpx 0 32rpx;
-        text {
-          display: inline-block;
-          font-size: 28rpx;
-          line-height: 32rpx;
-          color: #333333;
-        }
-        navigator {
-          display: inline-block;
-          font-size: 28rpx;
-          line-height: 32rpx;
-          color: #FF471C;
-          border-bottom: 1rpx solid #FF471C;
-        }
-      }
-      .participatePeople {
-        overflow: hidden;
-        text-align: center;
-        display: block;
-        position: relative;
-        image {
-          border-radius: 50rpx;
-          display: inline-block;
-          width: 72rpx;
-          height: 72rpx;
-          margin: 0 12rpx;
-        }
-        label {
+        .progressBar {
+          width: 468rpx;
+          height: 21rpx;
           display: block;
-          color: #FF471C;
-          font-size: 34rpx;
-          margin-top: 20rpx;
-        }
-        .ellipsis {
-          position: absolute;
-          background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAECAYAAACKqs+rAAAAAXNSR0IArs4c6QAAAKJJREFUGBm1TUsOAiEUG4iElcqxNLoePQG6YcshuAAJnsXPCcajGOKGQAK+GieZzN4m8PpaWrruT2DotdYuY4wX8NbaKYQQwUcYY1Y550A745yfvfev0cPUWq8ZY4GyVSmlnXNvDoNK9yQecCi4hTZFKWXz8/ta627qgSNDfk/0iC5oC1z025WMAVxKecec4UH7QO+YEOI2876ZlNKT9Iou+B/opkhj5iraCQAAAABJRU5ErkJggg==') no-repeat;
-          background-size: 24rpx 5rpx;
-          width: 24rpx;
-          height: 5rpx;
-          top: 55rpx;
-          right: 25rpx;
-        }
-      }
-      .formSub {
-        .surplus {
-          display: block;
-          border: 1rpx solid #FA5C37;
-          border-radius: 50rpx;
-          background: #fff;
-          color: #FA5C37;
-          width: 686rpx;
-          height: 92rpx;
-          font-size: 32rpx;
-          line-height: 92rpx;
-          font-family: 400;
-          margin: 32rpx 0 32rpx;
-        }
-        .shareIncrease {
-          display: block;
-          border: 1rpx solid #FA5C37;
-          border-radius: 50rpx;
-          background: #FA5C37;
-          color: #fff;
-          width: 686rpx;
-          height: 92rpx;
-          font-size: 32rpx;
-          line-height: 92rpx;
-          font-family: 400;
-        }
-        .drawBtn {
-          width: 552rpx;
-          height: 92rpx;
-          line-height: 92rpx;
-          font-weight: 300;
-          display: block;
-          text-align: center;
-          background: #FA5C37;
-          border-radius: 50rpx;
-          color: #fff;
-          margin-top: 64rpx;
-          margin: 64rpx auto 0 auto;
-        }
-        .active {
-          border-color: #B2B2B2;
-          color: #B2B2B2;
-        }
-        text {
-          font-size: 24rpx;
-          line-height: 32rpx;
-          color: #FA5C37;
-          display: block;
-          text-align: center;
           margin-top: 16rpx;
         }
-      }
-    }
-    .describeAward {
-      margin-top: 32rpx;
-      background: #fff;
-      overflow: hidden;
-      label {
-        font-size: 36rpx;
-        color: #333333;
-        display: block;
-        text-align: center;
-        margin: 64rpx 0 54rpx;
-      }
-      .describeAwardImg {
-        width: 548rpx;
-        height: 140rpx;
-        display: block;
-        margin: 0 auto;
-        margin-bottom: 32rpx;
-      }
-      .describe {
-        font-size: 24rpx;
-        color: #333333;
-        display: inline-block;
-      }
-      .number {
-        font-size: 28rpx;
-        color: #333333;
-        text-align: center;
-        margin-bottom: 32rpx;
-        text {
-          display: inline-block;
-          &:nth-of-type(2) {
-            margin-left: 10rpx;
+        .code {
+          width: 200rpx;
+          height: 200rpx;
+          display: block;
+          margin: 32rpx auto 24rpx auto;
+          border-radius: 50rpx;
+        }
+        .participate {
+          font-size: 24rpx;
+          display: block;
+          text-align: center;
+        }
+        .projectName {
+          width: 140rpx;
+          height: 20rpx;
+          font-size: 20rpx;
+          display: block;
+          text-align: center;
+          background: #fff;
+          margin: 28rpx auto 0 auto;
+          position: relative;
+          z-index: 2;
+        }
+        .hr {
+          width: 468rpx;
+          height: 2rpx;
+          border: 0;
+          background: #ccc;
+          position: absolute;
+          bottom: 140rpx;
+          z-index: 0;
+        }
+        .userInfo {
+          margin-top: 10rpx;
+          overflow: hidden;
+          image {
+            width: 90rpx;
+            height: 90rpx;
+            display: block;
+            float: left;
+            border-radius: 50rpx;
+          }
+          view {
+            width: 340rpx;
+            height: 80rpx;
+            display: block;
+            float: left;
+            vertical-align: top;
+            font-size: 28rpx;
+            color: #0b0a0a;
+            margin: 15rpx 0 0 20rpx;
+            overflow: hidden;
+          }
+          label {
+            font-size: 28rpx;
+            display: inline-block;
+            vertical-align: top;
+            color: #fa5c37;
           }
         }
       }
-      .awardRed {
-        color: #FA3737;
+    }
+    button {
+      width: 532rpx;
+      height: 80rpx;
+      border-radius: 50rpx;
+      background: #fa5c37;
+      color: #fff;
+      display: block;
+      font-size: 32rpx;
+      line-height: 80rpx;
+      &:nth-of-type(2) {
+        margin-top: 20rpx;
+        background: #fff;
+        color: #fa5c37;
+        border: 1rpx solid #fa5c37;
       }
-      .participatePeople {
-        overflow: hidden;
-        text-align: center;
+    }
+  }
+}
+.luckDrawSurround {
+  .banner {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+  }
+  .describe {
+    background: #fff;
+    padding: 32rpx 32rpx 48rpx 32rpx;
+    overflow: hidden;
+    .name {
+      font-size: 40rpx;
+      line-height: 44rpx;
+      font-weight: 600;
+      color: #333333;
+      float: left;
+    }
+    .number {
+      font-size: 28rpx;
+      line-height: 32rpx;
+      color: #999999;
+      float: right;
+    }
+    .reachNumber {
+      clear: both;
+      font-size: 24rpx;
+      line-height: 32rpx;
+      color: #666666;
+      display: block;
+      margin: 56rpx 0 60rpx;
+    }
+    .awardProgress {
+      overflow: hidden;
+      .percentageTitle {
+        font-size: 24rpx;
+        line-height: 32rpx;
+        color: #fa5c37;
         display: block;
-        position: relative;
-        image {
-          border-radius: 50rpx;
-          display: inline-block;
-          width: 72rpx;
-          height: 72rpx;
-          margin: 0 12rpx;
+        float: left;
+      }
+      .progress {
+        display: block;
+        float: right;
+        width: 560rpx;
+        background: #f2f3f5;
+        height: 24rpx;
+        border-radius: 20rpx;
+        margin: 6rpx 4rpx 0 15rpx;
+        view {
+          border-radius: 20rpx;
+          margin: 4rpx 0 0 4rpx;
+          height: 16rpx;
+          background: linear-gradient(to right, #fb6741, #fd9367);
+          border-radius: 20rpx;
         }
-        &:before {
-          content: '';
-          position: absolute;
-          background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAAMCAYAAAAtUZ4rAAAAAXNSR0IArs4c6QAAAQRJREFUSA3dVsENwjAMtNMHE1QVgg3YomIMfjAW/BgDsUU3AKGoE/CoTEywGkpoLIEUqf6kcS+Xu7S1i/AKIsKLtTsE2ALgyqepIYDDsqr2iOgu9ZGLz+kHaNt2fu+6IxHUMcmIcJ4VxaYsy1vs/jCXk8/wSY6ZYbFs1GPoeQBDA+E8N5/h1+zbk3kXCjVjw1zsOjef8d9MTNpnToPVYIRZg9VgQj7TFwBJj41SLH7FyPr/8zlD0wpniBq9JQ1Wg5EdNVgNpucz3Gdkmho1WA1G9tFgNZiQD7nMXq09pSod96JFVa1TDTY3n2GB3DRZsDgdjtJYU2Z4XW4+VxV98MlO4dfnASWfAz5FrbEYAAAAAElFTkSuQmCC') no-repeat;
-          background-size: 52rpx 12rpx;
-          width: 52rpx;
-          height: 12rpx;
-          top: 30rpx;
-          right: 165rpx;
-        }
+      }
+    }
+    .participate {
+      text-align: center;
+      margin: 44rpx 0 32rpx;
+      text {
+        display: inline-block;
+        font-size: 28rpx;
+        line-height: 32rpx;
+        color: #333333;
       }
       navigator {
-        width: 136rpx;
-        color: #4A90E2;
+        display: inline-block;
         font-size: 28rpx;
-        display: block;
-        text-align: center;
-        margin: 34rpx auto 0 auto;
-        border-bottom: 1rpx solid #4A90E2;
+        line-height: 32rpx;
+        color: #ff471c;
+        border-bottom: 1rpx solid #ff471c;
       }
-      button {
+    }
+    .participatePeople {
+      overflow: hidden;
+      text-align: center;
+      display: block;
+      position: relative;
+      image {
+        border-radius: 50rpx;
+        display: inline-block;
+        width: 72rpx;
+        height: 72rpx;
+        margin: 0 12rpx;
+      }
+      label {
+        display: block;
+        color: #ff471c;
+        font-size: 34rpx;
+        margin-top: 20rpx;
+      }
+      .ellipsis {
+        position: absolute;
+        background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAECAYAAACKqs+rAAAAAXNSR0IArs4c6QAAAKJJREFUGBm1TUsOAiEUG4iElcqxNLoePQG6YcshuAAJnsXPCcajGOKGQAK+GieZzN4m8PpaWrruT2DotdYuY4wX8NbaKYQQwUcYY1Y550A745yfvfev0cPUWq8ZY4GyVSmlnXNvDoNK9yQecCi4hTZFKWXz8/ta627qgSNDfk/0iC5oC1z025WMAVxKecec4UH7QO+YEOI2876ZlNKT9Iou+B/opkhj5iraCQAAAABJRU5ErkJggg==')
+          no-repeat;
+        background-size: 24rpx 5rpx;
+        width: 24rpx;
+        height: 5rpx;
+        top: 55rpx;
+        right: 25rpx;
+      }
+    }
+    .formSub {
+      .surplus {
+        display: block;
+        border: 1rpx solid #fa5c37;
+        border-radius: 50rpx;
+        background: #fff;
+        color: #fa5c37;
+        width: 686rpx;
+        height: 92rpx;
+        font-size: 32rpx;
+        line-height: 92rpx;
+        font-family: 400;
+        margin: 32rpx 0 32rpx;
+      }
+      .shareIncrease {
+        display: block;
+        border: 1rpx solid #fa5c37;
+        border-radius: 50rpx;
+        background: #fa5c37;
+        color: #fff;
+        width: 686rpx;
+        height: 92rpx;
+        font-size: 32rpx;
+        line-height: 92rpx;
+        font-family: 400;
+      }
+      .drawBtn {
         width: 552rpx;
         height: 92rpx;
         line-height: 92rpx;
-        font-size: 32rpx;
+        font-weight: 300;
         display: block;
         text-align: center;
-        background: #FA5C37;
+        background: #fa5c37;
         border-radius: 50rpx;
         color: #fff;
         margin-top: 64rpx;
-        margin: 64rpx auto;
+        margin: 64rpx auto 0 auto;
       }
-    }
-    // .probability {
-    //   border-top: 1rpx solid #EDEEF0;
-    //   height: 92rpx;
-    //   background: #fff;
-    //   padding: 0 32rpx;
-    //   position: relative;
-    //   &:before {
-    //     content: '';
-    //     position: absolute;
-    //     top: 38rpx;
-    //     right: 45rpx;
-    //     background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAYCAYAAADKx8xXAAAAAXNSR0IArs4c6QAAAf5JREFUOBGFVMtOVEEQrepG/YThGuNiZkjuwJegLtCMEDDGEFAWxK9hQZT4XpgoEKJh4cqvcGYS77Ai3IGlKwWnyzow1d5hHnTSqe7Tdfp0dVc1/8jyWRJ5SdqY/fPpamkP46ua65FuqaP2sN1sdxavImHdFZ1ExGv/0GofPyriw8YOx2Pmri2CHCS8b/w8emzYMOsQkwgtaYR/zUHJTgN+28zyJ4ZdtmxA6yCvd7v0kUgmDNOTBMe0mlaSN4aZjTGm5WTbOVlQ5TNbhHIQetU46KwYZjYqGtDIjudEwidVvmaYKgsTr9Wqk1uGRUUDELMnruv81DBVZiF50cyO1gwbULQFfc97IYQdnV83DMrEtD5dSTZHEuHcaOd3KciOEN0wMqy+4fJYIpx6KYk0jMr6VCcDMcK52DQnb+sR40X11n6NVWxmnae4FFyObcZMvzU77oxUxNsNkIj+sPi5tJp8H0pstfNlvZStPiUlCfP92lTpG9TjEewoyE+9xdfIGsPUnrLjB/oM+4bFvASAihhGct7Va+XJSIJv3PW8BrUi+pX4zJN7qKSvcC62c0VUvdbgu8skZjefVktfigQbM5IaX4aSvIGoTVRKrXJz9z/WP5oQ6W4o1EfynhbT8mgStogxYqIZgi9kCbWJ+biGL+KZOhxedFefmUo+jyPY2j8L8NKoRhpQsgAAAABJRU5ErkJggg==') no-repeat;
-    //     background-size: 10rpx 20rpx;
-    //     width: 10rpx;
-    //     height: 20rpx;
-    //   }
-    //   text, label {
-    //     display: inline-block;
-    //     font-size: 28rpx;
-    //     line-height: 92rpx;
-    //     color: #666666;
-    //   }
-    //   label {
-    //     color: #FA5C37;
-    //   }
-    // }
-    .sponsor {
-      height: 50rpx;
-      background: #F2F3F5;
-      padding: 32rpx;
-      overflow: hidden;
+      .active {
+        border-color: #b2b2b2;
+        color: #b2b2b2;
+      }
       text {
-        font-size: 28rpx;
-        line-height: 50rpx;
-        color: #999999;
+        font-size: 24rpx;
+        line-height: 32rpx;
+        color: #fa5c37;
         display: block;
-        float: left;
+        text-align: center;
+        margin-top: 16rpx;
       }
-      label {
-        font-size: 28rpx;
-        line-height: 50rpx;
-        color: #333333;
-        display: block;
-        float: right;
-      }
-      image {
-        width: 36rpx;
-        height: 36rpx;
-        display: block;
-        float: right;
-        border-radius: 50rpx;
-        margin-top: 7rpx;
-        margin-left: 10rpx;
-      }
-    }
-    .commodityDisplay {
-      display: block;
-      width: 100%;
-      overflow: hidden;
     }
   }
+  .describeAward {
+    margin-top: 32rpx;
+    background: #fff;
+    overflow: hidden;
+    label {
+      font-size: 36rpx;
+      color: #333333;
+      display: block;
+      text-align: center;
+      margin: 64rpx 0 54rpx;
+    }
+    .describeAwardImg {
+      width: 548rpx;
+      height: 140rpx;
+      display: block;
+      margin: 0 auto;
+      margin-bottom: 32rpx;
+    }
+    .describe {
+      font-size: 24rpx;
+      color: #333333;
+      display: inline-block;
+    }
+    .number {
+      font-size: 28rpx;
+      color: #333333;
+      text-align: center;
+      margin-bottom: 32rpx;
+      text {
+        display: inline-block;
+        &:nth-of-type(2) {
+          margin-left: 10rpx;
+        }
+      }
+    }
+    .awardRed {
+      color: #fa3737;
+    }
+    .participatePeople {
+      overflow: hidden;
+      text-align: center;
+      display: block;
+      position: relative;
+      image {
+        border-radius: 50rpx;
+        display: inline-block;
+        width: 72rpx;
+        height: 72rpx;
+        margin: 0 12rpx;
+      }
+      &:before {
+        content: '';
+        position: absolute;
+        background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAAMCAYAAAAtUZ4rAAAAAXNSR0IArs4c6QAAAQRJREFUSA3dVsENwjAMtNMHE1QVgg3YomIMfjAW/BgDsUU3AKGoE/CoTEywGkpoLIEUqf6kcS+Xu7S1i/AKIsKLtTsE2ALgyqepIYDDsqr2iOgu9ZGLz+kHaNt2fu+6IxHUMcmIcJ4VxaYsy1vs/jCXk8/wSY6ZYbFs1GPoeQBDA+E8N5/h1+zbk3kXCjVjw1zsOjef8d9MTNpnToPVYIRZg9VgQj7TFwBJj41SLH7FyPr/8zlD0wpniBq9JQ1Wg5EdNVgNpucz3Gdkmho1WA1G9tFgNZiQD7nMXq09pSod96JFVa1TDTY3n2GB3DRZsDgdjtJYU2Z4XW4+VxV98MlO4dfnASWfAz5FrbEYAAAAAElFTkSuQmCC')
+          no-repeat;
+        background-size: 52rpx 12rpx;
+        width: 52rpx;
+        height: 12rpx;
+        top: 30rpx;
+        right: 165rpx;
+      }
+    }
+    navigator {
+      width: 136rpx;
+      color: #4a90e2;
+      font-size: 28rpx;
+      display: block;
+      text-align: center;
+      margin: 34rpx auto 0 auto;
+      border-bottom: 1rpx solid #4a90e2;
+    }
+    button {
+      width: 552rpx;
+      height: 92rpx;
+      line-height: 92rpx;
+      font-size: 32rpx;
+      display: block;
+      text-align: center;
+      background: #fa5c37;
+      border-radius: 50rpx;
+      color: #fff;
+      margin-top: 64rpx;
+      margin: 64rpx auto;
+    }
+  }
+  // .probability {
+  //   border-top: 1rpx solid #EDEEF0;
+  //   height: 92rpx;
+  //   background: #fff;
+  //   padding: 0 32rpx;
+  //   position: relative;
+  //   &:before {
+  //     content: '';
+  //     position: absolute;
+  //     top: 38rpx;
+  //     right: 45rpx;
+  //     background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAYCAYAAADKx8xXAAAAAXNSR0IArs4c6QAAAf5JREFUOBGFVMtOVEEQrepG/YThGuNiZkjuwJegLtCMEDDGEFAWxK9hQZT4XpgoEKJh4cqvcGYS77Ai3IGlKwWnyzow1d5hHnTSqe7Tdfp0dVc1/8jyWRJ5SdqY/fPpamkP46ua65FuqaP2sN1sdxavImHdFZ1ExGv/0GofPyriw8YOx2Pmri2CHCS8b/w8emzYMOsQkwgtaYR/zUHJTgN+28zyJ4ZdtmxA6yCvd7v0kUgmDNOTBMe0mlaSN4aZjTGm5WTbOVlQ5TNbhHIQetU46KwYZjYqGtDIjudEwidVvmaYKgsTr9Wqk1uGRUUDELMnruv81DBVZiF50cyO1gwbULQFfc97IYQdnV83DMrEtD5dSTZHEuHcaOd3KciOEN0wMqy+4fJYIpx6KYk0jMr6VCcDMcK52DQnb+sR40X11n6NVWxmnae4FFyObcZMvzU77oxUxNsNkIj+sPi5tJp8H0pstfNlvZStPiUlCfP92lTpG9TjEewoyE+9xdfIGsPUnrLjB/oM+4bFvASAihhGct7Va+XJSIJv3PW8BrUi+pX4zJN7qKSvcC62c0VUvdbgu8skZjefVktfigQbM5IaX4aSvIGoTVRKrXJz9z/WP5oQ6W4o1EfynhbT8mgStogxYqIZgi9kCbWJ+biGL+KZOhxedFefmUo+jyPY2j8L8NKoRhpQsgAAAABJRU5ErkJggg==') no-repeat;
+  //     background-size: 10rpx 20rpx;
+  //     width: 10rpx;
+  //     height: 20rpx;
+  //   }
+  //   text, label {
+  //     display: inline-block;
+  //     font-size: 28rpx;
+  //     line-height: 92rpx;
+  //     color: #666666;
+  //   }
+  //   label {
+  //     color: #FA5C37;
+  //   }
+  // }
+  .sponsor {
+    height: 50rpx;
+    background: #f2f3f5;
+    padding: 32rpx;
+    overflow: hidden;
+    text {
+      font-size: 28rpx;
+      line-height: 50rpx;
+      color: #999999;
+      display: block;
+      float: left;
+    }
+    label {
+      font-size: 28rpx;
+      line-height: 50rpx;
+      color: #333333;
+      display: block;
+      float: right;
+    }
+    image {
+      width: 36rpx;
+      height: 36rpx;
+      display: block;
+      float: right;
+      border-radius: 50rpx;
+      margin-top: 7rpx;
+      margin-left: 10rpx;
+    }
+  }
+  .commodityDisplay {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+  }
+}
 </style>

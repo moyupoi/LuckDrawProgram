@@ -165,7 +165,7 @@
     toFLBRecord() {
       this.$goto('FLBRecord?id=0')
     }
-    toChangeDetails(){
+    toChangeDetails() {
       this.$goto('FLBRecord?id=2')
     }
   }
