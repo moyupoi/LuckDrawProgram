@@ -114,6 +114,7 @@ export default class Turn extends wepy.page {
     }
   }
   wheelRotate(lotteryId, v, data) {
+    let that = this
     let animation = wepy.createAnimation({
       // 创建动画对象
       duration: 6000,
@@ -131,19 +132,29 @@ export default class Turn extends wepy.page {
     // 延时显示抽奖结果
     setTimeout(() => {
       this.canRoll = true
-      this.dailyLeftTimes = data.daily_left_times < 0 ? 0 : data.daily_left_times
+      this.dailyLeftTimes =
+        data.daily_left_times < 0 ? 0 : data.daily_left_times
       let endcontent = ''
       this.lottery[lotteryId].category !== 'none'
         ? (endcontent = `恭喜您获得：${this.lottery[lotteryId].title}`)
         : (endcontent = `${this.lottery[lotteryId].title}`)
       wepy.showToast({
         title: endcontent,
-        icon: 'none'
+        icon: 'none',
+        duration: 1000,
+        success: function() {
+        // 每日免费机会用完之后的提示
+          if (that.dailyLeftTimes === 0 && v !== 'coin') {
+            setTimeout(function() {
+              wepy.showModal({
+                title: '提示',
+                content: '今日免费次数已用完',
+                showCancel: false
+              })
+            }, 1000)
+          }
+        }
       })
-      // 每日免费机会用完之后的引导
-      // if (this.dailyLeftTimes === 983 && v !== 'coin') {
-      //   console.log('抽奖次数已用完')
-      // }
       this.$apply()
     }, 6000)
   }
@@ -153,7 +164,8 @@ export default class Turn extends wepy.page {
       {
         success: ({ statusCode, data }) => {
           this.lottery = data.wheel_sectors
-          this.dailyLeftTimes = data.daily_left_times < 0 ? 0 : data.daily_left_times
+          this.dailyLeftTimes =
+            data.daily_left_times < 0 ? 0 : data.daily_left_times
           this.dailyLimitTimes = data.daily_limit_times
           this.expendCoin = data.expend_coin
           this.leftCoin = data.left_coin
