@@ -117,7 +117,9 @@ export default class Prize extends wepy.page {
       )
     }
   }
-  onShow() {}
+  onShow() {
+    wepy.hideShareMenu()
+  }
   address() {
     let that = this
     wepy.chooseAddress({
@@ -143,9 +145,9 @@ export default class Prize extends wepy.page {
       }
     })
   }
-  onShareAppMessage(res) {
-    return this.$parent.onShareAppMessage()
-  }
+  // onShareAppMessage(res) {
+  //   return this.$parent.onShareAppMessage()
+  // }
   formSubmit(event) {
     let formId = event.detail.formId
     if (
