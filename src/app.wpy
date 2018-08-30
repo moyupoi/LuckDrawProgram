@@ -24,7 +24,8 @@ export default class extends wepy.app {
       'pages/strategy',
       'pages/turn',
       'pages/feedBack',
-      'pages/sponsor'
+      'pages/sponsor',
+      'pages/collageDetails'
     ],
     window: {
       backgroundTextStyle: 'light',

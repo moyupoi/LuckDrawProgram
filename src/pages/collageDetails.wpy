@@ -1,0 +1,1011 @@
+<template>
+  <LoadingZ :isShow.sync="isShow"></LoadingZ>
+  <LoadingX :isLoading.sync="isLoading"></LoadingX>
+  <TitleBar :isBackBtn.sync="isBackBtn" :isShareBtn.sync="isShareBtn" :titleText.sync="titleText"></TitleBar>
+  <view class="collageSurround">
+    <image src="{{groupsAllDetails.banner_url}}" class="banner"></image>
+    <view class="collageCondition">
+      <view class="conditionNumber">
+        <view class="person">{{groupsDetails.gp_member_number}}人成团</view>
+        <view class="prize">
+          <text>¥{{groupsDetails.gp_amount}}</text>
+          <label>已成团
+            <text class="hasgroup">{{groupsDetails.gp_success_number}}</text>个</label>
+        </view>
+      </view>
+      <view class="conditionTime">
+        <image src="../assets/images/collage/endtime.png" class="timeBg"></image>
+        <view class="end">距离结束</view>
+        <view class="time">
+          <view>{{dateTime.day}}:</view>
+          <view>{{dateTime.hour}}:</view>
+          <view>{{dateTime.minute}}:</view>
+          <view>{{dateTime.second}}</view>
+        </view>
+      </view>
+    </view>
+    <view class="describe">
+      <text class="name">{{groupsAllDetails.name}}</text>
+      <!-- <label>开奖时间：{{groupsDetails.gp_finished_at}}</label> -->
+      <label class="reachNumber">数量：{{groupsAllDetails.number}}</label>
+    </view>
+    <!-- 第一次进入 -->
+    <view class="rule" wx-if="{{processStatus == 0 && !isShareBtn}}">
+      <image src="../assets/images/collage/ruleBg.jpg" class="ruleBg"></image>
+      <view class="ruleTitle">团奖步骤</view>
+      <navigator hover-class="none" url="/pages/....." class="ruleDetail">
+        详细规则>>
+      </navigator>
+    </view>
+    <!-- 支付完成后 分享后他人进入-->
+    <view class="complatePay" wx:if="{{processStatus == 1}}">
+      <view class="situation">
+        <view>还差</view>
+        <text>{{peopleNumber}}</text>
+        <view>人成团</view>
+        <label>已成团{{groupsDetails.gp_success_number}}个</label>
+      </view>
+      <view>
+        <view class="openTime">
+          <view>{{dateTime.totalHour}}</view> :
+          <view>{{dateTime.minute}}</view> :
+          <view>{{dateTime.second}}</view>
+        </view>
+        <view class="collagePeople">
+          <view class="identity" wx:for="{{groupMember}}" wx:key="index">
+            <image src="{{item.avatar_url}}" class="head" wx:if="{{item.avatar_url !== undefined}}">
+              <view class="leader" wx:if="{{item.is_master}}">团长</view>
+              <view class="member" wx:if="{{item.is_master === false}}">团员</view>
+            </image>
+            <image src="../assets/images/collage/head.png" class="head" wx:if="{{item.avatar_url === undefined}}"></image>
+          </view>
+        </view>
+        <view class="valueShare">分享到3个群，成团率可达98%</view>
+      </view>
+    </view>
+    <!-- 待开奖  已中奖 未中奖-->
+    <view class="waitOpen" wx:if="{{processStatus == 2}}">
+      <view class="luckly" wx:if="{{isfinished && group}}">{{ groupsAllDetails.is_get_draw? '恭喜您中奖了' : '很遗憾未中奖' }}</view>
+      <view class="openTime" wx:if="{{!isfinished}}">
+        <view>{{dateTime.totalHour}}</view> :
+        <view>{{dateTime.minute}}</view> :
+        <view>{{dateTime.second}}</view>
+      </view>
+      <view class="collagePeople">
+        <view class="identity" wx:for="{{groupMember}}" wx:key="index">
+          <image src="{{item.avatar_url}}" class="head" wx:if="{{item.avatar_url !== undefined}}">
+            <view class="leader" wx:if="{{item.is_master}}">团长</view>
+            <view class="member" wx:if="{{item.is_master === false}}">团员</view>
+          </image>
+          <image src="../assets/images/collage/head.png" class="head" wx:if="{{item.avatar_url === undefined}}"></image>
+        </view>
+      </view>
+      <view class="luckPeople" wx:if="{{isfinished}}">
+        <view>中奖人：</view>
+        <view wx:for="{{groupsAllDetails.prize_draw_user_avatars_for_get}}" wx:key="index">
+          <image src="{{groupsAllDetails.prize_draw_user_avatars_for_get[index]}}" class="luckPeopleHead"></image>
+        </view>
+      </view>
+      <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" wx:if="{{isfinished && groupsAllDetails.is_get_draw }}">
+        <button class="fillAddress" @tap="address" wx:if="{{userAddress === ''}}">填写收货地址</button>
+      </form>
+      <view class="express" wx:if="{{userAddress !== '' && isfinished && groupsAllDetails.is_get_draw}}">
+        <view class="expressInformation">
+          <view>
+            <label>[收货地址] </label>
+            <text>{{userAddress}}</text>
+          </view>
+          <view class="paiInfomation">我们正在积极派奖，请注意关注服务通知</view>
+        </view>
+        <view class="status">
+          <view class="line"></view>
+          <view class="statusItem">收</view>
+          <view class="statusItem item">派</view>
+        </view>
+      </view>
+      <view class="null"></view>
+    </view>
+    <view class="sponsor">
+      <text>赞助商</text>
+      <image src="../assets/images/luckDraw/officialLogo.png"></image>
+      <label>{{groupsAllDetails.sponsor}}</label>
+    </view>
+    <image src="{{groupsAllDetails.detail_url}}" class="commodityDisplay" mode="widthFix"></image>
+  </view>
+  <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="collageBtn" wx:if="{{processStatus !== 2}}">
+    <button class="btn" @tap="requestPay" formType="submit" wx:if="{{processStatus === 0 || (processStatus === 1 && isShareBtn && !isMyself)}}">
+      <view>¥{{groupsDetails.gp_amount}} {{processStatus===0?'立即开团':'我要参团'}}</view>
+      <view>未中奖全额退款</view>
+    </button>
+    <button class="btn" style="line-height:92rpx" open-type="share" formType="submit" wx:if="{{(processStatus === 1)||( isShareBtn && isMyself)}}">邀请好友参团</button>
+    <!-- <button @tap="shareFriends">生成朋友圈分享图</button> -->
+  </form>
+</template>
+<script>
+import wepy from 'wepy'
+import { service } from '../config.js'
+import http from '../mixins/http'
+import base from '../mixins/base'
+import ShareMessage from '../mixins/ShareMessage'
+import LoadingZ from '../components/LoadingZ'
+import LoadingX from '../components/LoadingX'
+import TitleBar from '../components/TitleBar'
+import painter from '../mixins/painter'
+export default class GroupDraw extends wepy.page {
+  mixins = [http, base, ShareMessage, painter]
+  config = {
+    // navigationBarTitleText: '抽奖详情'
+  }
+  data = {
+    titleText: '抽奖详情',
+    isBackBtn: true,
+    isShare: true,
+    isShareBtn: false,
+    groupsDetails: {},
+    groupsAllDetails: {},
+    groupMember: {},
+    formId: null,
+    hasUploadUserinfo: false,
+    prizeDrawUserAvatars: [],
+    prizeDrawsCount: 0,
+    aasmState: '',
+    isShow: true,
+    commodityId: null,
+    groupId: '',
+    shareUserId: null,
+    shareUrl: 'pages/collageDetails',
+    shareBannerUrl: '',
+    shareName: '',
+    leftChance: 0,
+    isReachPrizeLimit: false,
+    isLoading: false,
+    isShareWicket: false,
+    codeImg: '',
+    clock: null, // 定时器
+    id: '',
+    peopleNumber: '', // 还差多少人中奖
+    prizeDrawId: '', // 中奖id
+    userAddress: '', // 地址信息
+    memo: '',
+    dateTime: {
+      day: '00',
+      hour: '00',
+      totalHour: '00',
+      minute: '00',
+      second: '00'
+    },
+    group: false, // 是否成团
+    isMyself: false, // 是否是通过自己的转发进来的
+    processStatus: 1, // 0:第一次 1:支付完成 2:待开奖
+    isfinished: false // 是否开奖
+  }
+  components = {
+    LoadingZ,
+    LoadingX,
+    TitleBar
+  }
+  methods = {
+    requestPay() {
+      let that = this
+      this.$post(
+        {
+          url: service.prizes + this.groupsAllDetails.id + '/draw',
+          headers: {
+            'X-JINKU-WECHAT-FORM-ID': that.formId
+          },
+          data: {
+            group_id: that.groupId
+          }
+        },
+        {
+          success: ({ statusCode, data }) => {
+            if (statusCode === 200) {
+              wepy.requestPayment({
+                timeStamp: String(data.timeStamp),
+                nonceStr: data.nonceStr,
+                package: data.package,
+                signType: data.signType,
+                paySign: data.paySign,
+                success: function(res) {
+                  that.GroupDrawInit()
+                },
+                fail: function(res) {}
+              })
+            } else {
+            }
+          }
+        }
+      )
+    }
+  }
+  // 判断用户是否支付
+  isHasPay() {
+    let userId = ''
+    let isFindMember = 0
+    if (service.isFormal) {
+      userId = wepy.getStorageSync('userId')
+    } else {
+      userId = wepy.getStorageSync('userIdInfo')
+    }
+    if (this.groupMember !== null) {
+      isFindMember = this.groupMember.map(v => v.id).indexOf(userId)
+    }
+    if (isFindMember === -1) return false
+    else return true
+  }
+  // 判断用户是否通过自己的分享页面进入
+  isSelf() {
+    let userId = ''
+    if (service.isFormal) {
+      userId = wepy.getStorageSync('userId')
+    } else {
+      userId = wepy.getStorageSync('userIdInfo')
+    }
+    if (this.shareUserId === userId) this.isMyself = true
+    else this.isMyself = false
+  }
+  onLoad(options) {
+    // let that = this
+    console.log(options)
+    let isScene = wepy.getStorageSync('scene') || false
+    if (isScene) {
+      this.wechatRestoreScene(isScene)
+    } else if (!this.isUndefined(options.scene)) {
+      // 通过二维码进入
+      let scene = decodeURIComponent(options.scene)
+      wepy.setStorage({
+        key: 'scene',
+        data: scene
+      })
+      this.wechatRestoreScene(scene)
+    } else {
+      // 分享或者直接进入
+      this.commodityId = options.id
+      // options.id = '5b2c99544f14bf2c077cc43c'
+      console.log('onload gid' + this.groupId)
+      this.shareUserId = options.shareUserId ? options.shareUserId : null
+      if (!this.isUndefined(options.share) && !this.isUndefined(options.id)) {
+        this.isShareBtn = true
+      }
+      if (!this.isUndefined(options.groupId) && options.groupId !== '') {
+        this.groupId = options.groupId
+      }
+      if (!this.isUndefined(options.id) && options.id !== '') {
+        this.GroupDrawInit()
+      }
+    }
+    this.isSelf()
+  }
+  // 每次登陆计算距离结束时间 单位：秒
+  InitTimer() {
+    let that = this
+    // 获取数据中的时间戳
+    this.$get(
+      { url: service.prizes + this.commodityId },
+      {
+        success: ({ statusCode, data }) => {
+          let start = data.group_draw.current_time.replace(/-/g, '/')
+          let end = data.group_draw.gp_finished_at.replace(/-/g, '/')
+          let intDiff = (new Date(end) - new Date(start)) / 1000
+          that.transformTime(intDiff)
+          that.Timer(intDiff)
+        }
+      }
+    )
+    that.dateTime = {
+      day: '00',
+      hour: '00',
+      totalHour: '00',
+      minute: '00',
+      second: '00'
+    }
+  }
+  // 转换时间
+  transformTime(intDiff) {
+    let day = 0
+    let hour = 0
+    let minute = 0
+    let second = 0
+    let totalHour = 0
+
+    day = Math.floor(intDiff / (60 * 60 * 24))
+    hour = Math.floor(intDiff / (60 * 60)) - day * 24
+    totalHour = Math.floor(intDiff / (60 * 60))
+    minute = Math.floor(intDiff / 60) - day * 24 * 60 - hour * 60
+    second =
+      Math.floor(intDiff) - day * 24 * 60 * 60 - hour * 60 * 60 - minute * 60
+    if (day <= 9) day = '0' + day
+    if (hour <= 9) hour = '0' + hour
+    if (totalHour <= 9) totalHour = '0' + totalHour
+    if (minute <= 9) minute = '0' + minute
+    if (second <= 9) second = '0' + second
+
+    this.dateTime = {
+      day: day,
+      hour: hour,
+      totalHour: totalHour,
+      minute: minute,
+      second: second
+    }
+    this.$apply()
+  }
+  Timer(intDiff) {
+    let that = this
+    if (intDiff <= 0) {
+      this.dateTime = {
+        day: '00',
+        hour: '00',
+        totalHour: '00',
+        minute: '00',
+        second: '00'
+      }
+      this.$apply()
+    } else {
+      this.clock = setInterval(function() {
+        if (intDiff >= 0) {
+          that.transformTime(intDiff)
+          intDiff--
+        } else {
+          clearInterval(that.clock)
+          that.dateTime = {
+            day: '00',
+            hour: '00',
+            totalHour: '00',
+            minute: '00',
+            second: '00'
+          }
+          that.GroupDrawInit()
+          that.isfinished = true
+        }
+        that.$apply()
+      }, 1000)
+    }
+  }
+  onShow(a) {
+    console.log('onshow')
+    this.GroupDrawInit()
+    this.InitTimer()
+  }
+  onHide() {
+    clearInterval(this.clock)
+  }
+  onUnload() {
+    clearInterval(this.clock)
+  }
+  address() {
+    let that = this
+    wepy.chooseAddress({
+      success: function(res) {
+        that.$post(
+          {
+            url: service.prizesDraws + that.prizeDrawId + '/address',
+            data: res
+          },
+          {
+            success: ({ statusCode, data }) => {
+              if (statusCode === 200) {
+                wepy.showToast({
+                  title: '地址绑定成功！',
+                  icon: 'success'
+                })
+                that.userAddress = data.address
+                that.memo = data.memo
+              }
+            }
+          }
+        )
+      }
+    })
+  }
+  // wechatRestoreScene(scene) {
+  //   this.$get(
+  //     {
+  //       url: service.wechatRestoreScene + '?scene=' + scene
+  //     },
+  //     {
+  //       success: ({ statusCode, data }) => {
+  //         if (statusCode === 200) {
+  //           wepy.removeStorage({
+  //             key: 'scene'
+  //           })
+  //           this.commodityId = data.prize_id
+  //           this.shareUserId = data.share_user_id
+  //           this.isShareBtn = true
+  //           switch (data.category) {
+  //             case 'share_prize':
+  //               this.shareUrl = 'pages/luckDraw'
+  //               break
+  //             default:
+  //               this.shareUrl = 'pages/home'
+  //               break
+  //           }
+  //           this.GroupDrawInit()
+  //         }
+  //       }
+  //     }
+  //   )
+  // }
+  GroupDrawInit() {
+    let that = this
+    let isGroup = false // 是否成团的标志
+    this.$get(
+      {
+        url: service.prizes + this.commodityId,
+        data: {
+          group_id: that.groupId
+        }
+      },
+      {
+        success: ({ statusCode, data }) => {
+          that.groupsAllDetails = data
+          that.groupsDetails = data.group_draw
+          that.groupId = that.isShareBtn
+            ? that.groupId
+            : data.group_draw.group_id
+
+          that.userAddress = data.user_address
+          if (
+            data.group_draw.group_members.length <
+            data.group_draw.gp_member_number
+          ) {
+            if (data.group_draw.group_members.length === 0) {
+              // 未参加
+              that.groupMember = null
+            } else {
+              that.peopleNumber =
+                data.group_draw.gp_member_number -
+                data.group_draw.group_members.length
+              data.group_draw.group_members.length =
+                data.group_draw.gp_member_number
+              that.groupMember = data.group_draw.group_members
+            }
+          } else {
+            that.groupMember = data.group_draw.group_members
+            isGroup = true
+            that.group = true
+          }
+          let start = data.group_draw.current_time.replace(/-/g, '/')
+          let end = data.group_draw.gp_finished_at.replace(/-/g, '/')
+          let intDiff = (new Date(end) - new Date(start)) / 1000
+          console.log(intDiff)
+          that.shareBannerUrl = data.banner_url
+          // that.shareName = data.name
+          // that.codeImg =
+          //   service.wxacodeunlimit +
+          //   '?scene=share_prize:' +
+          //   this.commodityId +
+          //   ':' +
+          //   this.$getUserId() +
+          //   '&page=' +
+          //   this.shareUrl
+          // this.createCanvas()
+          console.log('isfinished')
+          console.log(that.isfinished)
+          if (data.aasm_state === 'finished') {
+            that.isfinished = true
+            that.prizeDrawId = data.prize_draw_id
+          }
+          console.log(that.isfinished)
+          that.WhichOfPhase(isGroup, data.aasm_state)
+          that.isShow = false
+        }
+      }
+    )
+  }
+  // 判断进度
+  WhichOfPhase(isGroup, isfinished) {
+    let isPay = this.isHasPay()
+    console.log(isPay)
+    if (isfinished === 'finished') {
+      this.processStatus = 2
+    } else {
+      if (!this.isShareBtn) {
+        // 不是通过分享进入 并且 未支付 显示开团规则页面
+        if (!isPay) {
+          this.processStatus = 0
+        } else {
+          // 已支付 已成团 显示等待开奖 否则 显示分享
+          this.processStatus = isGroup ? 2 : 1
+        }
+      } else {
+        // 通过分享进入 未支付 根据是否成团 成团显示等待结果 未成团显示拼团界面
+        this.processStatus = isGroup ? 2 : 1
+      }
+    }
+  }
+  formSubmit(event) {
+    let formId = event.detail.formId
+    if (
+      formId !== 'the formId is a mock one' &&
+      !this.isUndefined(formId) &&
+      formId !== '' &&
+      formId !== null
+    ) {
+      this.formId = formId
+      this.$updataFormId(this.formId)
+    }
+  }
+  // shareSwitch() {
+  //   this.isShareWicket = true
+  // }
+  // closeShareSwitch() {
+  //   this.isShareWicket = false
+  // }
+  // shareFriends() {
+  //   wepy.showToast({
+  //     title: '生成中...',
+  //     icon: 'loading',
+  //     duration: 1000
+  //   })
+  //   if (this.canvasImg !== '') {
+  //     wepy.getImageInfo({
+  //       src: this.canvasImg,
+  //       success: function(res) {
+  //         wepy.saveImageToPhotosAlbum({
+  //           filePath: res.path,
+  //           success(result) {
+  //             wepy.showToast({
+  //               title: '图片保存成功',
+  //               icon: 'success'
+  //             })
+  //           }
+  //         })
+  //       }
+  //     })
+  //   }
+  // }
+}
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+@import '../assets/stylesheets/layout.scss';
+.collageSurround {
+  .banner {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+  }
+  .collageCondition {
+    display: flex;
+    flex-direction: row;
+    height: 144rpx;
+    .conditionNumber {
+      width: 430rpx;
+      padding: 16rpx 24rpx 0 32rpx;
+      background: linear-gradient(
+        -90deg,
+        rgba(255, 126, 87, 1),
+        rgba(255, 73, 49, 1)
+      );
+      color: #ffffff;
+      .person {
+        font-size: 24rpx;
+        line-height: 24rpx;
+        margin-bottom: 16rpx;
+      }
+      .prize {
+        text {
+          font-size: 72rpx;
+          line-height: 72rpx;
+          margin-right: 62rpx;
+        }
+        label {
+          font-size: 24rpx;
+          line-height: 34rpx;
+          .hasgroup {
+            font-size: 36rpx;
+            margin-right: 0;
+          }
+        }
+      }
+    }
+    .conditionTime {
+      width: 264rpx;
+      padding: 24rpx 0;
+      position: relative;
+      .timeBg {
+        z-index: -1;
+        width: 264rpx;
+        height: 144rpx;
+        position: absolute;
+        left: 0;
+        top: 0;
+      }
+      .end {
+        text-align: center;
+        font-size: 26rpx;
+        color: #ff4931;
+        line-height: 28rpx;
+        margin-bottom: 16rpx;
+      }
+      .time {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        view {
+          width: 52rpx;
+          height: 52rpx;
+          background-color: #ffffff;
+          color: #ff4a32;
+          font-size: 28rpx;
+          line-height: 52rpx;
+          margin-right: 8rpx;
+          text-align: center;
+          &:last-child {
+            margin-right: 0;
+          }
+        }
+      }
+    }
+  }
+  .describe {
+    background: #fff;
+    padding: 32rpx;
+    overflow: hidden;
+    .name {
+      font-size: 40rpx;
+      line-height: 44rpx;
+      font-weight: 600;
+      color: #333333;
+      float: left;
+    }
+    .number {
+      font-size: 28rpx;
+      line-height: 32rpx;
+      color: #999999;
+      float: right;
+    }
+    .reachNumber {
+      clear: both;
+      font-size: 24rpx;
+      line-height: 32rpx;
+      color: #666666;
+      display: block;
+      margin-top: 56rpx;
+    }
+  }
+  .rule {
+    width: 100%;
+    height: 370rpx;
+    margin-top: 34rpx;
+    text-align: center;
+    position: relative;
+    padding-top: 70rpx;
+    .ruleBg {
+      width: 100%;
+      height: 440rpx;
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: -1;
+    }
+    .ruleTitle {
+      font-size: 36rpx;
+      font-weight: bold;
+      color: #333333;
+    }
+    .ruleDetail {
+      margin-top: 222rpx;
+      font-size: 24rpx;
+      color: #4a90e2;
+    }
+  }
+  .complatePay {
+    margin-top: 20rpx;
+    width: 100%;
+    height: 458rpx;
+    background-color: #ffffff;
+    padding-top: 60rpx;
+    .situation {
+      display: flex;
+      flex-direction: row;
+      align-items: baseline;
+      margin-left: 32rpx;
+      font-size: 36rpx;
+      color: #333333;
+      text {
+        color: #fa5c37;
+      }
+      label {
+        font-size: 24rpx;
+        color: #666666;
+        margin-left: 10rpx;
+      }
+    }
+    .openTime {
+      margin-top: 64rpx;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      font-size: 34rpx;
+      color: #fa5c37;
+      view {
+        width: 62rpx;
+        height: 62rpx;
+        margin: 0 32rpx;
+        line-height: 62rpx;
+        text-align: center;
+        border-radius: 4rpx;
+        background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAD4AAABABAMAAACwx9nGAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAYUExURUxpcfT09PT09Pj4+PT09PDw8Pf39+/v74FUt3EAAAAGdFJOUwC78FSUTxcsvUAAAABVSURBVDjL7c6hDYAwAAXRE92AABsUjUF3BRSaNqmnCWF9Jug3tf/sMwd7rL3yBKGqEof0wiL9JkrPVJ3dbh/wT2e32wd8k9xYpT9c0l+C9ARn/6DN/PNqUlCC0LAcAAAAAElFTkSuQmCC')
+          no-repeat;
+        background-size: 62rpx 62rpx;
+      }
+    }
+    .collagePeople {
+      margin: 38rpx 0 32rpx 0;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      .identity {
+        position: relative;
+        margin-right: 96rpx;
+        .head {
+          height: 120rpx;
+          width: 120rpx;
+          border-radius: 50%;
+          .leader,
+          .member {
+            width: 42rpx;
+            height: 20rpx;
+            position: absolute;
+            top: -8rpx;
+            left: -8rpx;
+            border-radius: 10rpx;
+            font-size: 12rpx;
+            text-align: center;
+            line-height: 20rpx;
+          }
+          .leader {
+            background: linear-gradient(180deg, #3c82e2, #5d3dcd);
+            box-shadow: 0px 4px 9px 0px rgba(192, 190, 189, 0.3);
+            color: #ffffff;
+          }
+          .member {
+            width: 38rpx;
+            height: 16rpx;
+            background-color: #ffffff;
+            box-shadow: 0px 4px 9px 0px rgba(192, 190, 189, 0.3);
+            border: 2rpx solid #4a90e2;
+            color: #4a90e2;
+          }
+        }
+        &:last-child {
+          margin-right: 0rpx;
+        }
+      }
+    }
+    .valueShare {
+      font-size: 28rpx;
+      text-align: center;
+      color: #333333;
+    }
+  }
+  .waitOpen {
+    margin-top: 20rpx;
+    width: 100%;
+    background-color: #ffffff;
+    padding: 60rpx 0 0 0;
+    .luckly {
+      margin: 0rpx auto 48rpx;
+      font-size: 48rpx;
+      color: #333333;
+      text-align: center;
+    }
+    .luckWin {
+      color: #fa5c37;
+    }
+    .openTime {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      font-size: 26rpx;
+      color: #ff4a32;
+      view {
+        width: 50rpx;
+        height: 50rpx;
+        margin: 0 28rpx;
+        line-height: 50rpx;
+        text-align: center;
+        border-radius: 4rpx;
+        background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAD4AAABABAMAAACwx9nGAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAYUExURUxpcfT09PT09Pj4+PT09PDw8Pf39+/v74FUt3EAAAAGdFJOUwC78FSUTxcsvUAAAABVSURBVDjL7c6hDYAwAAXRE92AABsUjUF3BRSaNqmnCWF9Jug3tf/sMwd7rL3yBKGqEof0wiL9JkrPVJ3dbh/wT2e32wd8k9xYpT9c0l+C9ARn/6DN/PNqUlCC0LAcAAAAAElFTkSuQmCC')
+          no-repeat;
+        background-size: 50rpx 50rpx;
+      }
+    }
+    .collagePeople {
+      margin: 54rpx 0 60rpx 0;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      .identity {
+        position: relative;
+        margin-right: 98rpx;
+        .head {
+          height: 96rpx;
+          width: 96rpx;
+          border-radius: 50%;
+          .leader,
+          .member {
+            width: 42rpx;
+            height: 20rpx;
+            position: absolute;
+            top: -8rpx;
+            left: -8rpx;
+            border-radius: 10rpx;
+            font-size: 12rpx;
+            text-align: center;
+            line-height: 20rpx;
+          }
+          .leader {
+            background: linear-gradient(180deg, #3c82e2, #5d3dcd);
+            box-shadow: 0px 4px 9px 0px rgba(192, 190, 189, 0.3);
+            color: #ffffff;
+          }
+          .member {
+            width: 38rpx;
+            height: 16rpx;
+            background-color: #ffffff;
+            box-shadow: 0px 4px 9px 0px rgba(192, 190, 189, 0.3);
+            border: 2rpx solid #4a90e2;
+            color: #4a90e2;
+          }
+        }
+        &:last-child {
+          margin-right: 0rpx;
+        }
+      }
+    }
+    .luckPeople {
+      margin-bottom: 60rpx;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      font-size: 36rpx;
+      color: #333333;
+      image {
+        width: 120rpx;
+        height: 120rpx;
+        border-radius: 50%;
+        margin-left: 18rpx;
+      }
+    }
+    .null {
+      width: 100%;
+      height: 1rpx;
+    }
+    .fillAddress {
+      margin-bottom: 60rpx;
+      width: 326rpx;
+      height: 92rpx;
+      font-size: 32rpx;
+      line-height: 92rpx;
+      border-radius: 50rpx;
+      text-align: center;
+      background: #fff;
+      color: #fa5c37;
+      border: 1rpx solid #fa5c37;
+    }
+    .express {
+      margin-bottom: 60rpx;
+      position: relative;
+      .expressInformation {
+        height: 154rpx;
+        margin-left: 98rpx;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        view {
+          label {
+            font-size: 28rpx;
+            color: #999999;
+          }
+          text {
+            font-size: 28rpx;
+            color: #333333;
+            line-height: 42rpx;
+          }
+        }
+        .paiInfomation {
+          margin-top: 26rpx;
+          font-size: 24rpx;
+          color: #ff471c;
+        }
+      }
+      .status {
+        .line {
+          width: 2rpx;
+          height: 160rpx;
+          background: linear-gradient(
+            180deg,
+            rgba(216, 216, 216, 1),
+            rgba(216, 216, 216, 1),
+            rgba(216, 216, 216, 0)
+          );
+          position: absolute;
+          left: 52rpx;
+          top: 54rpx;
+        }
+        .statusItem {
+          position: absolute;
+          left: 28rpx;
+          top: 4rpx;
+          width: 46rpx;
+          height: 46rpx;
+          background-color: #fff6f2;
+          color: #ff471c;
+          border: 2rpx solid #fa5c37;
+          border-radius: 50%;
+          font-size: 24rpx;
+          line-height: 46rpx;
+          text-align: center;
+        }
+        .item {
+          top: 112rpx;
+        }
+      }
+    }
+  }
+  .sponsor {
+    height: 50rpx;
+    background: #f2f3f5;
+    padding: 32rpx;
+    overflow: hidden;
+    text {
+      font-size: 28rpx;
+      line-height: 50rpx;
+      color: #999999;
+      display: block;
+      float: left;
+    }
+    label {
+      font-size: 28rpx;
+      line-height: 50rpx;
+      color: #333333;
+      display: block;
+      float: right;
+    }
+    image {
+      width: 36rpx;
+      height: 36rpx;
+      display: block;
+      float: right;
+      border-radius: 50rpx;
+      margin-top: 7rpx;
+      margin-left: 10rpx;
+    }
+  }
+  .commodityDisplay {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+  }
+}
+.collageBtn {
+  width: 100%;
+  height: 92rpx;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  background-color: #ffffff;
+  box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.1);
+  padding: 20rpx 0;
+  .btn {
+    width: 686rpx;
+    height: 92rpx;
+    background-color: #fa5c37;
+    text-align: center;
+    line-height: 132rpx;
+    border-radius: 46rpx;
+    color: #ffffff;
+    font-size: 36rpx;
+    view {
+      line-height: 72rpx;
+      &:last-child {
+        font-size: 20rpx;
+        line-height: 0;
+      }
+    }
+  }
+}
+</style>

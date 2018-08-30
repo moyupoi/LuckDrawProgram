@@ -7,7 +7,7 @@
     <image src="{{prizesDraws.banner_url}}" class="bannerImg"></image>
     <text class="title">{{prizesDraws.name}}</text>
     <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="formSub">
-      <button class="fillAddress shareBtn" @tap="address" wx:if="{{userAddress === ''}}">填写收货地址</button>
+      <button class="fillAddress" @tap="address" wx:if="{{userAddress === ''}}">填写收货地址</button>
       <!-- <button class="fillAddress shareBtn {{userAddress !== '' ? 'shareShow' : ''}}" formType="submit" open-type="share">分享
       </button> -->
     </form>
@@ -220,7 +220,7 @@ export default class Prize extends wepy.page {
     background: #fff;
     color: #fa5c37;
     border: 1rpx solid #fa5c37;
-    margin-right: 32rpx;
+    // margin-right: 32rpx;
   }
   .shareBtn {
     background: #fa5c37;

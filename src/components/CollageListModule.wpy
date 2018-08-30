@@ -1,0 +1,254 @@
+<template>
+  <view class="ripple" style="{{rippleStyle}}"></view>
+  <view class="groups">
+    <form bindsubmit="formSubmit" report-submit="true">
+      <block wx:for="{{prizesGroup}}" wx:key="index">
+        <view class="groupsItem">
+          <navigator hover-class="none" url="/pages/collageDetails?id={{item.id}}" class="banner">
+            <image src="{{item.banner_url}}"></image>
+            <image wx:if="{{item.aasm_state === 'finished'}}" src="../assets/images/collage/hasend.png" class="end"></image>
+            <button formType="submit" class="prizesItemFormSubmit"></button>
+          </navigator>
+          <view class="describe">
+            <navigator hover-class="none" url="/pages/collageDetails?id={{item.id}}">
+              <text class="name">{{item.brand}} · {{item.name}}</text>
+              <view class="title">
+                <text class="isJoin" wx:if="{{item.is_has_draw}}">已参加</text>
+                <text class="isJoin2" wx:if="{{item.is_has_draw}}">|</text>
+                <label> {{item.number}}件</label>
+              </view>
+            </navigator>
+            <button formType="submit" class="CollageBtn">拼团抽奖</button>
+          </view>
+        </view>
+      </block>
+    </form>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+// import { service } from '../config.js'
+import http from '../mixins/http'
+import base from '../mixins/base'
+export default class CollageListModule extends wepy.component {
+  mixins = [http, base]
+  config = {
+    // navigationBarTitleText: '搞点福利'
+  }
+  props = {
+    prizesGroup: {
+      type: Array,
+      default: []
+    },
+    isLoading: {
+      type: Boolean,
+      default: false
+    },
+    rippleStyle: {
+      type: String,
+      default: ''
+    }
+  }
+  data = {
+    prizesGroup: [],
+    // prizesQueuingList: [],
+    formId: null,
+    switchTabName: '0'
+  }
+  components = {}
+  methods = {
+    formSubmit(event) {
+      let formId = event.detail.formId
+      if (
+        formId !== 'the formId is a mock one' &&
+        !this.isUndefined(formId) &&
+        formId !== '' &&
+        formId !== null
+      ) {
+        this.$updataFormId(formId)
+      }
+    },
+    Collage(isHasDraw, id) {
+      this.$goto('collageDetails?id=' + id)
+    }
+  }
+  onLoad() {}
+}
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+@import '../assets/stylesheets/layout.scss';
+.container {
+  width: 100%;
+  height: 500px;
+}
+.ripple {
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 100%;
+  height: 10px;
+  width: 10px;
+  margin-top: -90px;
+  position: absolute;
+  transform: scale(0);
+}
+@keyframes ripple {
+  100% {
+    transform: scale(12);
+    background-color: transparent;
+  }
+}
+.groups {
+  position: relative;
+  z-index: 1;
+  padding: 36rpx;
+  overflow: hidden;
+  .groupsItem {
+    margin-bottom: 32rpx;
+    width: 686rpx;
+    box-shadow: rgba(60, 62, 66, 0.1) 0 2rpx 8rpx 0;
+    border-radius: 20rpx;
+    position: relative;
+    .banner {
+      image {
+        border-top-left-radius: 20rpx;
+        border-top-right-radius: 20rpx;
+        width: 100%;
+        height: 386rpx;
+        display: block;
+        overflow: hidden;
+      }
+      .end {
+        width: 186rpx;
+        height: 178rpx;
+        position: absolute;
+        right: 16rpx;
+        top: 188rpx;
+      }
+    }
+    .prizesItemFormSubmit {
+      width: 686rpx;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0);
+    }
+    .describe {
+      border-bottom-left-radius: 20rpx;
+      border-bottom-right-radius: 20rpx;
+      background: #fff;
+      padding: 32rpx;
+      position: relative;
+      .name {
+        width: 460rpx;
+        max-height: 90rpx;
+        font-size: 32rpx;
+        color: #333333;
+        line-height: 48rpx;
+        display: inline-block;
+        text-align: left;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+      }
+      .CollageBtn {
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 100%;
+        width: 106rpx;
+        background: linear-gradient(to bottom, #ff7854, #ff4e36);
+        border-radius: 0;
+        border-bottom-right-radius: 25rpx;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        letter-spacing: 4rpx;
+        font-size: 28rpx;
+        color: #fff;
+        line-height: 42rpx;
+        padding: 0 15rpx;
+      }
+      .title {
+        .isJoin {
+          font-size: 24rpx;
+          line-height: 32rpx;
+          display: inline-block;
+          color: #fb5a35;
+          margin-right: 10rpx;
+          position: relative;
+        }
+        .isJoin2 {
+          line-height: 32rpx;
+          font-size: 24rpx;
+          display: inline-block;
+          color: #666666;
+          margin-right: 10rpx;
+        }
+        .number {
+          font-size: 24rpx;
+          display: inline-block;
+          margin-left: 16rpx;
+          color: #666666;
+        }
+        label {
+          font-size: 24rpx;
+          color: #666666;
+          line-height: 32rpx;
+          display: inline-block;
+        }
+        button {
+          width: 120rpx;
+          height: 50rpx;
+          font-size: 24rpx;
+          line-height: 49rpx;
+          position: absolute;
+          z-index: 10;
+          bottom: 35rpx;
+          right: 34rpx;
+          border-radius: 50rpx;
+          color: #3799fa;
+          border: 1rpx solid #3799fa;
+          background: #fff;
+        }
+        .already {
+          color: #666666;
+          width: 140rpx;
+          border-color: #666666;
+        }
+        .priceView {
+          margin-top: 10rpx;
+          view {
+            position: relative;
+            display: inline-block;
+            text {
+              font-size: 32rpx;
+              color: #fb5a35;
+            }
+            &:before {
+              content: '';
+              position: absolute;
+              top: 24rpx;
+              left: 3rpx;
+              display: block;
+              width: 100%;
+              height: 8rpx;
+              border-radius: 20rpx;
+              background: rgba(251, 90, 53, 0.5);
+              z-index: 10;
+            }
+          }
+          .preferential {
+            margin-left: 10rpx;
+            display: inline-block;
+            font-size: 28rpx;
+            color: #666666;
+          }
+        }
+      }
+    }
+  }
+}
+</style>

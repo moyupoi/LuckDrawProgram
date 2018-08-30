@@ -10,6 +10,7 @@
         <button class="switchTabBtn {{switchTabName === '0' ? 'active' : '' }}" open-type="reLaunch" data-current='0' formType="submit" @tap="switchTabBtn('0')">抽奖</button>
         <button class="switchTabBtn {{switchTabName === '1' ? 'active' : '' }}" open-type="reLaunch" data-current='1' formType="submit" @tap="switchTabBtn('1')">预告</button>
         <button class="switchTabBtn {{switchTabName === '2' ? 'active' : '' }}" open-type="reLaunch" data-current='2' formType="submit" @tap="switchTabBtn('2')">福利</button>
+        <button class="switchTabBtn {{switchTabName === '3' ? 'active' : '' }}" open-type="reLaunch" data-current='3' formType="submit" @tap="switchTabBtn('3')">团奖</button>
       </scroll-view>
 
     </form>
@@ -34,6 +35,12 @@
           <WelfareModule :switchTabName.sync="switchTabName" :welfareList.sync="welfareList" :handPoint.sync="handPoint" :poolSize.sync="poolSize" wx:if="{{switchTabName === '2'}}"></WelfareModule>
         </scroll-view>
       </swiper-item>
+      <swiper-item>
+        <scroll-view scroll-y="{{true}}" style="height: {{clientHeight?clientHeight+'px':'auto'}}">
+          <!-- @communicationEmit.user="refreshFun" :isLoading.sync="isLoading" -->
+          <CollageListModule :switchTabName.sync="switchTabName" :prizesGroup.sync="prizesGroup"  wx:if="{{switchTabName === '3'}}"></CollageListModule>
+        </scroll-view>
+      </swiper-item>
     </swiper>
   </view>
 </template>
@@ -51,6 +58,7 @@ import PreviewListModule from '../components/PreviewListModule'
 import WelfareModule from '../components/WelfareModule'
 import TransmissionGate from '../components/TransmissionGate'
 import TurnTable from '../components/TurnTable'
+import CollageListModule from '../components/CollageListModule'
 
 export default class Home extends wepy.page {
   mixins = [http, base, ShareMessage]
@@ -62,6 +70,7 @@ export default class Home extends wepy.page {
     prizesList: [],
     prizesQueuingList: [],
     welfareList: [],
+    prizesGroup: [],
     bannerUrl: '',
     isShow: true,
     barHeight: 0,
@@ -85,7 +94,8 @@ export default class Home extends wepy.page {
     PreviewListModule,
     WelfareModule,
     TransmissionGate,
-    TurnTable
+    TurnTable,
+    CollageListModule
   }
   methods = {
     // 父函数给传递子组件
@@ -136,6 +146,7 @@ export default class Home extends wepy.page {
           that.prizesQueuingList = data.prizes_queuing
           that.welfareList = data
           that.poolSize = data.user_coin_pools.length
+          that.prizesGroup = data.prizes_group
           if (that.welfareList.user_coin_pools.length > 0) {
             that.welfareList.user_coin_pools.map((item, i) => {
               that.welfareList.user_coin_pools[i].isShow = true
@@ -240,7 +251,10 @@ export default class Home extends wepy.page {
     text-align: center;
     padding: 0;
     &:nth-of-type(2) {
-      margin: 0 50rpx;
+      margin: 0 24rpx;
+    }
+    &:nth-of-type(3) {
+      margin-right: 24rpx;
     }
   }
   .active {
@@ -264,7 +278,7 @@ export default class Home extends wepy.page {
   .new {
     position: absolute;
     top: 17rpx;
-    left: 222rpx;
+    left: 162rpx;
     width: 66rpx;
     height: 33rpx;
     background: linear-gradient(to bottom, #00b7eb, #0093f2);
@@ -277,7 +291,7 @@ export default class Home extends wepy.page {
   .hot {
     position: absolute;
     top: 17rpx;
-    left: 407rpx;
+    left: 325rpx;
     width: 66rpx;
     height: 33rpx;
     background: linear-gradient(to bottom, #ff7854, #ff4e36);
@@ -290,7 +304,7 @@ export default class Home extends wepy.page {
   .remindSpot {
     position: absolute;
     top: 23rpx;
-    left: 596rpx;
+    left: 486rpx;
     width: 20rpx;
     height: 20rpx;
     background: #ff471c;
