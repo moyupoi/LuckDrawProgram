@@ -32,9 +32,9 @@
     <view class="rule" wx-if="{{processStatus === 0}}">
       <image src="../assets/images/collage/ruleBg.jpg" class="ruleBg"></image>
       <view class="ruleTitle">团奖步骤</view>
-      <navigator hover-class="none" url="/pages/....." class="ruleDetail">
+      <!-- <navigator hover-class="none" url="/pages/....." class="ruleDetail">
         详细规则>>
-      </navigator>
+      </navigator> -->
     </view>
     <!-- 支付完成后 分享后他人进入-->
     <view class="complatePay" wx:if="{{processStatus === 1}}">
@@ -277,7 +277,6 @@ export default class GroupDraw extends wepy.page {
       }
     }
   }
-  // 每次登陆计算距离结束时间 单位：秒
   // 转换时间
   transformTime(intDiff) {
     let day = 0
@@ -320,7 +319,7 @@ export default class GroupDraw extends wepy.page {
       this.$apply()
     } else {
       that.transformTime(intDiff)
-      this.clock = setInterval(function() {
+      that.clock = setInterval(function() {
         if (intDiff >= 0) {
           that.transformTime(intDiff)
           intDiff--
@@ -341,6 +340,7 @@ export default class GroupDraw extends wepy.page {
     }
   }
   onShow(a) {
+    clearInterval(this.clock)
     this.GroupDrawInit()
   }
   onHide() {
