@@ -1,0 +1,68 @@
+<template>
+  <TitleBar :titleText.sync="titleText"></TitleBar>
+  <view class="content">
+    <view class="title">抽奖规则</view>
+    <view class="list">
+      <view class="list-txt">
+        1，如果成功成团数少于5个时，活动无效
+      </view>
+    </view>
+    <view class="list">
+      <view class="list-txt">
+        2，达到指定开奖时间，系统将在所有成功成团的用户中随机选取中奖人，保证公平、公正
+      </view>
+    </view>
+    <view class="list">
+      <view class="list-txt">
+        3，在参与活动过程中，如存在违规行为，本平台将取消其参与资格，并撤销相关违规奖励
+      </view>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import TitleBar from '../components/TitleBar'
+export default class CollageRules extends wepy.page {
+  config = {
+    // navigationBarTitleText: '详细规则'
+  }
+  components = {
+    TitleBar
+  }
+  data = {
+    titleText: '抽奖记录'
+  }
+  methods = {}
+}
+</script>
+<style lang="scss" rel="stylesheet/scss" scoped>
+@import '../assets/stylesheets/layout.scss';
+.content {
+  height: 100%;
+  background-color: #ffffff;
+  .title {
+    font-size: 48rpx;
+    color: #333333;
+    line-height: 36rpx;
+    padding: 64rpx 32rpx;
+    background-color: #ffffff;
+  }
+  .list {
+    // margin-top: 40rpx;
+    padding: 34rpx 32rpx;
+
+    // .list-tit {
+    //   font-size: 28rpx;
+    //   color: #333333;
+    //   line-height: 32rpx;
+    //   padding-bottom: 14rpx;
+    // }
+
+    .list-txt {
+      font-size: 30rpx;
+      color: #333333;
+      line-height: 50rpx;
+    }
+  }
+}
+</style>

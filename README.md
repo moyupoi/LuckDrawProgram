@@ -84,6 +84,8 @@ $ wepy build --watch
 |—— historyDraw            历史抽奖
 |—— sponsor                成为赞助商
 |—— feedBack               意见反馈
+|—— collageDetails         一分钱拼团详情页面/开奖页面
+|—— collageRules           拼团抽奖规则
 ```
 
 具体代码参照已实现的WePY

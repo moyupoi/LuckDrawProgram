@@ -32,9 +32,9 @@
     <view class="rule" wx-if="{{processStatus === 0}}">
       <image src="../assets/images/collage/ruleBg.jpg" class="ruleBg"></image>
       <view class="ruleTitle">团奖步骤</view>
-      <!-- <navigator hover-class="none" url="/pages/....." class="ruleDetail">
+      <navigator hover-class="none" url="/pages/collageRules" class="ruleDetail">
         详细规则>>
-      </navigator> -->
+      </navigator>
     </view>
     <!-- 支付完成后 分享后他人进入-->
     <view class="complatePay" wx:if="{{processStatus === 1}}">

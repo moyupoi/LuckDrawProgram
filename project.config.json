@@ -29,7 +29,7 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": 7,
+			"current": 8,
 			"list": [
 				{
 					"id": -1,
@@ -77,6 +77,12 @@
 					"id": 7,
 					"name": "拼团详情",
 					"pathName": "pages/collageDetails",
+					"query": "id=5b2c97774f14bf2c0a0de69a"
+				},
+				{
+					"id": -1,
+					"name": "拼团详情",
+					"pathName": "pages/collageRules",
 					"query": "id=5b2c97774f14bf2c0a0de69a"
 				}
 			]
