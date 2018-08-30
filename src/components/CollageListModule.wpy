@@ -4,20 +4,20 @@
     <form bindsubmit="formSubmit" report-submit="true">
       <block wx:for="{{prizesGroup}}" wx:key="index">
         <view class="groupsItem">
-          <navigator hover-class="none" url="/pages/collageDetails?id={{item.id}}" class="banner">
+          <view class="banner" @tap="Collage({{item.is_has_draw}}, {{item.id}}, {{item.aasm_state}})">
             <image src="{{item.banner_url}}"></image>
             <image wx:if="{{item.aasm_state === 'finished'}}" src="../assets/images/collage/hasend.png" class="end"></image>
             <button formType="submit" class="prizesItemFormSubmit"></button>
-          </navigator>
+          </view>
           <view class="describe">
-            <navigator hover-class="none" url="/pages/collageDetails?id={{item.id}}">
+            <view @tap="Collage({{item.is_has_draw}}, {{item.id}}, {{item.aasm_state}})">
               <text class="name">{{item.brand}} · {{item.name}}</text>
               <view class="title">
                 <text class="isJoin" wx:if="{{item.is_has_draw}}">已参加</text>
                 <text class="isJoin2" wx:if="{{item.is_has_draw}}">|</text>
                 <label> {{item.number}}件</label>
               </view>
-            </navigator>
+            </view>
             <button formType="submit" class="CollageBtn">拼团抽奖</button>
           </view>
         </view>
@@ -68,8 +68,14 @@ export default class CollageListModule extends wepy.component {
         this.$updataFormId(formId)
       }
     },
-    Collage(isHasDraw, id) {
-      this.$goto('collageDetails?id=' + id)
+    Collage(isHasDraw, id, aasmState) {
+      console.log('id' + id)
+      console.log('isHasDraw' + isHasDraw)
+      if (aasmState === 'finished') {
+        if (isHasDraw) this.$goto('collageDetails?id=' + id)
+      } else {
+        this.$goto('collageDetails?id=' + id)
+      }
     }
   }
   onLoad() {}

@@ -9,8 +9,7 @@
         <view class="person">{{groupsDetails.gp_member_number}}人成团</view>
         <view class="prize">
           <text>¥{{groupsDetails.gp_amount}}</text>
-          <label>已成团
-            <text class="hasgroup">{{groupsDetails.gp_success_number}}</text>个</label>
+          <label>已成团<text class="hasgroup">{{groupsDetails.gp_success_number}}</text>个</label>
         </view>
       </view>
       <view class="conditionTime">
@@ -30,7 +29,7 @@
       <label class="reachNumber">数量：{{groupsAllDetails.number}}</label>
     </view>
     <!-- 第一次进入 -->
-    <view class="rule" wx-if="{{processStatus == 0 && !isShareBtn}}">
+    <view class="rule" wx-if="{{processStatus === 0}}">
       <image src="../assets/images/collage/ruleBg.jpg" class="ruleBg"></image>
       <view class="ruleTitle">团奖步骤</view>
       <navigator hover-class="none" url="/pages/....." class="ruleDetail">
@@ -38,7 +37,7 @@
       </navigator>
     </view>
     <!-- 支付完成后 分享后他人进入-->
-    <view class="complatePay" wx:if="{{processStatus == 1}}">
+    <view class="complatePay" wx:if="{{processStatus === 1}}">
       <view class="situation">
         <view>还差</view>
         <text>{{peopleNumber}}</text>
@@ -64,8 +63,8 @@
       </view>
     </view>
     <!-- 待开奖  已中奖 未中奖-->
-    <view class="waitOpen" wx:if="{{processStatus == 2}}">
-      <view class="luckly" wx:if="{{isfinished && group}}">{{ groupsAllDetails.is_get_draw? '恭喜您中奖了' : '很遗憾未中奖' }}</view>
+    <view class="waitOpen" wx:if="{{processStatus === 2}}">
+      <view class="luckly" wx:if="{{isfinished}}">{{ groupsAllDetails.is_get_draw? '恭喜您中奖了' : '很遗憾未中奖' }}</view>
       <view class="openTime" wx:if="{{!isfinished}}">
         <view>{{dateTime.totalHour}}</view> :
         <view>{{dateTime.minute}}</view> :
@@ -86,8 +85,8 @@
           <image src="{{groupsAllDetails.prize_draw_user_avatars_for_get[index]}}" class="luckPeopleHead"></image>
         </view>
       </view>
-      <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" wx:if="{{isfinished && groupsAllDetails.is_get_draw }}">
-        <button class="fillAddress" @tap="address" wx:if="{{userAddress === ''}}">填写收货地址</button>
+      <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" wx:if="{{isfinished && groupsAllDetails.is_get_draw && userAddress === ''}}">
+        <button class="fillAddress" @tap="address">填写收货地址</button>
       </form>
       <view class="express" wx:if="{{userAddress !== '' && isfinished && groupsAllDetails.is_get_draw}}">
         <view class="expressInformation">
@@ -105,6 +104,9 @@
       </view>
       <view class="null"></view>
     </view>
+    <view wx:if="{{processStatus === 3}}" class="failGroup">
+      活动已失效
+    </view>
     <view class="sponsor">
       <text>赞助商</text>
       <image src="../assets/images/luckDraw/officialLogo.png"></image>
@@ -112,12 +114,12 @@
     </view>
     <image src="{{groupsAllDetails.detail_url}}" class="commodityDisplay" mode="widthFix"></image>
   </view>
-  <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="collageBtn" wx:if="{{processStatus !== 2}}">
-    <button class="btn" @tap="requestPay" formType="submit" wx:if="{{processStatus === 0 || (processStatus === 1 && isShareBtn && !isMyself)}}">
+  <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="collageBtn" wx:if="{{processStatus !== 2 &&processStatus !== 3}}">
+    <button class="btn" @tap="requestPay" formType="submit" wx:if="{{isPayButton}}">
       <view>¥{{groupsDetails.gp_amount}} {{processStatus===0?'立即开团':'我要参团'}}</view>
       <view>未中奖全额退款</view>
     </button>
-    <button class="btn" style="line-height:92rpx" open-type="share" formType="submit" wx:if="{{(processStatus === 1)||( isShareBtn && isMyself)}}">邀请好友参团</button>
+    <button class="btn" style="line-height:92rpx" open-type="share" formType="submit" wx:if="{{!isPayButton}}">邀请好友参团</button>
     <!-- <button @tap="shareFriends">生成朋友圈分享图</button> -->
   </form>
 </template>
@@ -175,9 +177,10 @@ export default class GroupDraw extends wepy.page {
       second: '00'
     },
     group: false, // 是否成团
-    isMyself: false, // 是否是通过自己的转发进来的
-    processStatus: 1, // 0:第一次 1:支付完成 2:待开奖
-    isfinished: false // 是否开奖
+    processStatus: 1, // 0:第一次 1:支付完成 2:待开奖 3:活动失效
+    isfinished: false, // 是否开奖
+    isPayButton: true, // true : 支付按钮 false： 分享按钮
+    groupSuccess: true // 是否满足开奖的成团最低数量限制
   }
   components = {
     LoadingZ,
@@ -221,15 +224,14 @@ export default class GroupDraw extends wepy.page {
   // 判断用户是否支付
   isHasPay() {
     let userId = ''
-    let isFindMember = 0
+    let isFindMember = -1
     if (service.isFormal) {
       userId = wepy.getStorageSync('userId')
     } else {
       userId = wepy.getStorageSync('userIdInfo')
     }
-    if (this.groupMember !== null) {
-      isFindMember = this.groupMember.map(v => v.id).indexOf(userId)
-    }
+    isFindMember = this.groupMember.map(v => v.id).indexOf(userId)
+    console.log('pay ' + isFindMember)
     if (isFindMember === -1) return false
     else return true
   }
@@ -241,8 +243,8 @@ export default class GroupDraw extends wepy.page {
     } else {
       userId = wepy.getStorageSync('userIdInfo')
     }
-    if (this.shareUserId === userId) this.isMyself = true
-    else this.isMyself = false
+    if (this.shareUserId === userId) return true
+    else return false
   }
   onLoad(options) {
     // let that = this
@@ -271,35 +273,11 @@ export default class GroupDraw extends wepy.page {
         this.groupId = options.groupId
       }
       if (!this.isUndefined(options.id) && options.id !== '') {
-        this.GroupDrawInit()
+        // this.GroupDrawInit()
       }
     }
-    this.isSelf()
   }
   // 每次登陆计算距离结束时间 单位：秒
-  InitTimer() {
-    let that = this
-    // 获取数据中的时间戳
-    this.$get(
-      { url: service.prizes + this.commodityId },
-      {
-        success: ({ statusCode, data }) => {
-          let start = data.group_draw.current_time.replace(/-/g, '/')
-          let end = data.group_draw.gp_finished_at.replace(/-/g, '/')
-          let intDiff = (new Date(end) - new Date(start)) / 1000
-          that.transformTime(intDiff)
-          that.Timer(intDiff)
-        }
-      }
-    )
-    that.dateTime = {
-      day: '00',
-      hour: '00',
-      totalHour: '00',
-      minute: '00',
-      second: '00'
-    }
-  }
   // 转换时间
   transformTime(intDiff) {
     let day = 0
@@ -341,6 +319,7 @@ export default class GroupDraw extends wepy.page {
       }
       this.$apply()
     } else {
+      that.transformTime(intDiff)
       this.clock = setInterval(function() {
         if (intDiff >= 0) {
           that.transformTime(intDiff)
@@ -362,9 +341,7 @@ export default class GroupDraw extends wepy.page {
     }
   }
   onShow(a) {
-    console.log('onshow')
     this.GroupDrawInit()
-    this.InitTimer()
   }
   onHide() {
     clearInterval(this.clock)
@@ -437,38 +414,42 @@ export default class GroupDraw extends wepy.page {
       },
       {
         success: ({ statusCode, data }) => {
+          console.log(data)
           that.groupsAllDetails = data
           that.groupsDetails = data.group_draw
-          that.groupId = that.isShareBtn
-            ? that.groupId
-            : data.group_draw.group_id
-
+          that.groupId = data.group_draw.group_id
           that.userAddress = data.user_address
+          // 对成员数组的处理 如果团内人数小于成团数
           if (
             data.group_draw.group_members.length <
             data.group_draw.gp_member_number
           ) {
-            if (data.group_draw.group_members.length === 0) {
-              // 未参加
-              that.groupMember = null
-            } else {
-              that.peopleNumber =
-                data.group_draw.gp_member_number -
-                data.group_draw.group_members.length
-              data.group_draw.group_members.length =
-                data.group_draw.gp_member_number
-              that.groupMember = data.group_draw.group_members
-            }
+            // 计算还差多少人成团
+            that.peopleNumber =
+              data.group_draw.gp_member_number -
+              data.group_draw.group_members.length
+            // 填补空位 以遍历两次
+            data.group_draw.group_members.length =
+              data.group_draw.gp_member_number
+            that.groupMember = data.group_draw.group_members
           } else {
             that.groupMember = data.group_draw.group_members
-            isGroup = true
-            that.group = true
           }
+          // 获取时间差intDiff 单位：秒
           let start = data.group_draw.current_time.replace(/-/g, '/')
           let end = data.group_draw.gp_finished_at.replace(/-/g, '/')
           let intDiff = (new Date(end) - new Date(start)) / 1000
+          that.Timer(intDiff)
           console.log(intDiff)
           that.shareBannerUrl = data.banner_url
+          if (data.group_draw.gourp_state === 'success') {
+            that.group = true
+            isGroup = true
+          }
+          if (data.group_draw.gp_success_number < data.group_draw.gp_minimum) {
+            that.groupSuccess = false
+          }
+
           // that.shareName = data.name
           // that.codeImg =
           //   service.wxacodeunlimit +
@@ -479,39 +460,62 @@ export default class GroupDraw extends wepy.page {
           //   '&page=' +
           //   this.shareUrl
           // this.createCanvas()
-          console.log('isfinished')
-          console.log(that.isfinished)
           if (data.aasm_state === 'finished') {
             that.isfinished = true
             that.prizeDrawId = data.prize_draw_id
           }
-          console.log(that.isfinished)
-          that.WhichOfPhase(isGroup, data.aasm_state)
+          that.WhichOfPhase(
+            isGroup,
+            data.aasm_state,
+            data.group_draw.gourp_state
+          )
           that.isShow = false
         }
       }
     )
   }
   // 判断进度
-  WhichOfPhase(isGroup, isfinished) {
+  WhichOfPhase(isGroup, isfinished, gourpState) {
     let isPay = this.isHasPay()
-    console.log(isPay)
+    let self = this.isSelf()
+    console.log('isPay ' + isPay)
+    console.log('self ' + self)
     if (isfinished === 'finished') {
-      this.processStatus = 2
+      this.processStatus = this.groupSuccess ? 2 : 3
     } else {
       if (!this.isShareBtn) {
         // 不是通过分享进入 并且 未支付 显示开团规则页面
         if (!isPay) {
           this.processStatus = 0
+          this.isPayButton = true
         } else {
           // 已支付 已成团 显示等待开奖 否则 显示分享
           this.processStatus = isGroup ? 2 : 1
+          this.isPayButton = false
         }
       } else {
-        // 通过分享进入 未支付 根据是否成团 成团显示等待结果 未成团显示拼团界面
-        this.processStatus = isGroup ? 2 : 1
+        // 通过分享进入 未支付 根据是否成团 成团显示开团界面 未成团显示拼团界面
+        if (self) {
+          // 通过自己的分享进入 已支付 根据是否成团显示
+          this.processStatus = isGroup ? 2 : 1
+          this.isPayButton = false
+        } else {
+          // 通过别人的分享进入
+          if (!isPay) {
+            console.log('isGroup' + isGroup)
+            // 通过别人的分享进入 但未参团 如果成团 显示开团 否则 显示拼团
+            this.processStatus = gourpState === null ? 0 : 1
+            this.isPayButton = true
+            console.log('share notpay' + this.processStatus)
+          } else {
+            // 通过别人的分享进入 但已参团 成团显示等待 未成团显示分享
+            this.processStatus = isGroup ? 2 : 1
+            this.isPayButton = false
+          }
+        }
       }
     }
+    console.log('finally' + this.processStatus)
   }
   formSubmit(event) {
     let formId = event.detail.formId
@@ -783,9 +787,9 @@ export default class GroupDraw extends wepy.page {
     margin-top: 20rpx;
     width: 100%;
     background-color: #ffffff;
-    padding: 60rpx 0 0 0;
+    padding: 64rpx 0;
     .luckly {
-      margin: 0rpx auto 48rpx;
+      margin: 0rpx auto;
       font-size: 48rpx;
       color: #333333;
       text-align: center;
@@ -812,7 +816,7 @@ export default class GroupDraw extends wepy.page {
       }
     }
     .collagePeople {
-      margin: 54rpx 0 60rpx 0;
+      margin-top: 54rpx;
       display: flex;
       flex-direction: row;
       justify-content: center;
@@ -855,7 +859,7 @@ export default class GroupDraw extends wepy.page {
       }
     }
     .luckPeople {
-      margin-bottom: 60rpx;
+      margin-top: 54rpx;
       display: flex;
       flex-direction: row;
       justify-content: center;
@@ -874,7 +878,7 @@ export default class GroupDraw extends wepy.page {
       height: 1rpx;
     }
     .fillAddress {
-      margin-bottom: 60rpx;
+      margin-top: 54rpx;
       width: 326rpx;
       height: 92rpx;
       font-size: 32rpx;
@@ -886,7 +890,7 @@ export default class GroupDraw extends wepy.page {
       border: 1rpx solid #fa5c37;
     }
     .express {
-      margin-bottom: 60rpx;
+      margin-top: 54rpx;
       position: relative;
       .expressInformation {
         height: 154rpx;
@@ -945,6 +949,16 @@ export default class GroupDraw extends wepy.page {
         }
       }
     }
+  }
+  .failGroup {
+    margin-top: 20rpx;
+    width: 100%;
+    background-color: #ffffff;
+    padding: 64rpx 0;
+    font-size: 36rpx;
+    color: #333333;
+    line-height: 36rpx;
+    text-align: center;
   }
   .sponsor {
     height: 50rpx;
