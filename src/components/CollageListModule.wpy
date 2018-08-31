@@ -69,8 +69,6 @@ export default class CollageListModule extends wepy.component {
       }
     },
     Collage(isHasDraw, id, aasmState) {
-      console.log('id' + id)
-      console.log('isHasDraw' + isHasDraw)
       if (aasmState === 'finished') {
         if (isHasDraw) this.$goto('collageDetails?id=' + id)
       } else {

@@ -8,8 +8,12 @@
       <view class="conditionNumber">
         <view class="person">{{groupsDetails.gp_member_number}}人成团</view>
         <view class="prize">
-          <text>¥{{groupsDetails.gp_amount}}</text>
-          <label>已成团<text class="hasgroup">{{groupsDetails.gp_success_number}}</text>个</label>
+          <view>
+            <text>¥{{groupsDetails.gp_amount}}</text>
+          </view>
+          <view>
+            <label>已成团<text class="hasgroup">{{groupsDetails.gp_success_number}}</text>个</label>
+          </view>
         </view>
       </view>
       <view class="conditionTime">
@@ -25,8 +29,11 @@
     </view>
     <view class="describe">
       <text class="name">{{groupsAllDetails.name}}</text>
-      <!-- <label>开奖时间：{{groupsDetails.gp_finished_at}}</label> -->
-      <label class="reachNumber">数量：{{groupsAllDetails.number}}</label>
+      <view class="info">
+        <label class='time'>开奖时间：{{groupsDetails.gp_finished_at}}</label>
+        <label>数量：{{groupsAllDetails.number}}</label>
+      </view>
+      <!-- <label class="reachNumber">数量：{{groupsAllDetails.number}}</label> -->
     </view>
     <!-- 第一次进入 -->
     <view class="rule" wx-if="{{processStatus === 0}}">
@@ -231,7 +238,7 @@ export default class GroupDraw extends wepy.page {
       userId = wepy.getStorageSync('userIdInfo')
     }
     isFindMember = this.groupMember.map(v => v.id).indexOf(userId)
-    console.log('pay ' + isFindMember)
+    // console.log('pay ' + isFindMember)
     if (isFindMember === -1) return false
     else return true
   }
@@ -248,7 +255,7 @@ export default class GroupDraw extends wepy.page {
   }
   onLoad(options) {
     // let that = this
-    console.log(options)
+    // console.log(options)
     let isScene = wepy.getStorageSync('scene') || false
     if (isScene) {
       this.wechatRestoreScene(isScene)
@@ -264,7 +271,7 @@ export default class GroupDraw extends wepy.page {
       // 分享或者直接进入
       this.commodityId = options.id
       // options.id = '5b2c99544f14bf2c077cc43c'
-      console.log('onload gid' + this.groupId)
+      // console.log('onload gid' + this.groupId)
       this.shareUserId = options.shareUserId ? options.shareUserId : null
       if (!this.isUndefined(options.share) && !this.isUndefined(options.id)) {
         this.isShareBtn = true
@@ -414,7 +421,7 @@ export default class GroupDraw extends wepy.page {
       },
       {
         success: ({ statusCode, data }) => {
-          console.log(data)
+          // console.log(data)
           that.groupsAllDetails = data
           that.groupsDetails = data.group_draw
           that.groupId = data.group_draw.group_id
@@ -440,7 +447,7 @@ export default class GroupDraw extends wepy.page {
           let end = data.group_draw.gp_finished_at.replace(/-/g, '/')
           let intDiff = (new Date(end) - new Date(start)) / 1000
           that.Timer(intDiff)
-          console.log(intDiff)
+          // console.log(intDiff)
           that.shareBannerUrl = data.banner_url
           if (data.group_draw.gourp_state === 'success') {
             that.group = true
@@ -478,8 +485,8 @@ export default class GroupDraw extends wepy.page {
   WhichOfPhase(isGroup, isfinished, gourpState) {
     let isPay = this.isHasPay()
     let self = this.isSelf()
-    console.log('isPay ' + isPay)
-    console.log('self ' + self)
+    // console.log('isPay ' + isPay)
+    // console.log('self ' + self)
     if (isfinished === 'finished') {
       this.processStatus = this.groupSuccess ? 2 : 3
     } else {
@@ -502,11 +509,11 @@ export default class GroupDraw extends wepy.page {
         } else {
           // 通过别人的分享进入
           if (!isPay) {
-            console.log('isGroup' + isGroup)
+            // console.log('isGroup' + isGroup)
             // 通过别人的分享进入 但未参团 如果成团 显示开团 否则 显示拼团
             this.processStatus = gourpState === null ? 0 : 1
             this.isPayButton = true
-            console.log('share notpay' + this.processStatus)
+            // console.log('share notpay' + this.processStatus)
           } else {
             // 通过别人的分享进入 但已参团 成团显示等待 未成团显示分享
             this.processStatus = isGroup ? 2 : 1
@@ -515,7 +522,7 @@ export default class GroupDraw extends wepy.page {
         }
       }
     }
-    console.log('finally' + this.processStatus)
+    // console.log('finally' + this.processStatus)
   }
   formSubmit(event) {
     let formId = event.detail.formId
@@ -587,17 +594,24 @@ export default class GroupDraw extends wepy.page {
         margin-bottom: 16rpx;
       }
       .prize {
-        text {
-          font-size: 72rpx;
-          line-height: 72rpx;
-          margin-right: 62rpx;
-        }
-        label {
-          font-size: 24rpx;
-          line-height: 34rpx;
-          .hasgroup {
-            font-size: 36rpx;
-            margin-right: 0;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: baseline;
+        font-size: 0;
+        view {
+          text {
+            font-size: 72rpx;
+            line-height: 72rpx;
+            margin-right: 62rpx;
+          }
+          label {
+            font-size: 24rpx;
+            line-height: 34rpx;
+            .hasgroup {
+              font-size: 36rpx;
+              margin-right: 0;
+            }
           }
         }
       }
@@ -650,21 +664,19 @@ export default class GroupDraw extends wepy.page {
       line-height: 44rpx;
       font-weight: 600;
       color: #333333;
-      float: left;
     }
-    .number {
-      font-size: 28rpx;
-      line-height: 32rpx;
-      color: #999999;
-      float: right;
-    }
-    .reachNumber {
-      clear: both;
+    .info {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
       font-size: 24rpx;
       line-height: 32rpx;
       color: #666666;
       display: block;
-      margin-top: 56rpx;
+      margin-top: 20rpx;
+      .time{
+        margin-right: 32rpx;
+      }
     }
   }
   .rule {
