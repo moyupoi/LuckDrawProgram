@@ -122,7 +122,7 @@
     <image src="{{groupsAllDetails.detail_url}}" class="commodityDisplay" mode="widthFix"></image>
   </view>
   <form bindsubmit="formSubmit" bindreset="formReset" report-submit="true" class="collageBtn" wx:if="{{processStatus !== 2 &&processStatus !== 3}}">
-    <button class="btn" @tap="requestPay" formType="submit" wx:if="{{isPayButton}}">
+    <button class="btn" @getuserinfo="requestPay" open-type="getUserInfo" formType="submit" wx:if="{{isPayButton}}">
       <view>¥{{groupsDetails.gp_amount}} {{processStatus===0?'立即开团':'我要参团'}}</view>
       <view>未中奖全额退款</view>
     </button>
@@ -426,7 +426,7 @@ export default class GroupDraw extends wepy.page {
           that.groupsDetails = data.group_draw
           that.groupId = data.group_draw.group_id
           that.userAddress = data.user_address
-          // 对成员数组的处理 如果团内人数小于成团数
+          // 对成员数组的处理 如果团内人数小于成团数 计算还差多少人成团 并强制增加长度为需要团员人数 以遍历出空头像
           if (
             data.group_draw.group_members.length <
             data.group_draw.gp_member_number
@@ -674,7 +674,7 @@ export default class GroupDraw extends wepy.page {
       color: #666666;
       display: block;
       margin-top: 20rpx;
-      .time{
+      .time {
         margin-right: 32rpx;
       }
     }

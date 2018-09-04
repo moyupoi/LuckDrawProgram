@@ -2,7 +2,7 @@
   <LoadingZ :isShow.sync="isShow"></LoadingZ>
   <TitleBar :isBackBtn.sync="isBackBtn" :titleText.sync="titleText"></TitleBar>
   <view class="container">
-    <image src="../assets/images/turn/turn.jpg" class="bgImg" @tap="multipleTap"></image>
+    <image src="../assets/images/turn/turn.jpg" class="bgImg" bindload="imageOnLoad"></image>
     <view class="lucky"></view>
     <view class="plateWrapBox">
       <view class="plateBorder" animation="{{ aniData }}">
@@ -66,14 +66,8 @@ export default class Turn extends wepy.page {
     TitleBar
   }
   methods = {
-    multipleTap() {
-      if (this.cantouch) {
-        this.cantouch = false
-        setTimeout(() => {
-          this.cantouch = true
-          this.$apply()
-        }, 2000)
-      }
+    imageOnLoad() {
+      this.initWeelInfo()
     },
     formSubmit(event) {
       let formId = event.detail.formId
@@ -143,7 +137,7 @@ export default class Turn extends wepy.page {
         icon: 'none',
         duration: 1000,
         success: function() {
-        // 每日免费机会用完之后的提示
+          // 每日免费机会用完之后的提示
           if (that.dailyLeftTimes === 0 && v !== 'coin') {
             setTimeout(function() {
               wepy.showModal({
@@ -174,9 +168,7 @@ export default class Turn extends wepy.page {
       }
     )
   }
-  onLoad(options) {
-    this.initWeelInfo()
-  }
+  onLoad(options) {}
   onShow() {}
 }
 </script>

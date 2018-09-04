@@ -25,7 +25,7 @@ export default class ShareMessage extends wepy.mixin {
       //   fail: (res) => {
       //   }
       // }
-      console.log('1??');
+      // console.log('1??');
       let userId = this.$getUserId()
       let resData = res.source.data
       let shareData = {}
@@ -35,19 +35,19 @@ export default class ShareMessage extends wepy.mixin {
       let shareUrl = !this.isUndefined(resData.shareUrl) ? resData.shareUrl : getCurrentPages()[0].route
       if (!this.isUndefined(userId)) {
         shareUrl = shareUrl + '?shareUserId=' + userId + '&share=true'
-        console.log('111' + shareUrl)
+        // console.log('111' + shareUrl)
       }
       if (resData.commodityId) {
-        console.log('1/resData.commodityId' + shareUrl + '&id=' + resData.commodityId)
+        // console.log('1/resData.commodityId' + shareUrl + '&id=' + resData.commodityId)
         if (resData.groupId) {
-          console.log(shareUrl + '&id=' + resData.commodityId + '&groupId=' + resData.groupId)
+          // console.log(shareUrl + '&id=' + resData.commodityId + '&groupId=' + resData.groupId)
           return {
             path: shareUrl + '&id=' + resData.commodityId + '&groupId=' + resData.groupId,
             imageUrl: shareImageUrl,
             title: shareTitle
           }
         } else {
-          console.log('commodityId'+resData.commodityId)
+          // console.log('commodityId'+resData.commodityId)
           return {
             path: shareUrl + '&id=' + resData.commodityId,
             imageUrl: shareImageUrl,
@@ -57,14 +57,14 @@ export default class ShareMessage extends wepy.mixin {
 
 
       } else if (!this.isUndefined(resData.shareUrl)) {
-        console.log('2/resData.shareUrl')
+        // console.log('2/resData.shareUrl')
         return {
           path: shareUrl,
           imageUrl: shareImageUrl,
           title: shareTitle
         }
       } else {
-        console.log('3/resData....')
+        // console.log('3/resData....')
         return {
           imageUrl: shareImageUrl,
           title: shareTitle
