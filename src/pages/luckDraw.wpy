@@ -356,11 +356,13 @@
           src: this.prizesDetails.banner_url,
           success: res => {
             console.log('下载完成')
-            let obj = {
-              prizesDetails: that.prizesDetails,
-              path: res.path
-            }
-            resolve(obj)
+            resolve(res.path)
+          },
+          fail() {
+            wepy.showToast({
+              title: '图片下载失败',
+              icon: 'none'
+            })
           }
         })
       })
@@ -370,6 +372,12 @@
           success: res => {
             console.log('下载完成')
             resolve(res.path)
+          },
+          fail() {
+            wepy.showToast({
+              title: '图片下载失败',
+              icon: 'none'
+            })
           }
         })
       })
@@ -379,6 +387,12 @@
           success: res => {
             console.log('下载完成')
             resolve(res.path)
+          },
+          fail() {
+            wepy.showToast({
+              title: '图片下载失败',
+              icon: 'none'
+            })
           }
         })
       })
@@ -387,18 +401,18 @@
           // 绘制底色和背景
           ctx.drawImage('../assets/images/painter/cavnasImg.png', 0, 0, 750, 1368)
           // 绘制banner图
-          ctx.drawImage(result[0].path, 0, 0, 750, 450)
+          ctx.drawImage(result[0], 0, 0, 750, 450)
           // 绘制小程序二维码
           ctx.drawImage(result[1], 225, 730, 300, 300)
           // 绘制商品名
           ctx.setFontSize(40)
           ctx.setFillStyle('#333333')
-          ctx.fillText(result[0].prizesDetails.name, 30, 530)
+          ctx.fillText(this.prizesDetails.name, 30, 530)
           // 绘制已有xxx人参加
           ctx.setFontSize(30)
           ctx.setFillStyle('#FF4C21')
           ctx.fillText(
-            '已有' + result[0].prizesDetails.prize_draws_count + '人次参加',
+            '已有' + this.prizesDetails.prize_draws_count + '人次参加',
             30,
             590
           )
@@ -406,7 +420,7 @@
           ctx.setFontSize(32)
           ctx.setFillStyle('#0B0A0A')
           let paragraph =
-            '我是' + result[0].prizesDetails.user_nick_name + '邀你一起免费抽奖'
+            '我是' + this.prizesDetails.user_nick_name + '邀你一起免费抽奖'
           if (paragraph.length > 17) {
             ctx.fillText(paragraph.substr(0, 17), 160, 1272)
             ctx.fillText(paragraph.substr(17, 17), 160, 1315)
