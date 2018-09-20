@@ -148,11 +148,15 @@ export default class GroupDraw extends wepy.page {
   data = {
     titleText: '抽奖详情',
     isBackBtn: true,
+    isShare: true,
     isShareBtn: false,
     groupsDetails: {},
     groupsAllDetails: {},
     groupMember: {},
     formId: null,
+    hasUploadUserinfo: false,
+    prizeDrawUserAvatars: [],
+    prizeDrawsCount: 0,
     aasmState: '',
     isShow: true,
     commodityId: null,
@@ -160,15 +164,18 @@ export default class GroupDraw extends wepy.page {
     shareUserId: null,
     shareUrl: 'pages/collageDetails',
     shareBannerUrl: '',
-    // shareName: '',
+    shareName: '',
+    leftChance: 0,
+    isReachPrizeLimit: false,
     isLoading: false,
-    // isShareWicket: false,
-    // codeImg: '',
+    isShareWicket: false,
+    codeImg: '',
     clock: null, // 定时器
     id: '',
     peopleNumber: '', // 还差多少人中奖
     prizeDrawId: '', // 中奖id
     userAddress: '', // 地址信息
+    memo: '',
     dateTime: {
       day: '00',
       hour: '00',
