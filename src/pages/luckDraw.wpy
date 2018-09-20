@@ -339,12 +339,11 @@
       this.isShareWicket = false
     }
     shareFriends() {
-      this.createCanvas()
-      wepy.showToast({
+      wepy.showLoading({
         title: '生成中...',
-        icon: 'loading',
-        duration: 1000
+        icon: 'loading'
       })
+      this.createCanvas()
     }
     createCanvas() {
       var that = this
@@ -425,35 +424,40 @@
           ctx.drawImage(result[2], 32, 1220, 108, 108)
           ctx.draw()
         })
-      setTimeout(function() {
-        wepy.canvasToTempFilePath({
-          canvasId: 'canvas',
-          success: function(res) {
-            // 将生成的图片放入到《image》标签里
-            that.canvasImg = res.tempFilePath
-            // console.log(that.canvasImg)
-            if (that.canvasImg !== '') {
-              wepy.getImageInfo({
-                src: that.canvasImg,
-                success: function(res) {
-                  wepy.saveImageToPhotosAlbum({
-                    filePath: res.path,
-                    success(result) {
-                      wepy.showToast({
-                        title: '图片保存成功',
-                        icon: 'success'
-                      })
-                    }
-                  })
-                }
-              })
+        .then(result => {
+          wepy.canvasToTempFilePath({
+            canvasId: 'canvas',
+            success: function(res) {
+              // 将生成的图片放入到《image》标签里
+              that.canvasImg = res.tempFilePath
+              // console.log(that.canvasImg)
+              if (that.canvasImg !== '') {
+                wepy.getImageInfo({
+                  src: that.canvasImg,
+                  success: function(res) {
+                    wepy.saveImageToPhotosAlbum({
+                      filePath: res.path,
+                      success(result) {
+                        wepy.hideLoading()
+                        wepy.showToast({
+                          title: '图片保存成功',
+                          icon: 'success'
+                        })
+                      },
+                      fail() {
+                        wepy.hideLoading()
+                      }
+                    })
+                  }
+                })
+              }
+            },
+            fail: function(res) {
+              // console.log(res)
+              wepy.hideLoading()
             }
-          },
-          fail: function(res) {
-            // console.log(res)
-          }
+          })
         })
-      }, 2000)
     }
   }
 </script>

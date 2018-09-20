@@ -10,7 +10,7 @@
 	"compileType": "miniprogram",
 	"appid": "wx025841df48304564",
 	"projectname": "luckdraw",
-	"miniprogramRoot": "./dist",
+	"miniprogramRoot": "dist/",
 	"libVersion": "2.2.0",
 	"condition": {
 		"search": {
